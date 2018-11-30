@@ -1,0 +1,351 @@
+= TbT ERP API
+MelKori <mieldo@gmail.com>
+1.3.2, 2018-11-01 (1:1.3.2): ERP API
+:toc: right
+:toclevels: 4
+{empty}
+
+== Общая информация
+
+Агентский API предназначен для интеграции ERP систем бизнес-агентов в сервисы TbT.
+
+Для подключения к системе необходимо:
+
+* иметь регистрационную запись в системе с установленным признаком **agent**
+* ID учетной записи агента (UUID)
+* Уникальный токен и пароль (или одноразовый сессионный код) для клиентского подключения (передаются в заголовке для Basic Auth)
+
+К агентскому токену могут добавляться ограничения на некоторые общие типы операций: `create`, `update`, `notify`
+
+При подключении в индифидуальном профиле создается реестр правил/классификатор обработки ТТН для каждой группы агентов (agent class) в зависимости от особенностей их данных, чтобы облегчить интеграцию.
+
+== API
+
+=== Посылки
+
+==== Создание посылки
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel
+method_params:: new
+request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<TIMESTAMP UTC>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
+expected_result:: 202 {"success": true, "id" : "<PARSEL ID>"}
+
+NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photo": "<OPTIONAL PHOTO>"}
+
+NOTE: ключи `cod_amount`, `contragent_id`, `dimensions`, `_comment`, `items` -- опциональны
+
+NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах.
+
+NOTE: параметр `delivery_type` имеет значение по-умолчанию *W2W*, в случае значений *W2D* и *D2D* необходимо передать ключ `dest_apartment`
+
+==== Получение по id/code
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel
+method_params:: <PARCEL ID>
+get_params:: <code>
+request_body:: ----
+expected_result:: 200 {"success": true, "address_id": "<SHIPPING ADDRESS ID>", "code": "<CODE-128>", "is_paid": <true/false>, "weight": <WEIGHT GRAM as DECIMAL(10,6)>, "agent": "<USER ID>", "is_open": <true/false>, "paid_at": "<TIMESTAMP UTC> or null", "closed_at": "<TIMESTAMP UTC or null>", "id": "<PARCEL ID>", "type": <TYPE CODE>, "parent": <PARCEL ID or null>, "price": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)>, "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>, "class": "<CLASS ID>", "sender": "<USER ID>", "created_at": "<TIMESTAMP UTC>", "modified_at": "<TIMESTAMP UTC>", "receiver": "<USER ID>", "state": "<PARCEL STATE>", "transfer_via": "<OFFCIE ID>", "pentity": "<OFFICE ENTITY ID>", "additional_data": {...}, "delivery_type": "<DELIVERY TYPE>" ...}
+
+CAUTION: `parcel_id` имеет более высокий приоритет, чем `code`
+
+==== Получение cписка посылок по списку id
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/list
+method_params:: ----
+get_params:: <code>
+request_body:: {"id": ["<PARCEL ID>", "<PARCEL ID>", ...]}
+expected_result:: 200 {"success": true, "parcels": [{<PARCEL SPEC>}, {<PARCEL SPEC>}, ...]}
+
+==== Получение cписка посылок по участию
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/list
+method_params:: ----
+get_params:: participant = all|agent|sender|receiver, sort_by = <SORT FIELD>, [sort_order = desc|asc], [limit=20, offset=0]
+request_body:: ----
+expected_result:: 200 {"success": true, "parcels": [{<PARCEL SPEC>}, {<PARCEL SPEC>}, ...], "total": <INTEGER TOTAL>}
+
+NOTE: По-умолчанию выполняется поиск всех посылок `participant=all`, порядок сортировки по-убыванию по состояниям. В качестве sort_by можно передать большинство полей из <PARCEL SPEC>
+
+==== Получение кодов
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/codes
+method_params:: <PARCEL ID>
+request_body:: ----
+expected_result:: 200 {"success": true, "qr" : "<QR body>", "bcode" : "<CODE128>"}
+
+==== Состояние посылки
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/track
+method_params:: <PARCEL ID>
+request_body:: ----
+expected_result:: 200 {"success": true, "geo" : [ <LATITUDE>, <LONGITUDE>], "code" : "<CODE ID>", "state_desc" : "<STATE DESCR>", "modified_at" : "<TIMESTAMP UTC>"}
+
+==== История изменения состояний
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/log
+method_params:: <PARCEL ID>
+request_body:: ----
+expected_result:: 200 {"success": true, "<TIMESTAMP UTC>" : { "geo" : [ <LATITUDE>, <LONGITUDE>], "code" : "<CODE ID>", "state_desc" : "<STATE DESCR>"}, ...}
+
+==== История изменения состояний всех посылок
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/
+method_params:: logs
+get_params:: ts_from=<TIMESTAMP UTC> [, ts_to=<TIMESTAMP UTC>, state=<PARCEL STATE>]
+request_body:: ----
+expected_result:: 200 {"success": true, "logs": [{"id": <PARCEL ID>, "<TIMESTAMP UTC>" : { "geo" : [ <LATITUDE>, <LONGITUDE>], "code" : "<CODE ID>", "state_desc" : "<STATE DESCR>"}, ...}, {"id": <PARCEL_ID>, <TIMESTAMP UTC>: {...}, ...}, ...]
+
+NOTE: Временные параметры `ts_from`, `ts_to` задаются в формате timestamp UTS *in miliseconds*.
+
+==== Модификация зарегистрированой посылки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/alter
+method_params:: <PARCEL ID>
+request_body:: { "receiver": { "id": "<MK User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<APARTMENT>" "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>"}
+expected_result:: 200 {"success": true}
+
+NOTE: Все ключи -- опциональны, некоторые ключи имеют в зависимостях другие ключи: например `dest` связан с `delivery_type`, `dest_apartment`
+
+IMPORTANT: Изменения применимы только для состояния `Заявка зарегистрирована в системе` (`state == PU0000`)
+
+==== Запрос на изменение посылки после принятия к доставке
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/update
+method_params:: <PARCEL ID>
+request_body:: { "receiver": { "id": "<MK User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
+expected_result:: 202 {"success": true}
+
+NOTE: `receiver` опциональный, `cod_amount` и `paid_amount` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением.
+
+IMPORTANT: Запрос на модификацию возможен в состояних `Принято к доставке` (`state == PU0001`) и `В отделении` (`state == PU0003`)
+
+==== Подтверждение платежа
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/paid
+method_params:: <PARCEL ID>
+request_body:: { "amount": <PRICE as DECIMAL(10,2)>, "payment_id": "<ID as STRING>"}
+expected_result:: 200 {"success": true}
+
+IMPORTANT: Изменения не применимы для состояния `Доставлено` (`state == PU0007`)
+
+==== Установка времени хранения посылки на отделении
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/ttl
+method_params:: <PARCEL ID>
+request_body:: {"ttl_days": <INTEGER>}
+expected_result:: 200 {"success": true}
+
+NOTE: `ttl_days` возможно передать в диапазоне parcel: `additional_data->>ttl_days`, `additional_data->>ttl_days_max OR additional_data->>ttl_days * 2`
+
+==== Пометка посылки к отмене на отделении
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/mark-cancel
+method_params:: <PARCEL ID>
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+==== Проверка условий доставки для посылки перед регистрацией
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/delivery-check
+method_params:: ----
+request_body:: {"delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>"}
+expected_result:: 200 {"success": true, "transfer_via": "<office_id>", "route_mark": "<mark>"}
+
+NOTE: В случае каких-либо ошибок валидации параметров будет возвращен статус 400 с описанием ошибки
+
+=== Отделения и адреса
+
+==== Получения данных отделений
+
+[horizontal]
+protocol_method:: GET
+method_name:: offices
+get_params:: <lang>
+request_body:: ----
+expected_result:: 200
+{
+    "offices": [
+    {
+        "id": "<OFFICE ID>",
+        "name": "<OFFICE NAME>",
+        "descr": "<OFFICE LONG NAME>",
+        "number": <OFFICE NUMBER>,
+        "phone": "<OFFICE PHONE>",
+        "email": "<OFFICE EMAIL>",
+        "address": { <ADDRESS SPEC> },
+        "address_data": {
+            "index": "<POST CODE>",
+            "floor": <NUM>,
+            ...
+            <OPTIONAL OTHER DATA>
+        },
+        "schedule": {
+            "1": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+            "2": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+            ...
+            "7": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+        },
+        "optimal_hours": {<OPTIMAL WORKING HOURS>},
+        "photos": ["<PHOTO URL>", ...],
+        "way_photos": ["<PHOTO URL>", ...],
+        "pay_cash": true|false,
+        "pay_card": true|false,
+        "additional_data": {
+            "sms_addr": "<SMS ADDRESS>",
+            "code_prefix": "<OFFICE CODE PREFIX>",
+            "label": "<OFFICE LABEL>"
+        },
+        "ui_address": "<ADDRESS LINE>"
+    },
+    .....
+    ],
+    "success": true
+}
+
+==== Получение данных адреса из справочника
+
+[horizontal]
+protocol_method:: GET
+method_name:: address
+get_params:: <lang, <lat,lon> | <region,city,street,building>>
+request_body:: ----
+expected_result:: 200 {"success": true, "lang": "<LANG>", "city": "<CITY>", "building": "<BUILDING>", "area": "<ADDRESS AREA or null>", "country": "<COUNTRY CODE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "lat": <LONGITUDE>, "id": "<SHIPPING ADDRESS ID>", "note": "<TEXT or null>", "modified_at": "<TIMESTAMP UTC>", "street": "<STREET>", "addr_type": "<TYPE ID>", "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+
+NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ cоставные части адреса `region`, `city`, `street`, `building` 
+
+=== Пользователи
+
+==== Регистрация пользователя
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/user
+method_params:: ----
+request_body:: { "email": "<EMAIL>", "phone": "<PHONE>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "male|female|undef", "birthday": "1970-01-01", "company": { "name": "<COMPANY NAME>", "reg_id": "<REG ID>", "tax_id": "<TAX ID>", "type": "company|pe" } }
+expected_result:: 200 { "user_id": "<USER ID>", "success": true }
+
+==== Поиск пользователя
+
+protocol_method:: GET
+method_name:: agent/user
+get_params:: phone, reg_id, tax_id, company
+request_body:: ----
+expected_result:: 200 {"users": [{"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "company": {"name": "<COMPANY NAME>", "modified_at": "2018-07-10T09:15:52.366826+00:00", "reg_id": "<REG ID>", "type": "company", "tax_id": "<TAX ID>"}, "email": "<EMAIL>", "phone": "PHONE", "id": "<USER ID>"}], "success": true}
+
+
+=== Контрагенты
+
+==== Регистрация контрагента
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/contragent
+method_params:: ----
+request_body:: {"name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX (INT(%))>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>"}
+expected_result:: 200 {"success": true, "id" : "<CONTRAGENT ID>"}
+
+[NOTE]
+====
+
+Параметры: `reg_id` -- код ЕДРПОУ контрагента, `tax_id` -- ИНН контрагента, `vat` - ставка НДС в процентах. `vat == 0` -- эквивалент `без НДС`.
+
+После регистрации контрагента, необходимо запрос почтой на его активацию.
+
+====
+
+==== Модификация контрагента
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/contragent
+method_params:: <CONTRAGENT ID>
+request_body:: {"name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX (INT(%))>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>"}
+expected_result:: 200 {"success": true, "id" : "<CONTRAGENT ID>"}
+
+NOTE: Все ключи являются опциональными
+
+IMPORTANT: После модификации контрагента сбрасывается статус активации, и необходимо отправлять запрос активации заново
+
+==== Информация о контрагенте
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/contragent
+method_params:: <CONTRAGENT ID>
+request_body:: ----
+expected_result:: 200 {"success": true, "name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX INT(%)>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>", "enabled": <true|false>, "modified_at": <TIMESTAMP UTC>, "translations": [{"processor": <POS PROCESSOR>, "merchant_id": <POS MERCHANT ID>, {...}, ...}]}
+
+==== Справочник контрагентов
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/contragent
+method_params:: list
+request_body:: ----
+expected_result:: 200 {"success": true, "contragents": [{<CONTRAGENT SPEC>}, ...]}
+
+=== Финансовые транзакции
+
+==== Получение финансовой транзакции по id
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/fin-transaction
+method_params:: <TRANSACTION ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "id": "<TRANSACTION ID>", "sender": "<SENDER USER ID>", "contragent": "<CONTRAGENT ID>", "processor": "<POS PROCESSOR TYPE>", "amount": <PRICE as DECIMAL(10,2), "trans_type": "<TRANSACTION TYPE: parcel|p2p>", "trans_ref": "<PARCEL ID>", "addidional_data": {"id": <POSORDER ID>, ... < OTHER SPECIFIC DATA >}, "created_at": <TIMESTAMP UTC>, "modified_at": <TIMESTAMP UTC>, "completed_at": <TIMESTAMP UTC>, "is_completed": true|false, "is_appiled": true|false}
+
+NOTE: На данный момент существуют только транзакции с `trans_type == "parcel"`, в таком случае `trans_ref` ссылается на `<PARCEL ID>`
+
+NOTE: `processor` на данный момент может быть: `fcs_term` - оплата через терминал, `_erp_api` - оплата через вызов API *agent/parcel/paid*
+
+==== Получение списка финансовых транзакций за период
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/fin-transactions
+method_params:: ----
+get_params:: ts_from=<TIMESTAMP UTC> [, ts_to=<TIMESTAMP UTC>, processor=fcs_term|_erp_api, contragent=<CONTRAGENT ID>, is_dirty=true limit=200, offset=0]
+request_body:: ----
+expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {<TRANSACTION SPEC>}, ...], "total": <INTEGER>}
+
+NOTE: Временные параметры `ts_from`, `ts_to` задаются в формате timestamp UTS *in miliseconds*. Параметр `is_dirty` указывает на получение транзакций, которые не синхронизированы с агентской системой в связи с какими-либо ошибками.
+
+==== Получение списка финансовых транзакций по посылке
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/fin-transactions
+method_params:: <PARCEL ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {<TRANSACTION SPEC>}, ...]}

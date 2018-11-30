@@ -1,0 +1,1245 @@
+= TbT API
+MelKori <mieldo@gmail.com>
+1.3.2, 2018-11-01 (1:1.3.2): Public API
+:toc: right
+:toclevels: 4
+{empty}
+
+
+== Общая информация
+
+Доступ к API осуществляется:
+
+    * во link:../README.adoc#_infrastructure[внутренней сети инфраструктуры] по
+      протоколу HTTP
+    * из всех остальных мест _вне_ локальной инфраструктуры - по протоколу HTTPS
+
+Внешний доступ к текущему апи -- https://api.tbt-post.net
+
+Следующая версия апи -- http://api-next.tbt-post.net
+
+Версия для разработки -- http://sandbox-api.tbt-post.net
+
+NOTE: Если явно не указаного обратного, по-умолчанию формат данных (content-type) подразумевается как `application/json`, кодировка (encoding/charset) UTF-8, использование BOM (ByteOrderMark для Windows клиентов) - отключено.
+
+NOTE: Если явно не указано обратного, текстовые поля в структурах данных (как ключи, так и значения) -- чувствительны к регистру (case sensitive)
+
+Формат URI для доступа к API:
+
+    https://api.tbt-post.net/api/v{v_number}/{method_name}/{method_params}?{get_params}
+
+где:
+
+[horizontal]
+    {v_number}:: номер версии API в виде числа
+    {method_name}:: название метода
+    {method_params}:: параметры метода в URI
+    {get_params}:: опциональные GET параметры
+
+Также, в описании API используются:
+
+[horizontal]
+    {protocol_method}:: HTTP метод
+    {request_body}:: описание формата тела запроса
+    {expected_result}:: описание формата возвращаемого в случае успеха результата в формате `<Code> <Response body>`
+
+=== Форматы протокола
+
+Формат обмена данными:
+
+     * JSON - комплекскные формы и структуры данных
+     * LINK PARAMS - параметризированный URI
+     * REQUEST BODY - для передачи бинарных банных
+     * REQUEST HEADER - для передачи заголовочной информации
+
+Формат возвращаемого ответа:
+
+    HTTP Response Code + JSON payload
+
+=== Типы данных
+
+Для унификации работы с данными в различных использованных наборах
+инструментов приняты такие типы данных и таковая их трактовка:
+
+.Типы данных
+[width="80%",cols=4,options="header"]
+|====================
+| #
+| Название типа
+| Описание типа
+| Пример
+
+| 1
+| integer
+| Целое число длиной 4 байта (32 бита)
+| 123456
+
+| 2
+| long
+| Целое число длиной 8 байт (64 бита)
+| 123456890
+
+| 3
+| float
+| Вещественное число с разделителем "." длиной 8 байт (64 бита)
+| 123456890.12 0.12345
+
+| 4
+| string (text)
+| Строка в формате unicode
+| u'строка'
+
+| 5
+| datatime
+| Дата и время в формате ISO 8601 (UTC+0) YYYY-MM-DDTHH:MM:SSZ
+| 2016-02-29T06:12:20Z
+
+| 6
+| boolean
+| Логический тип
+| true false
+
+| 7
+| Number/BigInteger
+| Целое число длиной более 8 байт (>64 бит)
+| 174554483551928087757411873995522791996L
+
+| 8
+| uuid (UUID)
+| Universally Unique Identifier -- 16-байтный (128-битный) номер, передается в текстовой форме как hexadecimal representation в виде строки, в бинарной форме -- как Number
+| u'8351f87e-7b89-4503-bc9a-76add66f5a3c' 174554483551928087757411873995522791996L
+|====================
+
+Для хранения меток времени `created_at`,`modified_at` и т.п. используется https://tools.ietf.org/html/rfc4122#section-4.2.2[uuid версии 1]
+
+=== HTTP Методы
+
+При работе с API используются следующие HTTP методы для выполнения той или иной функции:
+
+.Методы протокола
+[width="80%",cols=3,options="header"]
+|====================
+| #
+| Method
+| Описание
+
+| 1
+| GET
+| Выборка данных, немодифицирующие запросы
+
+| 2
+| POST
+| Создание данных
+
+| 3
+| PUT
+| Обновление данных
+
+| 4
+| DELETE
+| Удаление данных
+|====================
+
+=== HTTP Статусы
+
+Возвращаемые методами статусы должны следовать стандартам HTTP протокола в
+соответствии с
+http://www.ietf.org/assignments/http-status-codes/http-status-codes.xml[IETF RFC7231]
+
+Основные используемые в системе коды приведены ниже:
+
+.Статусы протокола
+[width="80%",cols=3,options="header"]
+|====================
+| Code
+| Значение
+| Описание
+
+| 200
+| OK
+| Запрос выполнен успешно.
+
+| 201
+| Created
+| Запрос был выполнен, и, в результате, создан новый ресурс. Вновь созданный ресурс может быть, на который ссылается URI (ы) возвращается в объекте ответа, с самым конкретным URI для ресурса отдается в поле заголовка Location. Ответ СЛЕДУЕТ включить объект, содержащий список характеристик и местоположения (ы), из которых пользователь или агент пользователя может выбрать наиболее подходящий. Формат объекта определяется тип носителя приведены в Content-Type заголовка поля. Первоначальный сервер ДОЛЖЕН создать ресурс перед возвратом кода состояния 201. Если действие не может быть выполнено немедленно, сервер должен ответить 202 (Принято) вместо ответа.
+
+| 202
+| Accepted
+| Запрос принят в обработку, но еще не завершен. Нет никаких гарантий, что запрос успешно выполнится в процессе обработки данных. Из-за асинхронного типа выполняемой операции отсутствует возможность повторной отправки статуса.
+
+| 204
+| No Content
+| Запрос был успешно обработан, но нет необходимости возвращать какие-либо данные. Так же в ответе может возвращаться новая, или обновленная информация, однако в итоге она не будет отличаться о того, что было изначально послано на сервер и, таким образом, считается что клиент и так обладает актуальной информацией. 
+
+| 301
+| Moved Permanently
+| Запрашиваемому ресурсу был установлен новый URI и будущие обращения к этому ресурсу должны осуществляться по возвращенному URI. Клиенты с возможностью редактирования должны автоматически переопределить ссылки на Request-URI для одной или более новых ссылок, возвращенных сервером, где это возможно. Этот ответ является кэшируемы если не указано иное.
+
+| 304
+| Not Modified
+| Если клиент выполнил условный запрос GET и доступ разрешен, но документ не был изменен, сервер должен ответить, используя этот код состояния. 
+
+
+| 400
+| Bad Request
+| Запрос не удалось обработать из-за синтаксической ошибки или ошибки протокола
+
+| 401
+| Not Unauthorized
+| Запрос требует аутентификации пользователя. Ответ должен содердать WWW-Authenticate заголовок (раздел 14.47). Клиент может повторить запрос с корректным Authorization заголовком (раздел 14.8). Если запрос уже содержит информацию для авторизации, в таком случае 401 код ответа показывает, что авторизация была отклонена.
+
+| 403
+| Forbidden
+| Сервер понял запрос, но отказывается его обрабатывать. Авторизация не поможет и этот запрос НЕ СЛЕДУЕТ повторять.
+
+| 404
+| Not Found
+| Сервер не нашел по указанному URI никаких ресурсов. Нет никаких указаний о том, постоянное это состояние или нет. СЛЕДУЕТ использовать статус 410 (Gone), если серверу известно, что старый ресурс недоступен постоянно и у него нет адреса пересылки.
+
+| 409
+| Conflict
+| Запрос нельзя обработать из-за конфликта в текущем состоянии ресурса. Этот код разрешается использовать только в тех случаях, когда ожидается, что пользователь может самостоятельно разрешить этот конфликт и повторить запрос.
+
+| 410
+| Gone
+| Требуемый ресурс больше не доступен на сервере и адрес его расположения не известен. Предполагается, что это состояние постоянно. Клиентам с возможностью редактирования ссылки СЛЕДУЕТ удалить ссылки на запрошенный URL после подтверждения
+
+| 422
+| Unprocessable Entity
+| Сервер понимает указанный вид данных, (т.е., статус 415 использовать нельзя), синтаксис запроса корректен (т.е. статус 400 использовать некорректно), однако содержащиеся в запросе инструкции нельзя выполнить ( Например, тело запроса синтаксически правильно, но содержит семантическую ошибку или некорректно обрабатывается нижним уровнем БД)
+
+| 429
+| Too Many Requests
+| Возвращается баллансировщикам (т.е. исключительно внутренним/доверенным сервисам) в случае, когда сервис может самостоятельно оценить превышение нагрузки. В случае с внешними клиентами -- задача оценки потока и **блокирования** трафика -- целиком и полностью задача внешнего периметра системы. Т.о. данных статус -- исключительно вспомогателен и должен использоваться с аккуратностью.
+
+| 500
+| Internal Server Error
+| Сервер столкнулся с неожиданными условиями, которые не позволили ему обработать запрос.
+
+| 501
+| Not Implemented
+| Сервер не поддерживает функциональных возможностей, необходимых для выполнения запроса. Это типичный ответ, когда сервер не понимает метод в запросе и не способен выполнить запрос для ресурса. Если же метод серверу известен, но он не применим к данному ресурсу, то нужно вернуть ответ 405.
+|====================
+
+== API
+
+NOTE: Все методы пользовательского api (`<api base uri>/api/...`) отдекорированы асинхронным методом `@authenticated`.
+
+NOTE: Все методы api с префиксом op/ предназначениы для операторского интерфейса, и требуют от пользователя соответствующих прав доступа.
+
+NOTE: методы, подразумевающие работу со структураци данных осуществляют базовою валидацию полей на стороне сервера
+
+CAUTION: Содержимое полей запроса в `<>` -- указание на определенный тип поля
+
+WARNING: Для обозначения пустого (осутствующего) содержимого в описании используется `----`. Использовать его как значение **НЕ РЕКОМЕНДУЕТСЯ**
+
+.Типы полей в запросах
+[width="80%",cols=4,options="header"]
+|====================
+| Поле
+| тип
+| Описание
+| Пример
+
+| USER ID
+| text
+| ID пользователя в системе (UUID в текстовом виде)
+| "3ea7a7b6-5623-48ba-9fb7-1bcfd4c15fa7"
+
+| USER EMAIL
+| text
+| Почтовый адрес пользователя (используется в качестве login)
+| "testuset@example.com"
+
+| USER PASSWORD, NEW PASSWORD, OLD PASSWORD
+| text
+| Пароль пользователя в открытом виде
+| "123456"
+
+| PHONE
+| text
+| Телефон пользователя в формате 380XXYYYYYYY
+| "380997788999"
+
+| FIRST NAME
+| text
+| Имя пользователя
+| "Иван"
+
+| LAST NAME
+| text
+| Фамилия пользователя
+| "Иванов"
+
+| GENDER
+| text
+| Пол пользователя (словарный тип: 'undef','male','female')
+| "male"
+
+| OTC
+| text
+| Одноразовый код (обычно - UUID в текстовом виде)
+| "046e053c-c35c-408f-a422-9fe20f50c35b"
+
+| true/false
+| boolean / text
+| Логический флаг. Может передаваться как boolean или как строковой литерал словарного типа 'true'/'false' (строковая форма -- предпочтительнее по причине лучшей совместимости с разными типами протоколов и серверного ПО)
+| true / "true"
+
+| USER RATE
+| long
+| Совокупный показатель рейтинга пользователя в системе
+| 123456789
+
+| BIRTHDAY
+| text
+| Дата рождения пользователя в формате YYYY-MM-DD или null (как тип)
+| "2000-01-02"
+
+| TIMESTAMP UTC, TIMESTAMP LOCAL
+| text
+| Временная метка в текстовом представлении ISO формата. UTC/LOCAL -- без/с учетом локальной временной зоны
+| "2016-08-12 15:30:21.341210+00:00"
+
+| USER SOURCE
+| text
+| Источник создания пользователя (собственный или из внешнего API, словарный тип: 'local','kasta'
+| "kasta"
+
+| USER ROLE
+| text
+| Роль(-и) пользователя в системе (словарный тип: 'guest', 'user', 'agent', 'courier', 'forwarder', 'operator', 'officer', 'manager', 'analyst', 'op_support', 'techician', 'admin')
+| "user"
+
+| LANG
+| text
+| Источник создания пользователя (собственный или из внешнего API, словарный тип: 'en','ru','uk'
+| "uk"
+|====================
+
+=== Регистрация
+
+==== Создание пользователя
+
+[horizontal]
+protocol_method:: POST
+method_name:: user/reg
+method_params:: ----
+request_body:: {"email":"<USER EMAIL>","password":"<USER PASSWORD>", "phone": "<PHONE 380XXYYYYYYY>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "prefered_lang" : "<LANG>"}
+expected_result:: 200 {"success": true}
+
+NOTE: поле `prefered_lang` является опциональным и, по-умолчанию, заполняется при создании пользователя в значение языка пользовательского интерфейса.
+
+==== Создание пользователя оператором
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/user/reg
+method_params:: ----
+request_body:: {"email":"<USER EMAIL>", "phone": "<PHONE 380XXYYYYYYY>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "prefered_lang" : "<LANG>", "activate": <true/false>}
+expected_result:: 200 {"success": true, "id": <USER ID>}
+
+NOTE: Если параметр `activate` false (по-умолчанию), пользователь будет создан с флагом `is_poor`, если true, то новый пользователь будет активирован.
+
+
+==== Потдтверждение регистрации
+
+===== Запрос ОТС
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: new
+request_body:: {"otc_type": "REGISTRATION", "email": "<USER EMAIL>"}
+expected_result:: 200 {"success": true}
+
+===== Подтверждение
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: validate
+request_body:: {"otc_type": "REGISTRATION", "otc": "<OTC>"}
+expected_result:: 200 {"success": true}
+
+=== Вход
+
+[horizontal]
+protocol_method:: POST
+method_name:: auth
+method_params:: login
+request_body:: {"username":"<USER EMAIL>","password":"<USER PASSWORD>", "remember_me": "<true/false>"}
+expected_result:: 200 {"success": true}
+
+=== Выход
+
+[horizontal]
+protocol_method:: GET
+method_name:: auth
+method_params:: logout
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+=== Восстановление пароля
+
+==== Запрос ОТС
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: new
+request_body:: {"otc_type": "RESTORE_PASSWORD", "email": "<USER EMAIL>"}
+expected_result:: 200 {"success": true}
+
+==== Превалидация ОТС
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: validate
+request_body:: {"otc_type": "RESTORE_PASSWORD", "otc": "<OTC>"}
+expected_result:: 200 {"success": true}
+
+==== Изменение пароля
+
+[horizontal]
+protocol_method:: POST
+method_name:: user/profile
+method_params:: password
+request_body:: {"new_password": "<NEW PASSWORD>", "otc": "<OTC>"}
+expected_result:: 200 {"success": true}
+
+=== Изменение пароля
+
+Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.
+
+IMPORTANT: требует авторизации
+
+[horizontal]
+protocol_method:: PUT
+method_name:: user/profile
+method_params:: password
+request_body:: {"new_password": "<NEW PASSWORD>", "old_password": "<OLD PASSWORD>"}
+expected_result:: 200 {"success": true}
+
+=== Пользовательский профиль
+
+==== Получение собственного профиля
+
+[horizontal]
+protocol_method:: GET
+method_name:: user/profile
+method_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "is_external": <true/false>, "phone": "<PHONE 380XXYYYYYYY>", "gender": "<GENDER>", "created_at": "<TIMESTAMP UTC>", "activated_at": "TIMESTAMP UTC", "modified_at": "TIMESTAMP UTC", "password_changed": "TIMESTAMP UTC", "additional_data": {}, "is_active": <true/false>, "sourced_by": "<USER SOURCE>", "rate": <USER RATE>, "birthday": <BIRTHDAY>, "id": "<USER ID>", "is_poor": <true/false>, "is_disabled": <true/false>, "email": "<USER EMAIL>", ...}
+
+==== Обновление собственного профиля
+
+NOTE: неактуальные для контекста поля -- игнорируются. Передавать можно только часть параметров из набора.
+
+[horizontal]
+protocol_method:: PUT
+method_name:: user/profile
+method_params:: ----
+request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
+expected_result:: 200 {"success": true}
+
+==== Получение базовых данных пользователя
+
+[horizontal]
+protocol_method:: GET
+method_name:: user/resolve
+method_params:: <USER ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "id": "<USER_ID>," "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "phone": "<PHONE 380XXYYYYYYY>"}
+
+NOTE: Часть цифр номера телефона пользователя скрывается для обеспечения анонимности
+
+
+==== Получение базовых данных списка пользователей
+
+[horizontal]
+protocol_method:: GET
+method_name:: user/resolve/list
+method_params:: ----
+get_params:: id[]=<USER ID>&id[]=<USER ID>&...
+request_body:: ----
+expected_result:: 200 {"success": true, "users": [<USER RESOLVE>, <USER RESOLVE>, ...]}
+
+NOTE: Значение <USER RESOLVE> является таким же, как и выходные данные метода `user/resolve/<USER ID>`
+
+
+==== Получение профиля пользователя
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/user/profile
+method_params:: <USER ID>
+get_params:: <phone>/<email>
+request_body:: ----
+expected_result:: 200 {"success": true, "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "is_external": <true/false>, "phone": "<PHONE 380XXYYYYYYY>", "gender": "<GENDER>", "created_at": "<TIMESTAMP UTC>", "activated_at": "TIMESTAMP UTC", "modified_at": "TIMESTAMP UTC", "password_changed": "TIMESTAMP UTC", "additional_data": {}, "is_active": <true/false>, "sourced_by": "<USER SOURCE>", "rate": <USER RATE>, "birthday": <BIRTHDAY>, "id": "<USER ID>", "is_poor": <true/false>, "is_disabled": <true/false>, "email": "<USER EMAIL>", "roles": [<ROLES LIST>], ...}
+
+CAUTION: `user_id` имеет более высокий приоритет
+
+==== Обновление профиля пользователя
+
+NOTE: неактуальные для контекста поля -- игнорируются. Передавать можно только часть параметров из набора.
+
+[horizontal]
+protocol_method:: PUT
+method_name:: op/user/profile
+method_params:: <USER ID>
+request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
+expected_result:: 200 {"success": true}
+
+==== Подтверждение профиля пользователя оператором
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/user/profile
+method_params:: confirm
+request_body:: {"user_id": "<USER ID>"}
+expected_result:: 200 {"success": true}
+
+
+==== Получение списка пользователей по id
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/user/list
+method_params:: ----
+get_params:: id[]=<USER ID>&id[]=<USER ID>&...
+request_body:: ----
+expected_result:: 200 {"success": true, "users": [<USER PROFILE>, <USER PROFILE>, ...]}
+
+NOTE: Значение <USER PROFILE> является таким же, как и выходные данные метода `op/user/profile/<USER ID>`
+
+==== Поиск пользователей
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/user/search
+method_params:: ----
+get_params:: <user_model_field>,sort_by,sort_order,limit,offset
+request_body:: ----
+expected_result:: 200 {"success": true, "users": [<USER PROFILE>, <USER PROFILE>, ...], "total": <search_result_length>}
+
+.Типы параметров поиска:
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| limit
+| <num>
+
+| offset
+| <offset>
+
+| sort_by
+| <user_model_field>
+
+| sort_order
+| asc/desc
+
+| <user_model_field>
+| ['first_name', 'last_name', 'gender', 'birthday', 'sourced_by', 'block_status', 'parent', 'confirmed_by', 'is_poor', 'is_active', 'is_external', 'is_phone_valid', 'is_confirmed']
+
+|====================
+
+
+=== Вход по номеру телефона
+
+==== Запрос кода
+
+NOTE: приватная часть кода `<SMS CODE>` будет выслана на указанный в запросе номер в случае его актуальности и валидности
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: new
+request_body:: {"otc_type": "PHONE_AUTH", "phone": "<PHONE 380XXYYYYYYY>" }
+expected_result:: 200 {"otc": "<OTC>", "success": true}
+
+==== Авторизация
+
+[horizontal]
+protocol_method:: POST
+method_name:: auth
+method_params:: phone-login
+request_body:: {"otc": "<OTC>", "phone_code": "<SMS CODE>"}
+expected_result:: 200 {"success": true}
+
+=== Изменение телефона
+
+==== Запрос ОТС
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: new
+request_body:: {"otc_type": "PHONE_CHANGE", "phone": "<PHONE 380XXYYYYYYY>" }
+expected_result:: 200 {"otc": "<OTC>", "success": true}
+
+==== Подтверждение
+
+[horizontal]
+protocol_method:: POST
+method_name:: auth
+method_params:: validate
+request_body:: {"otc_type": "PHONE_CHANGE", "otc": "<OTC>", "phone_code": "<SMS CODE>"}
+expected_result:: 200 {"success": true}
+
+=== Изменение email
+
+==== Запрос ОТС
+
+[horizontal]
+protocol_method:: POST
+method_name:: otc
+method_params:: new
+request_body:: {"otc_type": "EMAIL_CHANGE", "email": "<USER EMAIL>" }
+expected_result:: 200 {"success": true}
+
+==== Подтверждение
+
+[horizontal]
+protocol_method:: POST
+method_name:: auth
+method_params:: validate
+request_body:: {"otc_type": "EMAIL_CHANGE", "otc": "<OTC>"}
+expected_result:: 200 {"success": true}
+
+=== ACL
+
+==== Роли пользоватлея
+
+[horizontal]
+protocol_method:: GET
+method_name:: user
+method_params:: roles
+request_body:: ----
+expected_result:: 200 {"success": true, "roles": ["<USER ROLE>", ...]}
+
+=== Посылки
+
+==== Получение по id/code
+
+[horizontal]
+protocol_method:: GET
+method_name:: [op/] parcel
+method_params:: <PARCEL ID>
+get_params:: <code>
+request_body:: ----
+expected_result:: 200 {"success": true, "address_id": "<SHIPPING ADDRESS ID>", "code": "<CODE-128>", "is_paid": <true/false>, "weight": <WEIGHT GRAM as DECIMAL(10,6)>, "agent": "<USER ID>", "is_open": <true/false>, "paid_at": "<TIMESTAMP UTC> or null", "closed_at": "<TIMESTAMP UTC or null>", "id": "<PARCEL ID>", "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>, "type": <TYPE CODE>, "parent": <PARCEL ID or null>, "price": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)> "class": "<CLASS ID>", "sender": "<USER ID>", "created_at": "<TIMESTAMP UTC>", "modified_at": "<TIMESTAMP UTC>", "receiver": "<USER ID>", "state": "<PARCEL STATE>", "transfer_via": "<OFFCIE ID>", "pentity": "<OFFICE ENTITY ID>", "delivery_type": "<DELIVERY TYPE>", "additional_data": {...}, ...}
+
+CAUTION: `parcel_id` имеет более высокий приоритет, чем `code`
+
+==== Получение графических кодов
+
+[horizontal]
+protocol_method:: GET
+method_name:: [op/] parcel/codes
+method_params:: <PARCEL ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "qr": <IMAGE DATA URI>", "bcode": "<IMAGE DATA URI>"}
+
+NOTE: DATA URI is according to `RFC-2397`: data:[<media type>][;base64],<data>
+
+==== Поиск
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/parcel/search
+method_params:: ----
+get_params:: <<parcel_model_field>office_id/pentity/receiver_phone/sender_phone/participant_phone/sender_email/pattern_id/pattern_code/state[]/interval_from/interval_to>
+request_body:: ----
+expected_result:: 200 {
+    "parcels": [
+        {
+            "additional_data": {...},
+            "address_id": "<SHIPPING ADDRESS ID>",
+            "agent": "<USER ID>",
+            "class": "<CLASS ID>",
+            "closed_at": "<TIMESTAMP UTC>",
+            "code": "<CODE-128>",
+            "created_at": "<TIMESTAMP UTC>",
+            "id": "<PARCEL ID>",
+            "is_open": <true/false>,
+            "is_paid": <true/false>,
+            "modified_at": "<TIMESTAMP UTC>",
+            "cod_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_at": "<TIMESTAMP UTC>",
+            "parent": <PARCEL ID or null>,
+            "price": <PRICE as DECIMAL(10,2)>,
+            "receiver": "<USER ID>",
+            "sender": "<USER ID>",
+            "type": <TYPE CODE>,
+            "weight": <WEIGHT GRAM as DECIMAL(10,6)>,
+            "state": "<PARCEL STATE>",
+            "transfer_via": "<OFFCIE ID>",
+            "pentity": "<OFFICE ENTITY ID>",
+            "delivery_type": "<DELIVERY TYPE>",
+           ...
+        }
+    ],
+    "total": <search_result_length>,
+    "success": true
+}
+
+.Типы параметров поиска:
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| limit
+| <num>
+
+| offset
+| <offset>
+
+| sort_by
+| <parcel_model_field>
+
+| sort_order
+| asc/desc
+
+| <parcel_model_field>
+| ['sender', 'receiver', 'agent', 'parent', 'address_id', 'transfer_via', 'type', 'class', 'state', 'is_open', 'is_paid', 'goes_back']
+
+| office_id
+| <uuid>
+
+| pentity - рекурсивный поиск по ресурсу отделения
+| <uuid>
+
+| state[]
+| <parcel state list>
+
+| receiver_phone
+| <phone>
+
+| sender_phone
+| <phone>
+
+| participant_phone
+| <phone>
+
+| sender_email
+| <email>
+
+| pattern_id
+| <like pattern>
+
+| pattern_code
+| <like pattern>
+
+| interval_from
+| <date-time>
+
+| interval_to
+| <date-time>
+
+| interval_field
+| created_at/modified_at/checked_in_at (default created_at)
+
+| pentity_recur
+| true/false  - поиск рекурсивно по полю pentity
+|====================
+
+==== Получение посылок по списку id
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/parcel/list
+method_params:: ----
+get_params:: id[]=<PARCEL ID>&id[]=<PARCEL ID>&...
+request_body:: ----
+expected_result:: 200 {
+    "parcels": [
+        {
+            "additional_data": {...},
+            "address_id": "<SHIPPING ADDRESS ID>",
+            "agent": "<USER ID>",
+            "class": "<CLASS ID>",
+            "closed_at": "<TIMESTAMP UTC>",
+            "code": "<CODE-128>",
+            "created_at": "<TIMESTAMP UTC>",
+            "id": "<PARCEL ID>",
+            "is_open": <true/false>,
+            "is_paid": <true/false>,
+            "modified_at": "<TIMESTAMP UTC>",
+            "cod_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_at": "<TIMESTAMP UTC>",
+            "parent": <PARCEL ID or null>,
+            "price": <PRICE as DECIMAL(10,2)>,
+            "receiver": "<USER ID>",
+            "sender": "<USER ID>",
+            "type": <TYPE CODE>,
+            "weight": <WEIGHT GRAM as DECIMAL(10,6)>,
+            "state": "<PARCEL STATE>",
+            "transfer_via": "<OFFCIE ID>",
+            "pentity": "<OFFICE ENTITY ID>",
+            "delivery_type": "<DELIVERY TYPE>",
+           ...
+        }
+    ],
+    "success": true
+}
+
+==== Cписок посылок пользователя
+
+[horizontal]
+protocol_method:: GET
+method_name:: parcel/list
+method_params:: ----
+get_params:: participant
+request_body:: ----
+expected_result:: 200 {
+    "parcels": [
+        {
+            "additional_data": {...},
+            "address_id": "<SHIPPING ADDRESS ID>",
+            "agent": "<USER ID>",
+            "class": "<CLASS ID>",
+            "closed_at": "<TIMESTAMP UTC>",
+            "code": "<CODE-128>",
+            "created_at": "<TIMESTAMP UTC>",
+            "id": "<PARCEL ID>",
+            "is_open": <true/false>,
+            "is_paid": <true/false>,
+            "modified_at": "<TIMESTAMP UTC>",
+            "cod_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>,
+            "paid_at": "<TIMESTAMP UTC>",
+            "parent": <PARCEL ID or null>,
+            "price": <PRICE as DECIMAL(10,2)>,
+            "receiver": "<USER ID>",
+            "sender": "<USER ID>",
+            "type": <TYPE CODE>,
+            "weight": <WEIGHT GRAM as DECIMAL(10,6)>,
+            "state": "<PARCEL STATE>",
+            "transfer_via": "<OFFCIE ID>",
+            "pentity": "<OFFICE ENTITY ID>",
+            "delivery_type": "<DELIVERY TYPE>",
+           ...
+        }
+    ],
+    "total": <search_result_length>,
+    "success": true
+}
+
+.Типы параметров поиска:
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| participant
+| all/sender/receiver
+
+| limit
+| <num>
+
+| offset
+| <offset>
+
+| sort_by
+| ['weight', 'price', 'paid_amount', 'created_at', 'modified_at', 'paid_at', 'type', 'class', 'state', 'goes_back']
+
+| sort_order
+| asc/desc
+|====================
+
+==== Создание посылки
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/parcel
+method_params:: ----
+request_body:: {"type": <TYPE CODE>, "class": "<CLASS ID>", "sender": "<USER ID>", "receiver":"<USER ID>", "address_id": "<SHIPPING ADDRESS ID>", "weight": <WEIGHT GRAM as INTEGER)>, "price": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)>}
+expected_result:: 200 {"success": true, "id": "<PARCEL ID>"}
+
+
+==== Изменение посылки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: op/parcel
+method_params:: <PARCEL ID>
+request_body:: {"state": "<STATE ID>", "type": <TYPE CODE>, "class": "<CLASS ID>", "sender": "<USER ID>", "receiver":"<USER ID>", "address_id": "<SHIPPING ADDRESS ID>", "transfer_via": "<SHIPPING ADDRESS ID>", "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "paid_amount": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)>}
+expected_result:: 200 {"success": true}
+
+NOTE: необходимо передавать подмножество описанных параметров для изменения посылки.
+
+
+==== Статистика по посылкам для отделения
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/parcel
+method_params:: office-stat
+expected_result:: 200 {
+    "success": true,
+    "rules": {"<RULE ID>": ["<PARCEL STATE>", "<PARCEL STATE>",<...>], "<RULE ID>": [...], ...},
+    "total": <PARCEL COUNT as INTEGER>,
+    "stats": {"<RULE ID>": <PARCEL COUNT BY RULE as INTEGER>, "<RULE ID>": <...>, ...},
+    "filters": {"<FILTER ID>": <PARCEL COUNT BY FILTER as INTEGER>, "<FILTER ID>": <...>, ...}
+}
+
+NOTE: значения rules: `['delivered', 'on_stock', 'in', 'release', 'new', 'in_progress', 'trans', 'out']`
+
+NOTE: значения filters: `['returns', 'cancellations']`
+
+
+==== Сгруппированный список посылок для отделения
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/parcel
+method_params:: grouped-list
+get_params:: office_id
+expected_result:: 200 {
+    "success": true,
+    "grouped": { "<GROUP>": ["<PARCEL>", "<PARCEL>", ...], ...}
+}
+
+==== Статистика по посылкам для пользователя
+
+[horizontal]
+protocol_method:: GET
+method_name:: parcel
+method_params:: stat
+expected_result:: 200 {"success": true, "receiver": <PARCEL COUNT as INTEGER>, "sender": <PARCEL COUNT as INTEGER>, "on_release": <PARCEL COUNT as INTEGER>}
+
+NOTE: значения `on_relese` - это подмножество посылок из `receiver`, готовых к выдачи пользователю.
+
+
+==== Трекинговая информация о пользовательских посылках
+
+[horizontal]
+protocol_method:: GET
+method_name:: parcel
+method_params:: track
+expected_result:: 200 {
+    "success": true,
+    "sender": [{"id": "<PARCEL ID>", "state": "<PARCEL STATE>", "goes_back": <true/false>, "sender": "<USER ID>", "receiver": "<USER ID>", "lat": <LATITUDE>, "lon": <LONGITUDE>}, {...}, ...],
+    "receiver": [{"id": "<PARCEL ID>", "state": "<PARCEL STATE>", "goes_back": <true/false>, "sender": "<USER ID>", "receiver": "<USER ID>", "lat": <LATITUDE>, "lon": <LONGITUDE>}, {...}, ...]
+}
+
+
+=== Адреса и отделения
+
+Справочники адресов для разных языков могут отличаться. Для получения информации на конкретном языке в строке запроса можно специфировать язык при помощи параметра `lang=<LANG>`.
+
+Если язык не указан, то будет выбран либо язык пользовательского предпочтения в интерфейсе, либо язык, установленный в пользовательском профиле.
+
+==== Получения данных отделений
+
+[horizontal]
+protocol_method:: GET
+method_name:: offices
+get_params:: <lang, all=true|false>
+request_body:: ----
+expected_result:: 200
+{
+    "offices": [
+    {
+        "id": "<OFFICE ID>",
+        "name": "<OFFICE NAME>",
+        "descr": "<OFFICE LONG NAME>",
+        "number": <OFFICE NUMBER>,
+        "phone": "<OFFICE PHONE>",
+        "email": "<OFFICE EMAIL>",
+        "address": { <ADDRESS SPEC> },
+        "address_data": {
+            "index": "<POST CODE>",
+            "floor": <NUM>,
+            ...
+            <OPTIONAL OTHER DATA>
+        },
+        "schedule": {
+            "1": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+            "2": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+            ...
+            "7": "<OPEN_TIME-CLOSE_TIME | STATUS>",
+        },
+        "optimal_hours": {<OPTIMAL WORKING HOURS>},
+        "photos": ["<PHOTO URL>", ...],
+        "way_photos": ["<PHOTO URL>", ...],
+        "pay_cash": true|false,
+        "pay_card": true|false,
+        "additional_data": {
+            "sms_addr": "<SMS ADDRESS>",
+            "code_prefix": "<OFFICE CODE PREFIX>",
+            "label": "<OFFICE LABEL>"
+        },
+        "ui_address": "<ADDRESS LINE>"
+    },
+    .....
+    ],
+    "success": true
+}
+
+NOTE: в случае указания параметра `all=true` в списке будут отображаться так-же внутренние отделения системы.
+
+
+==== Список адресов отделений
+
+[horizontal]
+protocol_method:: GET
+method_name:: address
+method_params:: list
+get_params:: addr_type=<cc_office|fc_office> / id[]=<ADDRESS ID>&id[]=<ADDRESS ID>&...
+request_body:: ----
+expected_result:: 200 {"address_list": [<ADDRESS1>, <ADDRESS2>, ...], "success": true}
+
+где:
+
+[horizontal]
+cc_office:: собственные отделения
+fc_office:: агентские отделения
+
+==== Получение адреса из справочника
+
+[horizontal]
+protocol_method:: GET
+method_name:: address
+method_params:: <SHIPPING ADDRESS ID>
+get_params:: <lang <lat,lon> | <region,city,street,building>
+request_body:: ----
+expected_result:: 200 {"success": true, "lang": "<LANG>", "city": "<CITY>", "building": "<BUILDING>", "area": "<ADDRESS AREA or null>", "country": "<COUNTRY CODE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "lat": <LONGITUDE>, "id": "<SHIPPING ADDRESS ID>", "note": "<TEXT or null>", "modified_at": "<TIMESTAMP UTC>", "street": "<STREET>", "addr_type": "<TYPE ID>", "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+
+NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ составные параметры адреса, _либо_ `id` адреса.
+
+CAUTION: `id` в качестве параметра метода имеет боле высокий приоритет
+
+==== Получение списка фильтров (агрегации) адресов
+
+[horizontal]
+protocol_method:: GET
+method_name:: address
+method_params:: filters
+get_params:: field=<region|city|street|building>,[region=<AGG REGION>,city=<AGG CITY>,street=<AGG STREET>, pattern=<FILTER PATTERN>, lang]
+request_body:: ----
+expected_result:: 200 {"success": true, "filters": [<field_value_1>, .. <field_value_N>]}
+
+NOTE: Для получения списка фильтиров (агрегации) для поля адреса более нижнего уровня, необходимо задать через get-параметры значения полей более высокого уровня в соответствии с древовидной структурой адреса: region -> city -> street -> building.
+
+Дополнительный параметр `pattern` используется для дополнительной фильтрации результирующего списка фильтров.
+
+==== Создание адреса в справочнике
+
+NOTE: Кодирование и декодирование проиходят _с нормализацией гео-позиции_ (т.е. результат соответствует геометрическому центру результирующего объекта)
+
+Для создания адреса, как правило, достаточно указания в теле запроса:
+
+* `city` -- город/населенный пункт
+* `street` -- улица
+* `building` -- дом
+
+однако, ввиду того, что одно и то же название населенного пункта может присутствовать несколько раз в различных местностях, а улицы -- в разных районах одного города, возможно (а в ряде случаев и рекомендовано) использовать дополнительные опциональные параметры:
+
+* `region` -- область/регион
+* `area` -- район/местность
+
+Указание в теле запроса ключа `lang` приводит к переключению распознавания ввода и изменению языка вывода результата.
+
+Резолвинг происходит автоматически, т.е. фактическая процедура происходит по принципу **resolve and set**.
+
+[horizontal]
+protocol_method:: POST
+method_name:: address
+method_params:: ----
+request_body:: {"city": "<CITY>", "street": "<STREET>", "building": "<BUILDING>"}
+expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<STREET>", "lat": <LATITUDE>, "id": "<SHIPPING ADDRESS ID>", "lang": "<LANG>", "city": "<CITY>", "area": <ADDRESS AREA or null>, "country": "<COUNTRY CIDE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+
+Для обратного кодирования в теле запроса необходимо указывать координаты.
+
+[horizontal]
+protocol_method:: POST
+method_name:: address
+method_params:: ----
+request_body:: {"lat": <LATITUDE>, "lon": <LONGITUDE>}
+expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<STREET>", "lat": <LATITUDE>, "id": "<SHIPPING ADDRESS ID>", "lang": "<LANG>", "city": "<CITY>", "area": <ADDRESS AREA or null>, "country": "<COUNTRY CIDE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+
+==== Список пользовательских адресов
+
+[horizontal]
+protocol_method:: GET
+method_name:: user/address
+method_params:: ----
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "address_list": [{"building": "<BUILDING>", "city": "<CITY>", "address_id": "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "apartment": "<APARTMENT>", "lang": "<LANG>", "title": "<ADDRESS TITLE>", "country": "<COUNTRY CODE>", "notes": "<TEXT or null>", "area": <ADDRESS AREA or null>, "lon": <LONGITUDE>, "is_default": <true/false>, "street": "<STREET>", "lat": <LATITUDE>, "region": "<CITY REGION or null>"}]}
+
+NOTE: расширение параметризации метода идентификатором адреса (т.е.<SHIPPING ADDRES ID>) возвращает описание отдельного адреса (редуцирует выборку)
+
+==== Добавление пользовательского адреса
+
+[horizontal]
+protocol_method:: POST
+method_name:: user/address
+method_params:: ----
+request_body:: {"address_id" : "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "title": "ADDRESS TITLE", "apartment": "<APARTMENT>", "notes": "TEXT"}
+expected_result:: 200 {"success": true}
+
+==== Список пользовательских адресов произвольного пользователя
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/user/address
+method_params:: <USER ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, "address_list": [{"building": "<BUILDING>", "city": "<CITY>", "address_id": "<SHIPPING ADDRESS ID>", "apartment": "<APARTMENT>", "lang": "<LANG>", "title": "<ADDRESS TITLE>", "country": "<COUNTRY CODE>", "notes": "<TEXT or null>", "area": <ADDRESS AREA or null>, "lon": <LONGITUDE>, "is_default": <true/false>, "street": "<STREET>", "lat": <LATITUDE>, "region": "<CITY REGION or null>"}]}
+
+NOTE: расширение параметризации метода идентификатором адреса (т.е. <USER ID>/<SHIPPING ADDRES ID>) возвращает описание отдельного адреса (редуцирует выборку)
+
+==== Добавление пользовательского адреса произвольного пользователя
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/user/address
+method_params:: <USER ID>
+request_body:: {"address_id" : "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "title": "ADDRESS TITLE", "apartment": "<APARTMENT>", "notes": "TEXT"}
+expected_result:: 200 {"success": true}
+
+== Сущности и справочники
+
+=== Ресурсы отделения
+
+==== Cоздание ресурса отеления
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/entity
+method_params:: ----
+get_params:: ----
+request_body:: {"type": "<ENTITY TYPE>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>", "label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>"}
+expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
+
+==== Изменение ресурса отеления
+
+[horizontal]
+protocol_method:: PUT
+method_name:: op/entity
+method_params:: <ENTITY ID>
+get_params:: ----
+request_body:: {"descr": "<ENTITY DESCRIPTION>", "label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>"}
+expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
+
+NOTE: требуется указать только необходимые параметры для модификации ресурса.
+
+==== Удаление ресурса отеления
+
+[horizontal]
+protocol_method:: DELETE
+method_name:: op/entity
+method_params:: <ENTITY ID>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+NOTE: удаление возможно только ресурса, который не имеет подчиненных ресурсов
+
+==== Получение описания ресурса
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/entity
+method_params:: <ENTITY ID>
+get_params:: code=<ENTITY BARCODE>
+request_body:: ----
+expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"code": "<ENTITY BARCODE>", "bcode": "<DATA URI: ENTITY BARCODE>", "label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
+
+NOTE: получение сущности выполняется или по `<ENTITY ID>` в method_params или по <ENTITY BARCODE> в get_params
+
+==== Получение списка ресурсов
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/entity
+method_params:: list
+get_params:: [office_id=<OFFICE USER ID>] / parent=<ENTITY ID> / type=<ENTITY TYPE>
+request_body:: ----
+expected_result:: 200 {"success": true, "entities": [<ENTITY RECORD>, <ENTITY RECORD>, ...]
+
+NOTE: по-умолчанию office_id берется из данных операторского аккаунта, `<ENTITY RECORD>` соответсвует описанию результата для получения одиночной сущности за исключением поля `"properties"/"barcode"`
+
+==== Пeреназначение иерархии для ресурса отделения
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/entity/reparent
+method_params:: <ENTITY ID>
+get_params:: ----
+request_body:: {"parent": "<ENTITY ID>"}
+expected_result:: 200 {"success": true}
+
+
+=== Словари
+
+==== Сообщения для состояний отправлений
+
+[horizontal]
+protocol_method:: GET
+method_name:: dict/parcel
+method_params:: states
+get_params:: lang=<ru|uk|en> default: ru
+expected_result:: 200 {
+    "success": true,
+    "states": {"<STATE ID>": "<STATE MESSAGE>", "<STATE ID>": "<STATE MESSAGE>", ...}
+}
+
+==== Сообщения для действий по отправлениям
+
+[horizontal]
+protocol_method:: GET
+method_name:: dict/parcel
+method_params:: actions
+get_params:: lang=<ru|uk|en> default: ru
+expected_result:: 200 {
+    "success": true,
+    "actions": {"<STATE ID>": "<STATE ACTION MESSAGE>", "<STATE ID>": "<STATE ACTION MESSAGE>", ...}
+}
+
+=== Множественная (batch) обработка действий
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/batch
+method_params:: ----
+request_body:: {"action": "<parcel_update|entity_reparent|...>", "batches": {"<BATCH_KEY>": {"<PARAM>": "<VALUE>", "<PARAM2>": "<VALUE>", ...}, <"BATCH_KEY">: {...}, ...}
+expected_result:: 200 {"success": true, "<BATCH_KEY>": {"status": <STATUS_CODE>, "<RESULT_KEY>": <VALUE>, ...}, "<BATCH_KEY>": {...}, ...}
+
+Для action = `parcel_update` <BATCH_KEY> является `parcel_id`, для action = `entity_reparent` <BATCH_KEY> является `entity_id`
+
+== Уведомления
+
+=== Отчет интерфейса оператора
+
+[horizontal]
+protocol_method:: POST
+method_name:: op/report
+method_params:: ----
+request_body:: <ANY REPORT DATA>
+expected_result:: 202 {"success": true}
+
+NOTE: Ограничение объема передаваемых в запросе данных -- 2М
+
+=== Клиент->Система
+
+==== Забор отправления в отделении
+
+[horizontal]
+protocol_method:: POST
+method_name:: ev/parcel/sched
+method_params:: <PARCEL ID>
+request_body:: {"type" : "receiving", "sched" : "<TIMESTAMP UTC>"}
+expected_result:: 202 {"success": true}
