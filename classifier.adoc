@@ -1,4 +1,4 @@
-= TbT Classifier (TEST)
+= TbT Classifier
 MelKori <mieldo@gmail.com>
 1.3.2, 2018-11-01 (1:1.3.2): API Classifier
 :toc: right
