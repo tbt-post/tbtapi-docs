@@ -19,6 +19,18 @@ MelKori <mieldo@gmail.com>
 
 При подключении в индифидуальном профиле создается реестр правил/классификатор обработки ТТН для каждой группы агентов (agent class) в зависимости от особенностей их данных, чтобы облегчить интеграцию.
 
+Формат URI для доступа к API:
+
+    https://api.tbt-post.net/api/v{v_number}/{method_name}/{method_params}?{get_params}
+
+где:
+
+[horizontal]
+    {v_number}:: номер версии API в виде числа
+    {method_name}:: название метода
+    {method_params}:: параметры метода в URI
+    {get_params}:: опциональные GET параметры
+
 == API
 
 === Посылки
@@ -349,3 +361,20 @@ method_params:: <PARCEL ID>
 get_params:: ----
 request_body:: ----
 expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {<TRANSACTION SPEC>}, ...]}
+
+[horizontal]
+==== Пример запроса:
+
+request:: https://api.tbt-post.net/api/v1/agent/parcel/fin-transactions/c154aafe-2142-4959-be8e-3adead117e76
+response:: 200 {
+    "success": true, 
+    "transactions": [
+        {
+            <TRANSACTION SPEC>,
+            "summ": 341.0, 
+            "date": 2018-12-07T12:08:21.519346+00:00
+            <TRANSACTION SPEC>,
+            ...
+        }
+    ]
+}
