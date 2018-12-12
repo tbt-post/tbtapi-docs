@@ -19,6 +19,22 @@ MelKori <mieldo@gmail.com>
 
 При подключении в индифидуальном профиле создается реестр правил/классификатор обработки ТТН для каждой группы агентов (agent class) в зависимости от особенностей их данных, чтобы облегчить интеграцию.
 
+=== Формат URL для отправки запросов к API
+
+    https://api.tbt-post.net/api/v{v_number}/{method_name}/{method_params}?{get_params}
+
+где::
+
+[horizontal]
+    {v_number}:: номер версии API в виде числа
+    {method_name}:: название метода
+    {method_params}:: параметры метода в URI
+    {get_params}:: опциональные GET параметры
+
+Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
+
+[horizontal]
+
 == API
 
 === Посылки
@@ -29,16 +45,55 @@ MelKori <mieldo@gmail.com>
 protocol_method:: POST
 method_name:: agent/parcel
 method_params:: new
-request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<TIMESTAMP UTC>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
-expected_result:: 202 {"success": true, "id" : "<PARSEL ID>"}
+request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
+expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
 NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photo": "<OPTIONAL PHOTO>"}
 
-NOTE: ключи `cod_amount`, `contragent_id`, `dimensions`, `_comment`, `items` -- опциональны
+NOTE: ключи `cod_amount`, `contragent_id`, `dimensions`, `_comment`, `items` -- опциональны. +
+`contragent_id` - необходимо указывать если в `type=COD`
 
-NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах.
+NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах. `cod_amount` не может быть больше чем `price`
 
 NOTE: параметр `delivery_type` имеет значение по-умолчанию *W2W*, в случае значений *W2D* и *D2D* необходимо передать ключ `dest_apartment`
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST https://sandbox-api.tbt-post.net/api/v1/agent/parcel/new \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"order_id": "TEST0001", "receiver": { "id": 0, "phone": "380662225577", "email" : "example@gmail.com", "first_name" : "Юлия", "last_name": "Верещак"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 1520, "price" : 2500, "cod_amount" : 0, "type" : "fragile:A.PRP.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00"}'
+----
+
+В параметрах "Authorization" Необходимо указать токен и пароль в формате base64. +
+Например: `token:passwd - dG9rZW46cGFzc3dk`
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 11 Dec 2018 10:32:02 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type
+
+[source, json]
+----
+{
+  "id": "252395d6-5764-4232-baeb-2020db2d8c2c",
+  "success": true
+}
+----
+
+NOTE: При повторном отправлении запроса с такими же параметрами, сервер ответит ошибкой "409" и сообщением "{"message": "Order TEST0001 already registered", "success": false}"
+
 
 ==== Получение по id/code
 
@@ -52,6 +107,77 @@ expected_result:: 200 {"success": true, "address_id": "<SHIPPING ADDRESS ID>", "
 
 CAUTION: `parcel_id` имеет более высокий приоритет, чем `code`
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET https://sandbox-api.tbt-post.net/api/v1/agent/parcel/252395d6-5764-4232-baeb-2020db2d8c2c \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 11 Dec 2018 13:08:05 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1114 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "ea3c10b5aa787248012184e6befffbf7732930d0" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+  "code": "TEST0001",
+  "weight": 1520,
+  "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "is_dirty": false,
+  "is_open": true,
+  "paid_at": null,
+  "closed_at": null,
+  "id": "252395d6-5764-4232-baeb-2020db2d8c2c",
+  "paid_amount": 0,
+  "state": "PU0000",
+  "mark": null,
+  "last_seen_at": null,
+  "type": "fragile",
+  "delivery_type": "W2W",
+  "parent": null,
+  "price": 2500,
+  "checked_in_at": null,
+  "class": "A.PRP.NR.NA.S000",
+  "pentity": null,
+  "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+  "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "nsid": 0,
+  "is_paid": false,
+  "modified_at": "2018-12-11T10:32:02.238182+00:00",
+  "success": true,
+  "additional_data": {
+    "erp_token": "token",
+    "ttl_days": 15,
+    "ttl_days_default": 15,
+    "_receiver": {
+      "phone": "380662225577",
+      "first_name": "Юлия",
+      "last_name": "Верещак",
+      "id": 0,
+      "email": "example@gmail.com"
+    }
+  },
+  "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+  "cod_amount": 0,
+  "created_at": "2018-12-11T10:32:02.238169+00:00",
+  "goes_back": false
+}
+----
+
 ==== Получение cписка посылок по списку id
 
 [horizontal]
@@ -61,6 +187,129 @@ method_params:: ----
 get_params:: <code>
 request_body:: {"id": ["<PARCEL ID>", "<PARCEL ID>", ...]}
 expected_result:: 200 {"success": true, "parcels": [{<PARCEL SPEC>}, {<PARCEL SPEC>}, ...]}
+
+[]
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST https://sandbox-api.tbt-post.net/api/v1/agent/parcel/list \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"id": ["252395d6-5764-4232-baeb-2020db2d8c2c", "4d52c496-9137-4e8a-bb1b-56f378669ac0"]}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 11 Dec 2018 14:24:13 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2228 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "parcels": [
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0001",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "252395d6-5764-4232-baeb-2020db2d8c2c",
+      "paid_amount": 0,
+      "state": "PU0000",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": null,
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-11T10:32:02.238182+00:00",
+      "additional_data": {
+        "erp_token": "token",
+        "_receiver": {
+          "phone": "380662225577",
+          "first_name": "Юлия",
+          "last_name": "Верещак",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "ttl_days": 15,
+        "ttl_days_default": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T10:32:02.238169+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0002",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+      "paid_amount": 0,
+      "state": "PU0000",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": null,
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-11T14:23:51.628916+00:00",
+      "additional_data": {
+        "erp_token": "token",
+        "_receiver": {
+          "phone": "380662225577",
+          "first_name": "Юлия",
+          "last_name": "Верещак",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "ttl_days": 15,
+        "ttl_days_default": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T14:23:51.628901+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
+}
+----
+
 
 ==== Получение cписка посылок по участию
 
@@ -72,7 +321,8 @@ get_params:: participant = all|agent|sender|receiver, sort_by = <SORT FIELD>, [s
 request_body:: ----
 expected_result:: 200 {"success": true, "parcels": [{<PARCEL SPEC>}, {<PARCEL SPEC>}, ...], "total": <INTEGER TOTAL>}
 
-NOTE: По-умолчанию выполняется поиск всех посылок `participant=all`, порядок сортировки по-убыванию по состояниям. В качестве sort_by можно передать большинство полей из <PARCEL SPEC>
+NOTE: По-умолчанию выполняется поиск всех посылок `participant=all`, порядок сортировки по-убыванию по состояниям. В качестве sort_by можно передать большинство полей из <PARCEL SPEC> в *п.Создание посылки*
+
 
 ==== Получение кодов
 
@@ -349,3 +599,20 @@ method_params:: <PARCEL ID>
 get_params:: ----
 request_body:: ----
 expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {<TRANSACTION SPEC>}, ...]}
+
+[horizontal]
+==== Пример запроса:
+
+request:: https://api.tbt-post.net/api/v1/agent/parcel/fin-transactions/c154aafe-2142-4959-be8e-3adead117e76
+response:: 200 {
+    "success": true, 
+    "transactions": [
+        {
+            <TRANSACTION SPEC>,
+            "summ": 341.0, 
+            "date": 2018-12-07T12:08:21.519346+00:00
+            <TRANSACTION SPEC>,
+            ....
+        }
+    ]
+}
