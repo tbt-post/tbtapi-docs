@@ -940,6 +940,144 @@ expected_result:: 200
     "success": true
 }
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/offices?lang=ru" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 15 Dec 2018 13:49:42 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 28454 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "7a90a5c1837fa48d07b1e2a6eb67ebdd2b0540be" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "offices": [
+    {
+      "address_data": {
+        "index": "61161",
+        "floor": 1
+      },
+      "name": "Харьков, Отделение №1",
+      "descr": "Харьков, №1. ул. Академика Павлова, 323 (ориентир - автостанция)",
+      "schedule": {
+        "1": "09:00-21:00",
+        "2": "09:00-21:00",
+        "3": "09:00-21:00",
+        "4": "09:00-21:00",
+        "5": "09:00-21:00",
+        "6": "09:00-21:00",
+        "7": "09:00-21:00"
+      },
+      "optimal_hours": {},
+      "number": 1,
+      "photos": [],
+      "id": "93ccfdec-f886-4f1c-9d04-6d1d8ef502f3",
+      "pay_cash": true,
+      "phone": "380112000001",
+      "email": "harkov_1@tbt-post.net",
+      "way_photos": [],
+      "address": {
+        "lang": "ru",
+        "city": "Харьков",
+        "building": "323",
+        "area": "Харьковский городской совет",
+        "country": "UA",
+        "region": "Харьковская область",
+        "lon": 36.337401,
+        "geo_object": {},
+        "addr_type": "cc_office",
+        "note": "№1",
+        "modified_at": "2017-06-15T11:10:02.140775+00:00",
+        "street": "улица Академика Павлова",
+        "geo_source": "yandex",
+        "lat": 50.027012,
+        "id": "2d741b70-51bb-11e7-b609-0fc3a07cbedf",
+        "accuracy": "exact"
+      },
+      "services": [],
+      "additional_data": {
+        "label": "Харьков-1",
+        "code_prefix": "TJ",
+        "sms_addr": "Harkov, ul. Akademika Pavlova 323, 09:00-21:00"
+      },
+      "ui_address": "м.Харків, вулиця Академіка Павлова 323",
+      "pay_card": false
+    },
+    {
+      "address_data": {
+        "index": "03150",
+        "place": "ст. м. Бориспольская, БЦ modnaVilla",
+        "floor": 1
+      },
+      "name": "Киев, Отделение №1",
+      "descr": "№1. Харьковское шоссе, 201/203, БЦ modnaVilla, 1 этаж",
+      "schedule": {
+        "1": "09:00-21:00",
+        "2": "09:00-21:00",
+        "3": "09:00-21:00",
+        "4": "09:00-21:00",
+        "5": "09:00-21:00",
+        "6": "09:00-21:00",
+        "7": "09:00-21:00"
+      },
+      "optimal_hours": {},
+      "number": 1,
+      "photos": [
+        "csc_photos/4a3ad637c9ab45d0a034d2b3d8abae6b.jpg"
+      ],
+      "id": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "pay_cash": true,
+      "phone": "380110000001",
+      "email": "kiev_1@tbt-post.net",
+      "way_photos": [],
+      "address": {
+        "lang": "ru",
+        "city": "Киев",
+        "building": "201-203к1А",
+        "area": null,
+        "country": "UA",
+        "region": "Киев",
+        "lon": 30.679338,
+        "geo_object": {},
+        "addr_type": "cc_office",
+        "note": "№1",
+        "modified_at": "2016-10-04T10:33:54.383917+00:00",
+        "street": "Харьковское шоссе",
+        "geo_source": "yandex",
+        "lat": 50.405237,
+        "id": "0c722922-8a1e-11e6-8a66-b356fd9f196a",
+        "accuracy": "exact"
+      },
+      "services": [],
+      "additional_data": {
+        "code_prefix": "T1",
+        "label": "Киев-1"
+      },
+      "ui_address": "м.Київ, Харківське шосе 201-203к1А",
+      "pay_card": false
+    }
+  ],
+  "success": true
+}
+----
+NOTE: В теле json ответа в указанном примере включены не все отделения.
+
 ==== Получение данных адреса из справочника
 
 [horizontal]
@@ -951,16 +1089,98 @@ expected_result:: 200 {"success": true, "lang": "<LANG>", "city": "<CITY>", "bui
 
 NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ cоставные части адреса `region`, `city`, `street`, `building` 
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address?region=%D0%9A%D0%B8%D0%B5%D0%B2&city=%D0%9A%D0%B8%D0%B5%D0%B2&street=%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5%20%D1%88%D0%BE%D1%81%D1%81%D0%B5&building=201-203"\
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 15 Dec 2018 14:53:29 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 525 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "252fb40a97403595bcea1297618cb1432d54adb7" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "lang": "uk",
+  "city": "Київ",
+  "building": "201/203",
+  "success": true,
+  "area": "місто Київ",
+  "country": "UA",
+  "region": null,
+  "lon": 30.6817834,
+  "geo_object": {},
+  "id": "afea6db6-0074-11e9-a8b4-1f50ad4e3573",
+  "note": null,
+  "modified_at": "2018-12-15T14:21:17.909359+00:00",
+  "street": "Харківське шосе",
+  "geo_source": "google",
+  "lat": 50.4035667,
+  "addr_type": "regular",
+  "accuracy": "exact"
+}
+----
+
+NOTE: Используемое кодирование для кирилицы в запросе - UTF-8 +
+В ответе - текст закодированный функцией escape
+
 === Пользователи
 
 ==== Регистрация пользователя
 
 [horizontal]
 protocol_method:: POST
-method_name:: agent/user
+method_name:: agent/user/new
 method_params:: ----
 request_body:: { "email": "<EMAIL>", "phone": "<PHONE>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "male|female|undef", "birthday": "1970-01-01", "company": { "name": "<COMPANY NAME>", "reg_id": "<REG ID>", "tax_id": "<TAX ID>", "type": "company|pe" } }
 expected_result:: 200 { "user_id": "<USER ID>", "success": true }
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/user/new" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{ "email": "example@gmail.com", "phone": "380666666666", "first_name": "test", "last_name": "user", "gender": "undef", "birthday": "1980-01-01", "company": { "name": "TestCompany", "reg_id": "12345", "tax_id": "321654", "type": "company" } }'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 20 Dec 2018 14:40:11 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 68 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+
+[source, json]
+----
+{"user_id": "cf8b0967-f1d3-4e53-aa48-297940415263", "success": true}
+----
 
 ==== Поиск пользователя
 
@@ -970,6 +1190,20 @@ get_params:: phone, reg_id, tax_id, company
 request_body:: ----
 expected_result:: 200 {"users": [{"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "company": {"name": "<COMPANY NAME>", "modified_at": "2018-07-10T09:15:52.366826+00:00", "reg_id": "<REG ID>", "type": "company", "tax_id": "<TAX ID>"}, "email": "<EMAIL>", "phone": "PHONE", "id": "<USER ID>"}], "success": true}
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+
+----
+
+Ответ::
+
+[source, json]
+----
+
+----
 
 === Контрагенты
 
@@ -980,7 +1214,7 @@ protocol_method:: POST
 method_name:: agent/contragent
 method_params:: ----
 request_body:: {"name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX (INT(%))>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>"}
-expected_result:: 200 {"success": true, "id" : "<CONTRAGENT ID>"}
+expected_result:: 200 {"id" : "<CONTRAGENT ID>", "success": true}
 
 [NOTE]
 ====
@@ -988,8 +1222,39 @@ expected_result:: 200 {"success": true, "id" : "<CONTRAGENT ID>"}
 Параметры: `reg_id` -- код ЕДРПОУ контрагента, `tax_id` -- ИНН контрагента, `vat` - ставка НДС в процентах. `vat == 0` -- эквивалент `без НДС`.
 
 После регистрации контрагента, необходим запрос почтой на его активацию.
-
 ====
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/contragent" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"name": "TestAgent LLC", "reg_id": "65465465", "tax_id": "545468", "vat": 15, "bank_name": "ExampleInternational", "bank_mfo": "358697", "bank_account": "2168777"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 12 Dec 2018 12:41:38 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "id": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+  "success": true
+}
+----
 
 ==== Модификация контрагента
 
@@ -998,11 +1263,40 @@ protocol_method:: PUT
 method_name:: agent/contragent
 method_params:: <CONTRAGENT ID>
 request_body:: {"name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX (INT(%))>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>"}
-expected_result:: 200 {"success": true, "id" : "<CONTRAGENT ID>"}
+expected_result:: 200 {"success": true}
 
 NOTE: Все ключи являются опциональными
 
 IMPORTANT: После модификации контрагента сбрасывается статус активации, и необходимо отправлять запрос активации заново
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/contragent/e8459d69-e3bc-41bc-978d-28d6c6abda38" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"name": "Testcontragent LLC"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 20 Dec 2018 14:59:25 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{"success": true}
+----
 
 ==== Информация о контрагенте
 
@@ -1012,6 +1306,49 @@ method_name:: agent/contragent
 method_params:: <CONTRAGENT ID>
 request_body:: ----
 expected_result:: 200 {"success": true, "name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX INT(%)>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>", "enabled": <true|false>, "modified_at": <TIMESTAMP UTC>, "translations": [{"processor": <POS PROCESSOR>, "merchant_id": <POS MERCHANT ID>, {...}, ...}]}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/contragent/e8459d69-e3bc-41bc-978d-28d6c6abda38" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic NTEwYWQwOGEtODMwZS00NmFhLWFiNjMtZGZhZGU3NWEwMGE3OmtSZnR2dzdX"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 20 Dec 2018 15:07:04 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 366 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "6f7149e70c1636e6270cd910279fc2e05f8abdb7" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "bank_name": "ExampleInternational",
+  "vat": 15,
+  "user_id": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "name": "Testcontragent LLC",
+  "success": true,
+  "modified_at": "2018-12-20T14:59:25.552359+00:00",
+  "translations": null,
+  "id": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+  "reg_id": 65465465,
+  "bank_mfo": 358697,
+  "bank_account": 2168777,
+  "enabled": false,
+  "tax_id": 545468
+}
+----
 
 ==== Справочник контрагентов
 
