@@ -568,7 +568,7 @@ NOTE: Временные параметры `ts_from`, `ts_to` задаются 
 Запрос::
 [source, shell]
 ----
-curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/log/logs?ts_from=1542880237734, ts_to=1542880237734, state="PU0007" \
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/log/logs?ts_from=1542880237734&ts_to=1542880237734&state="PU0007" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
@@ -1179,13 +1179,16 @@ Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
-{"user_id": "cf8b0967-f1d3-4e53-aa48-297940415263", "success": true}
+{
+  "user_id": "cf8b0967-f1d3-4e53-aa48-297940415263",
+  "success": true
+}
 ----
 
 ==== Поиск пользователя
 
 protocol_method:: GET
-method_name:: agent/user
+method_name:: agent/user/find
 get_params:: phone, reg_id, tax_id, company
 request_body:: ----
 expected_result:: 200 {"users": [{"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "company": {"name": "<COMPANY NAME>", "modified_at": "2018-07-10T09:15:52.366826+00:00", "reg_id": "<REG ID>", "type": "company", "tax_id": "<TAX ID>"}, "email": "<EMAIL>", "phone": "PHONE", "id": "<USER ID>"}], "success": true}
@@ -1195,14 +1198,46 @@ expected_result:: 200 {"users": [{"first_name": "<FIRST NAME>", "last_name": "<L
 Запрос::
 [source, shell]
 ----
-
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/user/find?phone=380666666666&reg_id=12345&tax_id=321654&company=TestCompany" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
 
 Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 24 Dec 2018 18:21:05 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 319 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "9c6365dc6d23240c8fa56d9677d5e9ac2f99644f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
-
+{
+  "users": [
+    {
+      "first_name": "test",
+      "last_name": "user",
+      "company": {
+        "reg_id": "12345",
+        "modified_at": "2018-12-20T14:40:10.979426+00:00",
+        "type": "company",
+        "name": "TestCompany",
+        "tax_id": "321654"
+      },
+      "email": "example@gmail.com",
+      "phone": "380666666666",
+      "id": "cf8b0967-f1d3-4e53-aa48-297940415263"
+    }
+  ],
+  "success": true
+}
 ----
 
 === Контрагенты
@@ -1314,7 +1349,7 @@ expected_result:: 200 {"success": true, "name": "<CONTRAGENT NAME>", "reg_id": "
 ----
 curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/contragent/e8459d69-e3bc-41bc-978d-28d6c6abda38" \
 -H "Content-Type: application/json" \
--H "Authorization: Basic NTEwYWQwOGEtODMwZS00NmFhLWFiNjMtZGZhZGU3NWEwMGE3OmtSZnR2dzdX"
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
 
 Ответ::
@@ -1357,7 +1392,67 @@ protocol_method:: GET
 method_name:: agent/contragent
 method_params:: list
 request_body:: ----
-expected_result:: 200 {"success": true, "contragents": [{<CONTRAGENT SPEC>}, ...]}
+expected_result:: 200 {"contragents": [{<CONTRAGENT SPEC>}, ...], "success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/contragent/list" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+< Server: nginx/1.10.3 +
+< Date: Sun, 23 Dec 2018 17:02:51 GMT +
+< Content-Type: application/json; charset=utf-8 +
+< Content-Length: 334 +
+< Connection: keep-alive +
+< Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+< Access-Control-Max-Age: 600 +
+< Etag: "729c4673864e1837373a30078de20909fec609ec" +
+< Access-Control-Allow-Credentials: true +
+< Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+< Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "contragents": [
+    {
+      "bank_name": "ExampleInternational",
+      "vat": 15,
+      "name": "Testcontragent LLC",
+      "modified_at": "2018-12-20T15:14:48.007045+00:00",
+      "translations": null,
+      "id": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+      "reg_id": 65465465,
+      "bank_mfo": 358697,
+      "bank_account": 2168777,
+      "enabled": false,
+      "tax_id": 545468
+    },
+    {
+      "bank_name": "ExampleInternational2",
+      "vat": 1,
+      "name": "Testcontragent2 LLC",
+      "modified_at": "2018-12-20T15:14:48.007045+00:00",
+      "translations": null,
+      "id": "e8459d69-e3bc-41bc-978d-28d6c6abda39",
+      "reg_id": 65465447,
+      "bank_mfo": 778697,
+      "bank_account": 9968777,
+      "enabled": false,
+      "tax_id": 545668
+    }
+  ],
+  "success": true
+}
+----
 
 === Финансовые транзакции
 
@@ -1375,6 +1470,53 @@ NOTE: На данный момент существуют только тран�
 
 NOTE: `processor` на данный момент может быть: `fcs_term` - оплата через терминал, `_erp_api` - оплата через вызов API *agent/parcel/paid*
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/fin-transaction/9060af07-169c-4376-ac18-20d073123180" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 24 Dec 2018 21:17:20 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 535 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "30a9ee68f228a07a6164fcd90b1063c9f29e1e3d" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "is_applied": false,
+  "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "success": true,
+  "created_at": "2018-12-23T17:54:18.385932+00:00",
+  "contragent": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+  "modified_at": "2018-12-23T17:54:18.429628+00:00",
+  "processor": "_erp_api",
+  "completed_at": "2018-12-23T17:54:18.385932+00:00",
+  "amount": 299,
+  "trans_type": "parcel",
+  "id": "9060af07-169c-4376-ac18-20d073123180",
+  "trans_ref": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+  "additional_data": {
+    "id": "test0004"
+  },
+  "extid": 166,
+  "is_completed": true
+}
+----
+
 ==== Получение списка финансовых транзакций за период
 
 [horizontal]
@@ -1387,6 +1529,76 @@ expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {
 
 NOTE: Временные параметры `ts_from`, `ts_to` задаются в формате timestamp UTS *in miliseconds*. Параметр `is_dirty` указывает на получение транзакций, которые не синхронизированы с агентской системой в связи с какими-либо ошибками.
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/fin-transactions?ts_from=1543688645000&ts_to=1546194245000&processor=_erp_api&limit=200&offset=0" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 24 Dec 2018 21:26:20 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 3167 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "67f37817137afc911ea493d829aacb0dc20cc9ec" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "total": 2,
+  "success": true,
+  "transactions": [
+    {
+      "is_applied": false,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "created_at": "2018-12-23T17:44:09.971429+00:00",
+      "contragent": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+      "modified_at": "2018-12-23T17:44:10.162860+00:00",
+      "processor": "_erp_api",
+      "completed_at": "2018-12-23T17:44:09.971429+00:00",
+      "amount": 299,
+      "trans_type": "parcel",
+      "id": "17a4e31d-4758-4d4e-8700-135bfa91fdad",
+      "trans_ref": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "additional_data": {
+        "id": "TEST0001"
+      },
+      "extid": 163,
+      "is_completed": true
+    },
+    {
+      "is_applied": false,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "created_at": "2018-12-12T13:59:40.263358+00:00",
+      "contragent": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+      "modified_at": "2018-12-12T13:59:40.265089+00:00",
+      "processor": "_erp_api",
+      "completed_at": "2018-12-12T13:59:40.263358+00:00",
+      "amount": 299,
+      "trans_type": "parcel",
+      "id": "5555b600-0b58-45fa-8183-2e901d476018",
+      "trans_ref": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "additional_data": {
+        "id": "test0001"
+      },
+      "extid": 162,
+      "is_completed": true
+    }
+  ]
+}
+----
+
 ==== Получение списка финансовых транзакций по посылке
 
 [horizontal]
@@ -1397,19 +1609,73 @@ get_params:: ----
 request_body:: ----
 expected_result:: 200 {"success": true, "transactions": [{<TRANSACTION SPEC>}, {<TRANSACTION SPEC>}, ...]}
 
-[horizontal]
-==== Пример запроса:
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/fin-transactions/30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
 
-request:: https://api.tbt-post.net/api/v1/agent/parcel/fin-transactions/c154aafe-2142-4959-be8e-3adead117e76
-response:: 200 {
-    "success": true, 
-    "transactions": [
-        {
-            <TRANSACTION SPEC>,
-            "summ": 341.0, 
-            "date": 2018-12-07T12:08:21.519346+00:00
-            <TRANSACTION SPEC>,
-            ....
-        }
-    ]
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 24 Dec 2018 18:24:57 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2635 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "df09d5fee730bd0a96873d24ac60d6cc806e8d1b" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "success": true,
+  "transactions": [
+    {
+      "is_applied": false,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "created_at": "2018-12-23T17:54:18.385932+00:00",
+      "contragent": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+      "modified_at": "2018-12-23T17:54:18.429628+00:00",
+      "processor": "_erp_api",
+      "completed_at": "2018-12-23T17:54:18.385932+00:00",
+      "amount": 299,
+      "trans_type": "parcel",
+      "id": "9060af07-169c-4376-ac18-20d073123180",
+      "trans_ref": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "additional_data": {
+        "id": "test0004"
+      },
+      "extid": 166,
+      "is_completed": true
+    },
+    {
+      "is_applied": false,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "created_at": "2018-12-23T17:44:19.445261+00:00",
+      "contragent": "e8459d69-e3bc-41bc-978d-28d6c6abda38",
+      "modified_at": "2018-12-23T17:44:19.445966+00:00",
+      "processor": "_erp_api",
+      "completed_at": "2018-12-23T17:44:19.445261+00:00",
+      "amount": 299,
+      "trans_type": "parcel",
+      "id": "b26e547f-c7be-43b6-8dae-9ef8258f0b84",
+      "trans_ref": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "additional_data": {
+        "id": "TEST0003"
+      },
+      "extid": 165,
+      "is_completed": true
+    }
+  ]
 }
+----
+
+
