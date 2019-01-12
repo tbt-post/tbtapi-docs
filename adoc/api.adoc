@@ -223,13 +223,15 @@ http://www.ietf.org/assignments/http-status-codes/http-status-codes.xml[IETF RFC
 
 NOTE: Все методы пользовательского api (`<api base uri>/api/...`) отдекорированы асинхронным методом `@authenticated`.
 
-NOTE: Все методы api с префиксом op/ предназначениы для операторского интерфейса, и требуют от пользователя соответствующих прав доступа.
+NOTE: Все методы api с префиксом op/ предназначены для операторского интерфейса, и требуют от пользователя соответствующих прав доступа.
 
 NOTE: методы, подразумевающие работу со структураци данных осуществляют базовою валидацию полей на стороне сервера
 
 CAUTION: Содержимое полей запроса в `<>` -- указание на определенный тип поля
 
 WARNING: Для обозначения пустого (осутствующего) содержимого в описании используется `----`. Использовать его как значение **НЕ РЕКОМЕНДУЕТСЯ**
+
+WARNING: Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
 
 .Типы полей в запросах
 [width="80%",cols=4,options="header"]
@@ -328,6 +330,37 @@ expected_result:: 200 {"success": true}
 
 NOTE: поле `prefered_lang` является опциональным и, по-умолчанию, заполняется при создании пользователя в значение языка пользовательского интерфейса.
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/reg" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"email":"examplemail1@exampledomain.io","password":"examplepass", "phone": "380666666667", "first_name": "Vasia", "last_name": "Pipkin", "gender": "male", "prefered_lang" : "ru"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 12 Jan 2019 13:20:37 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
 ==== Создание пользователя оператором
 
 [horizontal]
@@ -339,6 +372,39 @@ expected_result:: 200 {"success": true, "id": <USER ID>}
 
 NOTE: Если параметр `activate` false (по-умолчанию), пользователь будет создан с флагом `is_poor`, если true, то новый пользователь будет активирован.
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/reg" \
+-b cookie-jar.txt \
+-H "Content-Type: application/json" \
+-d '{"email":"examplemail2@exampledomain.io", "phone": "380666666668", "first_name": "Sara", "last_name": "Pipkin", "gender": "female", "prefered_lang" : "ru", "activate": false}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 12 Jan 2019 14:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "id": "75c755df-f40a-4c85-a42b-e3c1ddeec93a",
+  "success": true
+}
+----
+
+CAUTION: В дальнешем, при использовании учетной записи с правами оператора, будут использованы HTTP cookies
 
 ==== Потдтверждение регистрации
 
@@ -351,6 +417,37 @@ method_params:: new
 request_body:: {"otc_type": "REGISTRATION", "email": "<USER EMAIL>"}
 expected_result:: 200 {"success": true}
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"otc_type": "REGISTRATION", "email": "examplemail2@exampledomain.io"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 12 Jan 2019 14:17:50 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
 ===== Подтверждение
 
 [horizontal]
@@ -359,6 +456,27 @@ method_name:: otc
 method_params:: validate
 request_body:: {"otc_type": "REGISTRATION", "otc": "<OTC>"}
 expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"otc_type": "REGISTRATION", "otc": "046e053c-c35c-408f-a422-9fe20f50c35b"}'
+
+----
+
+Ответ::
+soon..
+
+
+
+[source, json]
+----
+soon..
+----
 
 === Вход
 
@@ -369,6 +487,36 @@ method_params:: login
 request_body:: {"username":"<USER EMAIL>","password":"<USER PASSWORD>", "remember_me": "<true/false>"}
 expected_result:: 200 {"success": true}
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST https://sandbox-api.tbt-post.net/api/v1/auth/login \
+-H "Content-Type: application/json; charset=utf-8" \
+-d '{"username":"examplemail1@exampledomain.io","password":"examplepass","remember_me":"true"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 12 Jan 2019 15:17:55 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 37 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Set-Cookie: TBT_AUTH="2|1:0|10:1547306275|8:TBT_AUTH|48:OTcwY2RmNmQtMWZmOS00MWEzLTg5YmEtZjg1OGE5YjE2OTE2|bb0ce8075b6ac417be6d2fb9fd1e79af7980b52361ae5b2eeffd1240627b447e"; Domain=.tbt-post.net; expires=Mon, 11 Feb 2019 17:31:15 GMT; Path=/ +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
 === Выход
 
 [horizontal]
@@ -377,6 +525,36 @@ method_name:: auth
 method_params:: logout
 request_body:: ----
 expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/auth/logout" \
+-H "Content-Type: application/json" 
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 12 Jan 2019 15:21:15 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Cache-Control: no-cache, no-store, must-revalidate +
+Etag: "484b3032619fa1acd135d114565b0a5166281c22" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "success": true
+}
+----
 
 === Восстановление пароля
 
@@ -389,6 +567,23 @@ method_params:: new
 request_body:: {"otc_type": "RESTORE_PASSWORD", "email": "<USER EMAIL>"}
 expected_result:: 200 {"success": true}
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
+
 ==== Превалидация ОТС
 
 [horizontal]
@@ -397,6 +592,23 @@ method_name:: otc
 method_params:: validate
 request_body:: {"otc_type": "RESTORE_PASSWORD", "otc": "<OTC>"}
 expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Изменение пароля
 
@@ -407,11 +619,28 @@ method_params:: password
 request_body:: {"new_password": "<NEW PASSWORD>", "otc": "<OTC>"}
 expected_result:: 200 {"success": true}
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
+
 === Изменение пароля
 
 Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.
 
-IMPORTANT: требует авторизации
+IMPORTANT: Требует авторизации
 
 [horizontal]
 protocol_method:: PUT
@@ -419,6 +648,23 @@ method_name:: user/profile
 method_params:: password
 request_body:: {"new_password": "<NEW PASSWORD>", "old_password": "<OLD PASSWORD>"}
 expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Пользовательский профиль
 
@@ -430,10 +676,27 @@ method_name:: user/profile
 method_params:: ----
 request_body:: ----
 expected_result:: 200 {"success": true, "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "is_external": <true/false>, "phone": "<PHONE 380XXYYYYYYY>", "gender": "<GENDER>", "created_at": "<TIMESTAMP UTC>", "activated_at": "TIMESTAMP UTC", "modified_at": "TIMESTAMP UTC", "password_changed": "TIMESTAMP UTC", "additional_data": {}, "is_active": <true/false>, "sourced_by": "<USER SOURCE>", "rate": <USER RATE>, "birthday": <BIRTHDAY>, "id": "<USER ID>", "is_poor": <true/false>, "is_disabled": <true/false>, "email": "<USER EMAIL>", ...}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Обновление собственного профиля
 
-NOTE: неактуальные для контекста поля -- игнорируются. Передавать можно только часть параметров из набора.
+NOTE: Неактуальные для контекста поля -- игнорируются. Передавать можно только часть параметров из набора.
 
 [horizontal]
 protocol_method:: PUT
@@ -441,6 +704,23 @@ method_name:: user/profile
 method_params:: ----
 request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение базовых данных пользователя
 
@@ -453,6 +733,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "id": "<USER_ID>," "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "phone": "<PHONE 380XXYYYYYYY>"}
 
 NOTE: Часть цифр номера телефона пользователя скрывается для обеспечения анонимности
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 
 ==== Получение базовых данных списка пользователей
@@ -466,6 +763,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "users": [<USER RESOLVE>, <USER RESOLVE>, ...]}
 
 NOTE: Значение <USER RESOLVE> является таким же, как и выходные данные метода `user/resolve/<USER ID>`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 
 ==== Получение профиля пользователя
@@ -479,6 +793,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "is_external": <true/false>, "phone": "<PHONE 380XXYYYYYYY>", "gender": "<GENDER>", "created_at": "<TIMESTAMP UTC>", "activated_at": "TIMESTAMP UTC", "modified_at": "TIMESTAMP UTC", "password_changed": "TIMESTAMP UTC", "additional_data": {}, "is_active": <true/false>, "sourced_by": "<USER SOURCE>", "rate": <USER RATE>, "birthday": <BIRTHDAY>, "id": "<USER ID>", "is_poor": <true/false>, "is_disabled": <true/false>, "email": "<USER EMAIL>", "roles": [<ROLES LIST>], ...}
 
 CAUTION: `user_id` имеет более высокий приоритет
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Обновление профиля пользователя
 
@@ -490,6 +821,23 @@ method_name:: op/user/profile
 method_params:: <USER ID>
 request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Подтверждение профиля пользователя оператором
 
@@ -499,6 +847,23 @@ method_name:: op/user/profile
 method_params:: confirm
 request_body:: {"user_id": "<USER ID>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 
 ==== Получение списка пользователей по id
@@ -512,6 +877,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "users": [<USER PROFILE>, <USER PROFILE>, ...]}
 
 NOTE: Значение <USER PROFILE> является таким же, как и выходные данные метода `op/user/profile/<USER ID>`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Поиск пользователей
 
@@ -545,7 +927,23 @@ expected_result:: 200 {"success": true, "users": [<USER PROFILE>, <USER PROFILE>
 | ['first_name', 'last_name', 'gender', 'birthday', 'sourced_by', 'block_status', 'parent', 'confirmed_by', 'is_poor', 'is_active', 'is_external', 'is_phone_valid', 'is_confirmed']
 
 |====================
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Вход по номеру телефона
 
@@ -559,6 +957,23 @@ method_name:: otc
 method_params:: new
 request_body:: {"otc_type": "PHONE_AUTH", "phone": "<PHONE 380XXYYYYYYY>" }
 expected_result:: 200 {"otc": "<OTC>", "success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Авторизация
 
@@ -568,6 +983,23 @@ method_name:: auth
 method_params:: phone-login
 request_body:: {"otc": "<OTC>", "phone_code": "<SMS CODE>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Изменение телефона
 
@@ -579,6 +1011,23 @@ method_name:: otc
 method_params:: new
 request_body:: {"otc_type": "PHONE_CHANGE", "phone": "<PHONE 380XXYYYYYYY>" }
 expected_result:: 200 {"otc": "<OTC>", "success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Подтверждение
 
@@ -588,6 +1037,23 @@ method_name:: auth
 method_params:: validate
 request_body:: {"otc_type": "PHONE_CHANGE", "otc": "<OTC>", "phone_code": "<SMS CODE>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Изменение email
 
@@ -599,6 +1065,23 @@ method_name:: otc
 method_params:: new
 request_body:: {"otc_type": "EMAIL_CHANGE", "email": "<USER EMAIL>" }
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Подтверждение
 
@@ -608,6 +1091,23 @@ method_name:: auth
 method_params:: validate
 request_body:: {"otc_type": "EMAIL_CHANGE", "otc": "<OTC>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === ACL
 
@@ -619,6 +1119,23 @@ method_name:: user
 method_params:: roles
 request_body:: ----
 expected_result:: 200 {"success": true, "roles": ["<USER ROLE>", ...]}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Посылки
 
@@ -633,6 +1150,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "address_id": "<SHIPPING ADDRESS ID>", "code": "<CODE-128>", "is_paid": <true/false>, "weight": <WEIGHT GRAM as DECIMAL(10,6)>, "agent": "<USER ID>", "is_open": <true/false>, "paid_at": "<TIMESTAMP UTC> or null", "closed_at": "<TIMESTAMP UTC or null>", "id": "<PARCEL ID>", "paid_amount": <PAYMENTS TOTAL as DECIMAL(10,2)>, "type": <TYPE CODE>, "parent": <PARCEL ID or null>, "price": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)> "class": "<CLASS ID>", "sender": "<USER ID>", "created_at": "<TIMESTAMP UTC>", "modified_at": "<TIMESTAMP UTC>", "receiver": "<USER ID>", "state": "<PARCEL STATE>", "transfer_via": "<OFFCIE ID>", "pentity": "<OFFICE ENTITY ID>", "delivery_type": "<DELIVERY TYPE>", "additional_data": {...}, ...}
 
 CAUTION: `parcel_id` имеет более высокий приоритет, чем `code`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение графических кодов
 
@@ -645,6 +1179,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "qr": <IMAGE DATA URI>", "bcode": "<IMAGE DATA URI>"}
 
 NOTE: DATA URI is according to `RFC-2397`: data:[<media type>][;base64],<data>
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Поиск
 
@@ -748,6 +1299,23 @@ expected_result:: 200 {
 | pentity_recur
 | true/false  - поиск рекурсивно по полю pentity
 |====================
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение посылок по списку id
 
@@ -789,6 +1357,23 @@ expected_result:: 200 {
     ],
     "success": true
 }
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Cписок посылок пользователя
 
@@ -853,6 +1438,23 @@ expected_result:: 200 {
 | sort_order
 | asc/desc
 |====================
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Создание посылки
 
@@ -862,7 +1464,23 @@ method_name:: op/parcel
 method_params:: ----
 request_body:: {"type": <TYPE CODE>, "class": "<CLASS ID>", "sender": "<USER ID>", "receiver":"<USER ID>", "address_id": "<SHIPPING ADDRESS ID>", "weight": <WEIGHT GRAM as INTEGER)>, "price": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)>}
 expected_result:: 200 {"success": true, "id": "<PARCEL ID>"}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Изменение посылки
 
@@ -874,7 +1492,23 @@ request_body:: {"state": "<STATE ID>", "type": <TYPE CODE>, "class": "<CLASS ID>
 expected_result:: 200 {"success": true}
 
 NOTE: необходимо передавать подмножество описанных параметров для изменения посылки.
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Статистика по посылкам для отделения
 
@@ -893,7 +1527,23 @@ expected_result:: 200 {
 NOTE: значения rules: `['delivered', 'on_stock', 'in', 'release', 'new', 'in_progress', 'trans', 'out']`
 
 NOTE: значения filters: `['returns', 'cancellations']`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Сгруппированный список посылок для отделения
 
@@ -906,6 +1556,23 @@ expected_result:: 200 {
     "success": true,
     "grouped": { "<GROUP>": ["<PARCEL>", "<PARCEL>", ...], ...}
 }
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Статистика по посылкам для пользователя
 
@@ -916,6 +1583,23 @@ method_params:: stat
 expected_result:: 200 {"success": true, "receiver": <PARCEL COUNT as INTEGER>, "sender": <PARCEL COUNT as INTEGER>, "on_release": <PARCEL COUNT as INTEGER>}
 
 NOTE: значения `on_relese` - это подмножество посылок из `receiver`, готовых к выдачи пользователю.
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 
 ==== Трекинговая информация о пользовательских посылках
@@ -929,7 +1613,23 @@ expected_result:: 200 {
     "sender": [{"id": "<PARCEL ID>", "state": "<PARCEL STATE>", "goes_back": <true/false>, "sender": "<USER ID>", "receiver": "<USER ID>", "lat": <LATITUDE>, "lon": <LONGITUDE>}, {...}, ...],
     "receiver": [{"id": "<PARCEL ID>", "state": "<PARCEL STATE>", "goes_back": <true/false>, "sender": "<USER ID>", "receiver": "<USER ID>", "lat": <LATITUDE>, "lon": <LONGITUDE>}, {...}, ...]
 }
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Адреса и отделения
 
@@ -985,6 +1685,23 @@ expected_result:: 200
 }
 
 NOTE: в случае указания параметра `all=true` в списке будут отображаться так-же внутренние отделения системы.
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 
 ==== Список адресов отделений
@@ -1002,6 +1719,23 @@ expected_result:: 200 {"address_list": [<ADDRESS1>, <ADDRESS2>, ...], "success":
 [horizontal]
 cc_office:: собственные отделения
 fc_office:: агентские отделения
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение адреса из справочника
 
@@ -1016,6 +1750,23 @@ expected_result:: 200 {"success": true, "lang": "<LANG>", "city": "<CITY>", "bui
 NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ составные параметры адреса, _либо_ `id` адреса.
 
 CAUTION: `id` в качестве параметра метода имеет боле высокий приоритет
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение списка фильтров (агрегации) адресов
 
@@ -1029,7 +1780,24 @@ expected_result:: 200 {"success": true, "filters": [<field_value_1>, .. <field_v
 
 NOTE: Для получения списка фильтиров (агрегации) для поля адреса более нижнего уровня, необходимо задать через get-параметры значения полей более высокого уровня в соответствии с древовидной структурой адреса: region -> city -> street -> building.
 
-Дополнительный параметр `pattern` используется для дополнительной фильтрации результирующего списка фильтров.
+NOTE: Дополнительный параметр `pattern` используется для дополнительной фильтрации результирующего списка фильтров.
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Создание адреса в справочнике
 
@@ -1056,6 +1824,23 @@ method_name:: address
 method_params:: ----
 request_body:: {"city": "<CITY>", "street": "<STREET>", "building": "<BUILDING>"}
 expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<STREET>", "lat": <LATITUDE>, "id": "<SHIPPING ADDRESS ID>", "lang": "<LANG>", "city": "<CITY>", "area": <ADDRESS AREA or null>, "country": "<COUNTRY CIDE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 Для обратного кодирования в теле запроса необходимо указывать координаты.
 
@@ -1065,6 +1850,23 @@ method_name:: address
 method_params:: ----
 request_body:: {"lat": <LATITUDE>, "lon": <LONGITUDE>}
 expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<STREET>", "lat": <LATITUDE>, "id": "<SHIPPING ADDRESS ID>", "lang": "<LANG>", "city": "<CITY>", "area": <ADDRESS AREA or null>, "country": "<COUNTRY CIDE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Список пользовательских адресов
 
@@ -1077,6 +1879,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "address_list": [{"building": "<BUILDING>", "city": "<CITY>", "address_id": "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "apartment": "<APARTMENT>", "lang": "<LANG>", "title": "<ADDRESS TITLE>", "country": "<COUNTRY CODE>", "notes": "<TEXT or null>", "area": <ADDRESS AREA or null>, "lon": <LONGITUDE>, "is_default": <true/false>, "street": "<STREET>", "lat": <LATITUDE>, "region": "<CITY REGION or null>"}]}
 
 NOTE: расширение параметризации метода идентификатором адреса (т.е.<SHIPPING ADDRES ID>) возвращает описание отдельного адреса (редуцирует выборку)
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Добавление пользовательского адреса
 
@@ -1086,6 +1905,23 @@ method_name:: user/address
 method_params:: ----
 request_body:: {"address_id" : "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "title": "ADDRESS TITLE", "apartment": "<APARTMENT>", "notes": "TEXT"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Список пользовательских адресов произвольного пользователя
 
@@ -1098,6 +1934,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "address_list": [{"building": "<BUILDING>", "city": "<CITY>", "address_id": "<SHIPPING ADDRESS ID>", "apartment": "<APARTMENT>", "lang": "<LANG>", "title": "<ADDRESS TITLE>", "country": "<COUNTRY CODE>", "notes": "<TEXT or null>", "area": <ADDRESS AREA or null>, "lon": <LONGITUDE>, "is_default": <true/false>, "street": "<STREET>", "lat": <LATITUDE>, "region": "<CITY REGION or null>"}]}
 
 NOTE: расширение параметризации метода идентификатором адреса (т.е. <USER ID>/<SHIPPING ADDRES ID>) возвращает описание отдельного адреса (редуцирует выборку)
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Добавление пользовательского адреса произвольного пользователя
 
@@ -1107,6 +1960,23 @@ method_name:: op/user/address
 method_params:: <USER ID>
 request_body:: {"address_id" : "<SHIPPING ADDRESS ID>", "service": "<ADDRESS SERVICE>", "title": "ADDRESS TITLE", "apartment": "<APARTMENT>", "notes": "TEXT"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 == Сущности и справочники
 
@@ -1121,6 +1991,23 @@ method_params:: ----
 get_params:: ----
 request_body:: {"type": "<ENTITY TYPE>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>", "label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>"}
 expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Изменение ресурса отеления
 
@@ -1133,6 +2020,23 @@ request_body:: {"descr": "<ENTITY DESCRIPTION>", "label": "<ENTITY LABEL>", "pat
 expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
 
 NOTE: требуется указать только необходимые параметры для модификации ресурса.
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Удаление ресурса отеления
 
@@ -1145,6 +2049,23 @@ request_body:: ----
 expected_result:: 200 {"success": true}
 
 NOTE: удаление возможно только ресурса, который не имеет подчиненных ресурсов
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение описания ресурса
 
@@ -1157,6 +2078,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TYPE>", "owner": "<OFFICE USER ID>", "parent": "<ENTITY ID>", "descr": "<ENTITY DESCRIPTION>" "properties": {"code": "<ENTITY BARCODE>", "bcode": "<DATA URI: ENTITY BARCODE>", "label": "<ENTITY LABEL>", "path": "<PATH (1C FORMAT)>", "db_path": ["<PARENT ENTITY ID>", "<PARENT ENTITY ID>", ...]}]}
 
 NOTE: получение сущности выполняется или по `<ENTITY ID>` в method_params или по <ENTITY BARCODE> в get_params
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Получение списка ресурсов
 
@@ -1169,6 +2107,23 @@ request_body:: ----
 expected_result:: 200 {"success": true, "entities": [<ENTITY RECORD>, <ENTITY RECORD>, ...]
 
 NOTE: по-умолчанию office_id берется из данных операторского аккаунта, `<ENTITY RECORD>` соответсвует описанию результата для получения одиночной сущности за исключением поля `"properties"/"barcode"`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Пeреназначение иерархии для ресурса отделения
 
@@ -1179,7 +2134,23 @@ method_params:: <ENTITY ID>
 get_params:: ----
 request_body:: {"parent": "<ENTITY ID>"}
 expected_result:: 200 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
 
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Словари
 
@@ -1194,6 +2165,23 @@ expected_result:: 200 {
     "success": true,
     "states": {"<STATE ID>": "<STATE MESSAGE>", "<STATE ID>": "<STATE MESSAGE>", ...}
 }
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 ==== Сообщения для действий по отправлениям
 
@@ -1206,6 +2194,23 @@ expected_result:: 200 {
     "success": true,
     "actions": {"<STATE ID>": "<STATE ACTION MESSAGE>", "<STATE ID>": "<STATE ACTION MESSAGE>", ...}
 }
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Множественная (batch) обработка действий
 
@@ -1217,6 +2222,23 @@ request_body:: {"action": "<parcel_update|entity_reparent|...>", "batches": {"<B
 expected_result:: 200 {"success": true, "<BATCH_KEY>": {"status": <STATUS_CODE>, "<RESULT_KEY>": <VALUE>, ...}, "<BATCH_KEY>": {...}, ...}
 
 Для action = `parcel_update` <BATCH_KEY> является `parcel_id`, для action = `entity_reparent` <BATCH_KEY> является `entity_id`
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 == Уведомления
 
@@ -1230,6 +2252,23 @@ request_body:: <ANY REPORT DATA>
 expected_result:: 202 {"success": true}
 
 NOTE: Ограничение объема передаваемых в запросе данных -- 2М
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
 
 === Клиент->Система
 
@@ -1241,3 +2280,20 @@ method_name:: ev/parcel/sched
 method_params:: <PARCEL ID>
 request_body:: {"type" : "receiving", "sched" : "<TIMESTAMP UTC>"}
 expected_result:: 202 {"success": true}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+put text here
+----
+
+Ответ::
+put text here
+
+[source, json]
+----
+{
+  put text here
+}
+----
