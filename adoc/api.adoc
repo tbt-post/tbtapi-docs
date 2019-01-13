@@ -685,16 +685,61 @@ expected_result:: 200 {"success": true, "first_name": "<FIRST NAME>", "last_name
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/profile" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 13 Jan 2019 10:29:00 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 953 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "03aceef3d3ae3b3eb91cda7ebfa1677c4838dcc5" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "last_name": "Pipkin",
+  "confirmed_at": null,
+  "rate": 0,
+  "roles": [
+    "operator"
+  ],
+  "id": "4f9sd36a-8s22-4fa3-aad5-f656gg6f4ee8",
+  "first_name": "Vasia",
+  "is_confirmed": false,
+  "is_phone_valid": false,
+  "email": "examplemail1@exampledomain.io",
+  "parent": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+  "is_disabled": false,
+  "activated_at": "2019-01-13T10:36:07.858583+00:00",
+  "is_active": true,
+  "password_changed": "2019-01-13T10:23:23.643305+00:00",
+  "phone": "380666666667",
+  "birthday": null,
+  "confirmed_by": null,
+  "is_external": true,
+  "nsid": 0,
+  "sourced_by": "Agent",
+  "gender": "male",
+  "created_at": "2019-01-13T10:36:08.177308+00:00",
+  "modified_at": "2019-01-13T10:23:23.710000+00:00",
+  "success": true,
+  "is_badge": false,
+  "is_poor": true,
+  "additional_data": {
+    "foreign_id": 7429614,
+    "last_login": "2019-01-13T10:23:23.325704+00:00"
+  }
 }
 ----
 
@@ -713,7 +758,10 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/user/profile" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"first_name": "Vasilii", "last_name": "Pypkin", "gender": "male", "birthday": "1900-12-31>", "prefered_lang": "en"}'
 ----
 
 Ответ::
@@ -1128,16 +1176,34 @@ expected_result:: 200 {"success": true, "roles": ["<USER ROLE>", ...]}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/roles" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 13 Jan 2019 10:45:00 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 100 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "cf70b22ea6546b1f69cb5fbc06b683d6932caf92" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "roles": [
+    "user",
+    "operator"
+  ]
 }
 ----
 
