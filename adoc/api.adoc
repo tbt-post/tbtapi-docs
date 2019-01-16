@@ -237,6 +237,10 @@ WARNING: Для обозначения пустого (осутствующег�
 
 WARNING: Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
 
+NOTE: Запросы без указания `*-H "Authorization*` можно выполнить без регистрации.
+
+NOTE: Для запросов требующих авторизации учетной записи, в т.ч с правами оператора [/op], будут использованы HTTP cookies
+
 .Типы полей в запросах
 [width="80%",cols=4,options="header"]
 |====================
@@ -340,7 +344,6 @@ NOTE: поле `prefered_lang` является опциональным и, п�
 ----
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/reg" \
 -H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
 -d '{"email":"examplemail1@exampledomain.io","password":"examplepass", "phone": "380666666667", "first_name": "Vasia", "last_name": "Pipkin", "gender": "male", "prefered_lang" : "ru"}'
 ----
 
@@ -376,6 +379,8 @@ expected_result:: 200 {"success": true, "id": <USER ID>}
 
 NOTE: Если параметр `activate` false (по-умолчанию), пользователь будет создан с флагом `is_poor`, если true, то новый пользователь будет активирован.
 
+NOTE: Обычно запрос ипользуется для служебных целей.
+
 Пример запроса/ответа::
 Запрос::
 [source, shell]
@@ -408,8 +413,6 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
-CAUTION: В дальнешем, при использовании учетной записи с правами оператора, будут использованы HTTP cookies
-
 ==== Потдтверждение регистрации
 
 ===== Запрос ОТС
@@ -427,7 +430,6 @@ expected_result:: 200 {"success": true}
 ----
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
 -H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
 -d '{"otc_type": "REGISTRATION", "email": "examplemail2@exampledomain.io"}'
 ----
 
@@ -443,7 +445,6 @@ Access-Control-Max-Age: 600 +
 Access-Control-Allow-Credentials: true +
 Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
 Access-Control-Allow-Headers: Content-Type +
-
 
 [source, json]
 ----
@@ -473,13 +474,23 @@ curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
 ----
 
 Ответ::
-soon..
-
-
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 13:38:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
-soon..
+{
+  "success": true
+}
 ----
 
 === Вход
@@ -509,7 +520,7 @@ Content-Length: 37 +
 Connection: keep-alive +
 Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
 Access-Control-Max-Age: 600 +
-Set-Cookie: TBT_AUTH="2|1:0|10:1547306275|8:TBT_AUTH|48:OTcwY2RmNmQtMWZmOS00MWEzLTg5YmEtZjg1OGE5YjE2OTE2|bb0ce8075b6ac417be6d2fb9fd1e79af7980b52361ae5b2eeffd1240627b447e"; Domain=.tbt-post.net; expires=Mon, 11 Feb 2019 17:31:15 GMT; Path=/ +
+Set-Cookie: TBT_AUTH="2|1:0|10:1547646244|8:TBT_AUTH|48:ODBkYTFkY2EtOThkMy00ODVjLWI4Y2YtOTE4M2MxMDYzMzQ0|9e9a3f3ac84bb2d8ebba1f75ed94ea6898ccf5b4dac2e2bf7faae3772c218685"; Domain=.tbt-post.net; expires=Fri, 15 Feb 2019 15:57:24 GMT; Path=/ +
 Access-Control-Allow-Credentials: true +
 Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
 Access-Control-Allow-Headers: Content-Type +
@@ -517,7 +528,8 @@ Access-Control-Allow-Headers: Content-Type +
 [source, json]
 ----
 {
-  "success": true
+  "success": true,
+  "roles": []
 }
 ----
 
@@ -575,16 +587,29 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "RESTORE_PASSWORD", "email": "examplemail1@exampledomain.io"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 13:53:09 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -601,18 +626,40 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "RESTORE_PASSWORD", "otc": "1a0fd578-fa4b-435d-9f8f-8933d4528f45"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 14:15:35 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
+Если ОТС не проходит валидацию, ответ будет выглядеть так::
+[source, json]
+----
+{
+  "message": "Invalid OTC",
+  "success": false
+}
+----
+
 
 ==== Изменение пароля
 
@@ -627,24 +674,36 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/profile/password" \
+-H "Content-Type: application/json" \
+-d '{"new_password": "examplepass-new", "otc": "498c9940-4720-40bd-83b2-4edbbed5ed76"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 14:09:20 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 0 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
 === Изменение пароля
 
-Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.
+IMPORTANT: Требует авторизации. Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.
 
-IMPORTANT: Требует авторизации
+
 
 [horizontal]
 protocol_method:: PUT
@@ -657,16 +716,30 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/user/profile/password" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"new_password": "examplepass", "old_password": "examplepass-new"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 17:09:29 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -711,34 +784,32 @@ Access-Control-Allow-Headers: Content-Type +
   "last_name": "Pipkin",
   "confirmed_at": null,
   "rate": 0,
-  "roles": [
-    "operator"
-  ],
-  "id": "4f9sd36a-8s22-4fa3-aad5-f656gg6f4ee8",
+  "roles": [],
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
   "first_name": "Vasia",
   "is_confirmed": false,
   "is_phone_valid": false,
   "email": "examplemail1@exampledomain.io",
-  "parent": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+  "parent": null,
   "is_disabled": false,
-  "activated_at": "2019-01-13T10:36:07.858583+00:00",
+  "activated_at": "2019-01-16T13:38:19.206955+00:00",
   "is_active": true,
-  "password_changed": "2019-01-13T10:23:23.643305+00:00",
+  "password_changed": "2019-01-16T17:09:29.347996+00:00",
   "phone": "380666666667",
   "birthday": null,
   "confirmed_by": null,
-  "is_external": true,
+  "is_external": false,
   "nsid": 0,
-  "sourced_by": "Agent",
+  "sourced_by": "local",
   "gender": "male",
-  "created_at": "2019-01-13T10:36:08.177308+00:00",
-  "modified_at": "2019-01-13T10:23:23.710000+00:00",
+  "created_at": "2019-01-12T13:20:35.009201+00:00",
+  "modified_at": "2019-01-16T17:09:29.031432+00:00",
   "success": true,
   "is_badge": false,
-  "is_poor": true,
+  "is_poor": false,
   "additional_data": {
-    "foreign_id": 7429614,
-    "last_login": "2019-01-13T10:23:23.325704+00:00"
+    "prefered_lang": "ru",
+    "last_login": "2019-01-16T17:08:07.319400+00:00"
   }
 }
 ----
@@ -752,7 +823,7 @@ protocol_method:: PUT
 method_name:: user/profile
 method_params:: ----
 request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
-expected_result:: 200 {"success": true}
+expected_result:: 202 {"success": true}
 [horizontal]
 Пример запроса/ответа::
 Запрос::
@@ -761,16 +832,27 @@ expected_result:: 200 {"success": true}
 curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/user/profile" \
 -H "Content-Type: application/json" \
 -b cookie-jar.txt \
--d '{"first_name": "Vasilii", "last_name": "Pypkin", "gender": "male", "birthday": "1900-12-31>", "prefered_lang": "en"}'
+-d '{"first_name": "Vasilii", "last_name": "Pypkin", "gender": "male", "birthday": "1980-10-20", "prefered_lang": "ru"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 17:18:50 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -790,16 +872,33 @@ NOTE: Часть цифр номера телефона пользователя
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/resolve/6cca769e-f380-4385-805c-84232c51a60c" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 16 Jan 2019 17:23:28 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 136 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "22d3f11c1121b6ef294a79dcf02f533dd9076ba8" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "phone": "38066XXX6667",
+  "first_name": "Vasilii",
+  "last_name": "Pypkin",
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
+  "success": true
 }
 ----
 
