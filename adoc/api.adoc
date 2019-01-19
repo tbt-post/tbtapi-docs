@@ -239,7 +239,11 @@ WARNING: Для проверки запросов в командной стро
 
 NOTE: Запросы без указания `*-H "Authorization*` можно выполнить без регистрации.
 
-NOTE: Для запросов требующих авторизации учетной записи, в т.ч с правами оператора [/op], будут использованы HTTP cookies
+NOTE: Для запросов требующих авторизации учетной записи, в т.ч с правами оператора [/op], будут использованы link:https://ec.haxx.se/http-cookies.html[HTTP cookies]
+
+NOTE: Используемое кодирование для кирилицы и спец символов в GET запросах - UTF-8
+В ответе - текст закодированный функцией escape
+
 
 .Типы полей в запросах
 [width="80%",cols=4,options="header"]
@@ -468,7 +472,6 @@ expected_result:: 200 {"success": true}
 ----
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
 -H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
 -d '{"otc_type": "REGISTRATION", "otc": "046e053c-c35c-408f-a422-9fe20f50c35b"}'
 
 ----
@@ -919,16 +922,44 @@ NOTE: Значение <USER RESOLVE> является таким же, как �
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/resolve/list?id%5B%5D=6cca769e-f380-4385-805c-84232c51a60c&id%5B%5D=0d554821-c0ce-43d8-9823-d3ad8d0103fd" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 10:42:35 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 319 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "8aaf42d18c0f6ab1afac029e64660293e9dc709e" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "users": [
+    {
+      "phone": "38066XXX6667",
+      "first_name": "Peter",
+      "last_name": "Abramovich",
+      "id": "6cca769e-f380-4385-805c-84232c51a60c"
+    },
+    {
+      "phone": "38050XXX0752",
+      "first_name": "Сара",
+      "last_name": "Абибок",
+      "id": "0d554821-c0ce-43d8-9823-d3ad8d0103fd"
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -949,16 +980,60 @@ CAUTION: `user_id` имеет более высокий приоритет
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/profile?email=examplemail1@exampledomain.io" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 08:35:55 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 813 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "bec27b54affb5363ee1afcf47720a73b93b55c8f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "last_name": "Pypkin",
+  "confirmed_at": null,
+  "rate": 0,
+  "roles": [],
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
+  "first_name": "Vasilii",
+  "is_confirmed": false,
+  "is_phone_valid": false,
+  "email": "examplemail1@exampledomain.io",
+  "parent": null,
+  "is_disabled": false,
+  "activated_at": "2019-01-16T13:38:19.206955+00:00",
+  "is_active": true,
+  "password_changed": "2019-01-16T17:09:29.347996+00:00",
+  "phone": "380666666667",
+  "birthday": "1980-10-20",
+  "confirmed_by": null,
+  "block_status": null,
+  "is_external": false,
+  "nsid": 0,
+  "sourced_by": "local",
+  "gender": "male",
+  "created_at": "2019-01-12T13:20:35.009201+00:00",
+  "modified_at": "2019-01-16T17:18:50.255000+00:00",
+  "success": true,
+  "is_badge": false,
+  "is_poor": false,
+  "additional_data": {
+    "prefered_lang": "ru",
+    "last_login": "2019-01-16T17:08:07.319400+00:00"
+  }
 }
 ----
 
@@ -971,22 +1046,35 @@ protocol_method:: PUT
 method_name:: op/user/profile
 method_params:: <USER ID>
 request_body:: {"first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "<GENDER>", "birthday": "<YYYY-MM-DD>", "prefered_lang": "<LANG>"}
-expected_result:: 200 {"success": true}
+expected_result:: 202 {"success": true}
 [horizontal]
 Пример запроса/ответа::
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/user/profile/6cca769e-f380-4385-805c-84232c51a60c" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"first_name": "Peter", "last_name": "Abramovich", "gender": "male", "birthday": "1985-05-05", "prefered_lang": "en"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 08:41:10 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1003,16 +1091,30 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/profile/confirm" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"user_id": "6cca769e-f380-4385-805c-84232c51a60c"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 08:44:02 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1033,16 +1135,93 @@ NOTE: Значение <USER PROFILE> является таким же, как �
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/list?id%5B%5D=6cca769e-f380-4385-805c-84232c51a60c&id%5B%5D=0d554821-c0ce-43d8-9823-d3ad8d0103fd" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 10:47:04 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1565 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "6a44d9ea2b31f9974f50d93e413fc4e44648e97a" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "users": [
+    {
+      "last_name": "Abramovich",
+      "confirmed_at": "2019-01-17T08:44:01.981119+00:00",
+      "rate": 0,
+      "id": "6cca769e-f380-4385-805c-84232c51a60c",
+      "first_name": "Peter",
+      "is_confirmed": true,
+      "is_phone_valid": false,
+      "email": "examplemail1@exampledomain.io",
+      "parent": null,
+      "activated_at": "2019-01-16T13:38:19.206955+00:00",
+      "is_active": true,
+      "password_changed": "2019-01-16T17:09:29.347996+00:00",
+      "phone": "380666666667",
+      "birthday": "1985-05-05",
+      "confirmed_by": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "local",
+      "gender": "male",
+      "created_at": "2019-01-12T13:20:35.009201+00:00",
+      "modified_at": "2019-01-17T08:44:01.981201+00:00",
+      "is_badge": false,
+      "is_poor": false,
+      "additional_data": {
+        "prefered_lang": "ru",
+        "last_login": "2019-01-16T17:08:07.319400+00:00"
+      }
+    },
+    {
+      "last_name": "Абибок",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "0d554821-c0ce-43d8-9823-d3ad8d0103fd",
+      "first_name": "Сара",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "email": "SaraAbibok@inbox.com",
+      "parent": null,
+      "activated_at": null,
+      "is_active": false,
+      "password_changed": null,
+      "phone": "380505005002,
+      "birthday": null,
+      "confirmed_by": null,
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "kasta",
+      "gender": "undef",
+      "created_at": "2016-12-10T04:06:19.100235+00:00",
+      "modified_at": "2016-12-10T04:06:19.100247+00:00",
+      "is_badge": false,
+      "is_poor": true,
+      "additional_data": {
+        "foreign_id": 1747577
+      }
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1083,16 +1262,63 @@ expected_result:: 200 {"success": true, "users": [<USER PROFILE>, <USER PROFILE>
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/search?first_name=Test&last_name=User" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 08:50:38 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 784 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "8d811a61b639ba2f4ce704bd1106e5febada2f0e" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "total": 1,
+  "users": [
+    {
+      "last_name": "User",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "cf8b0967-f1d3-4e53-aa48-297940415263",
+      "first_name": "Test",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "email": "example@example.com",
+      "parent": null,
+      "activated_at": "2016-10-12T08:22:08.871838+00:00",
+      "is_active": false,
+      "password_changed": "2019-01-12T15:04:06.391445+00:00",
+      "phone": "380666666666",
+      "birthday": "1980-01-01",
+      "confirmed_by": null,
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "local",
+      "gender": "male",
+      "created_at": "2016-10-12T08:22:08.871824+00:00",
+      "modified_at": "2019-01-12T15:04:06.073544+00:00",
+      "is_badge": false,
+      "is_poor": true,
+      "additional_data": {
+        "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680"
+      }
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1104,25 +1330,39 @@ NOTE: приватная часть кода `<SMS CODE>` будет высла�
 
 [horizontal]
 protocol_method:: POST
-method_name:: otc
+method_name:: auth/phone
 method_params:: new
-request_body:: {"otc_type": "PHONE_AUTH", "phone": "<PHONE 380XXYYYYYYY>" }
+request_body:: {"phone": "<PHONE 380XXYYYYYYY>" }
 expected_result:: 200 {"otc": "<OTC>", "success": true}
 [horizontal]
 Пример запроса/ответа::
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/auth/phone/new" \
+-H "Content-Type: application/json" \
+-d '{"phone": "380666666667"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 08:54:42 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 64 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "otc": "d346e741-473e-4edf-8a3f-903c3ac99f72",
+  "success": true
 }
 ----
 
@@ -1130,25 +1370,38 @@ put text here
 
 [horizontal]
 protocol_method:: POST
-method_name:: auth
-method_params:: phone-login
-request_body:: {"otc": "<OTC>", "phone_code": "<SMS CODE>"}
+method_name:: auth/phone
+method_params:: login
+request_body:: {"otc": "<OTC>", "sms_code": "<SMS CODE>", "remember_me": true|false}
 expected_result:: 200 {"success": true}
 [horizontal]
 Пример запроса/ответа::
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/auth/phone/login" \
+-H "Content-Type: application/json" \
+-d '{"otc": "ec0b678e-728c-4465-a20e-91a6b1d1ea18", "sms_code": "303941890", "remember_me": true}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 11:11:36 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 30 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "roles": []
 }
 ----
 
@@ -1167,42 +1420,71 @@ expected_result:: 200 {"otc": "<OTC>", "success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"otc_type": "PHONE_CHANGE", "phone": "380666666677"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 11:20:30 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 64 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "otc": "5a266aaa-da39-404e-9c21-11207a1b47a6",
+  "success": true
 }
 ----
+
+NOTE: В запросе необходимо указывать необходимый для смены номер.
 
 ==== Подтверждение
 
 [horizontal]
 protocol_method:: POST
-method_name:: auth
+method_name:: otc
 method_params:: validate
-request_body:: {"otc_type": "PHONE_CHANGE", "otc": "<OTC>", "phone_code": "<SMS CODE>"}
+request_body:: {"otc_type": "PHONE_CHANGE", "otc": "<OTC>", "sms_code": "<SMS CODE>"}
 expected_result:: 200 {"success": true}
 [horizontal]
 Пример запроса/ответа::
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "PHONE_CHANGE", "otc": "5a266aaa-da39-404e-9c21-11207a1b47a6", "sms_code": "872386376"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 11:33:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1221,16 +1503,29 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"otc_type": "EMAIL_CHANGE", "email": "example@exampledomain.io" }'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 11:37:28 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1238,7 +1533,7 @@ put text here
 
 [horizontal]
 protocol_method:: POST
-method_name:: auth
+method_name:: otc
 method_params:: validate
 request_body:: {"otc_type": "EMAIL_CHANGE", "otc": "<OTC>"}
 expected_result:: 200 {"success": true}
@@ -1247,16 +1542,29 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "EMAIL_CHANGE", "otc": "8dfe3d63-a9b2-482a-9217-daae0b126f90"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 11:41:54 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1324,16 +1632,83 @@ CAUTION: `parcel_id` имеет более высокий приоритет, ч
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 09:12:04 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1477 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "ab05045ba94b1887181caa4218bd241a30b5702f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+  "code": "TEST0002",
+  "weight": 1520,
+  "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "is_dirty": false,
+  "is_open": true,
+  "paid_at": null,
+  "closed_at": null,
+  "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+  "paid_amount": 0,
+  "state": "PU0007",
+  "mark": null,
+  "last_seen_at": null,
+  "type": "fragile",
+  "delivery_type": "W2W",
+  "parent": null,
+  "price": 2500,
+  "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+  "class": "A.PRP.NR.NA.S000",
+  "pentity": null,
+  "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+  "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "nsid": 0,
+  "is_paid": false,
+  "modified_at": "2018-12-12T13:51:10.483000+00:00",
+  "success": true,
+  "additional_data": {
+    "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+    "_receiver": {
+      "phone": "380666666666",
+      "first_name": "Test",
+      "last_name": "User",
+      "id": 0,
+      "email": "example@expmail.com"
+    },
+    "invoices": [
+      {
+        "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+        "sms_notifications": 0.6,
+        "office_delivery": 24,
+        "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+        "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+        "main_transportation": 10.01,
+        "delivery_insurance": 16.25
+      }
+    ],
+    "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+    "ttl_days_default": 15,
+    "ttl_days": 15
+  },
+  "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+  "cod_amount": 0,
+  "created_at": "2018-12-11T14:23:51.628901+00:00",
+  "goes_back": false
 }
 ----
 
@@ -1353,18 +1728,36 @@ NOTE: DATA URI is according to `RFC-2397`: data:[<media type>][;base64],<data>
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/codes/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 09:16:24 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 4040 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "2b06b6d02fb247c191d703bb325ca1173138a2bd" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAACyAQAAAADO8ajFAAAE9klEQVR4nNVXz4fl1xKv7ro8TY0aZvUITxjeqqlWTQxnVG8fTf6GEN52yCpkE7J9hLcaQv6JkNVwWg0jnOtcejU0EYaswmnn0oa6KvuYe2b73ndZPj4+p+pTP74nCR/6bk4/GAb434ufbG5gu7+4fL2Fy93F9vkF3J9cHcVD2kzpYEoZrbA1G5pWj+NFYXD1rpXnyJRExY/graQgzvQ6baCv8BsA0K3CzvaPujyy76/GJ+8er97L9TD3FwZv84u3tpPd3R8Qx/EneYLyl9hhZ98e15/JgNUKBjYrzKNa5lH9p3Cxedef4Q0UfLW/eVOfXsP95rgeyOzRZEy1UOaEIVj9OD+kj+iDWKq2mZTUs41V/iMiHIAyfNbRRafiih+d2aYnSyP1FjLW/NamVVRlQx6TsxAv+dUdc7QiHk6UVD14xQ+cnjxrrz2nNnFAWPEXt5jQB5hW66hZmqzwPUCbhvamXSqnGC/zz97KHFCGxjCs0j3myg/w7Kvb7Z29/sfZZ7++qsSfnl3uVn6Q2pUkajcHLRPIC630TJrQU91HcgB1YY1lP6I4QiWp4eJTEput8JMFotPMhoa1tJk8V/gK6OpAU9PBYKSDLfWbyWCD5mgGvWna2j8KA1WlS1YFIQ1d1PcUiOj6jwPhpz88fkFwp98/odvVPEQgagHGMjowysf0a8PGMcFqS1WOSiGr/BCgaPbpNls1KhXX7+VGOQBpVjAaLWuWsXqv7J9e7Pzgb7/Jb//568ONbeB65TdOKzZH1Tp6KUqTaOkf9jJkAHWzhp7R/CP1ChvNlAXrNCgMSbriVy/dgA3LDOsK3cuiH0/hP9coYOeH9w/bN/cXZwyH11er+lYdPcGxy+w9fWLaUg83iFkJJrlNaUWaLudDl+ZzAgoXpJ7Fci7mA+RoNCWpsSiGdZutLfmreEWJUm106kmZsfADJLYcwc25aBfkAZV1hW+VipUs0dBgNG595TfIliZt9tJj9Cg0jfvSD71maZYaHSJaYMux2KeQQeAEkT3UWRNHNz6O38Dtnq/G1cb2rwjuz24KXR5k5X8yADaD5EFWMI1tcZ+cwu97hXf3ezr56e6n/Zv3j74b+2d1wa+GoGiUA8nIB6Et910CBjZAVmQQK81gub+iiGZYjUAayaE0lv4BmRW1ZdXwbJMi1/wjq0yChjF9DKfksfRzOk4SKMDKhUSz05J/ZiuljsJ9NJ/QlVb3FSTOoZheAWOSOmSHRT43QP/aE5xI9xc70Puz8pqq8NF7fgO/Xf24h6//u5EDwuHu3/Vs/8lY+af2Ku4QIhoji2vRZX4cBhWyItl76qTW1/1bqClIL7WhhTaakUt+kCg0yQemRx9aZln0yykwP7l993c/7N5fnm/2n798uHvzdDk/PUCS2WV61yCrddnvNdSxB1pHEyBz60t/qhSHPjpqZDMU9rK8t4HhEF88+bJt/7bZv/qFf3vx3W6pf3ogz8Fm3tkH1SzLedWQreCMRkUGcc2sy/cO645AVWaAqWSF5b2aaV3BhGlWo0rQ1/sIsKmLFpd0RS4zdTHPT8HGVy+v7+ih7HZC5wd8fqDD8v5Ubh5QqBcD7WU6LPMjqoDDpwUCh88p0Zf1grfzl+uvt9uHcz5/oLPnP3y2X+mxOaKn4CTXLEMkaeH/Ddw8PgfejtudfvPyBm8J4eez1f/gB8P/N//7fwKlha0A3o4jOwAAAABJRU5ErkJggg==",
+  "bcode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAABzCAIAAAC3jEg6AAAGK0lEQVR4nO3cSWgTfRiA8TeaNGpj6gJWMFZIrVAXKrmIqFiJDT1pUTwIRcEePKQnF0Q81JsH6c1qwZPkUJEKgiLi2rhUBDFipbhUEaVougiKmqaNme8wfCFfE9Ms8yqffX43Z97M/GfoQ9Jp0GYYhgDQMeNPLwD4mxEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoMg+5YTNZkv/p/nVqtTG9G9aZd1Y0NEyd/3qCDmWkfVcqYH0l5e+NmuPlvUIWa80x3Gy7so9k2Nj1svJsav0F+a+0il/tApaW9YZSxaTwjsYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBiiyGYbxp9cA/LV4BwMUERigiMAARQQGKCIwQBGBAYoIDFBEYIAiAgMUERigiMD+49ChQ7acWltbRWRkZCT3QEooFNq4caPb7Xa73T6f7+jRo69evSroXKbHjx83NjZWVFS43e6GhoaHDx9mLr70mXg8fuHChW3btnm9XqfTWVlZuWvXrkgkUvqNnb4MpDl48GDu2xUMBg3DGB4ezj1g2r9/f+bAkiVLCjqXYRiPHj1yOp3puxwOx927d9NXbsnM2bNnM5fhcDguX76sdMP/egSWS3l5uYhMTExM2m4Glkolq9u3b4tIeXl5Z2fnx48fv3///vz581OnTgUCgYLOZRiGz+cTkebm5k+fPg0NDbW0tIjIqlWrksmktTOhUGjHjh3d3d2vX7/+8eNHX19fIBAQkcWLF2ddGKZEYLmUEtiBAwdEpL29vcRzPXnyREQ8Hk88Hje3TExMeL1eEXnw4IG1M5m+fPnicrlEJBKJ5HkhSMfvYFq+ffsmIjU1NSUeJxwOi0hTU1NZWZm5xW6379y5U0Tu3Llj7Uwmt9ttRphMJku8kOmJwLSsXLlSRDo7O83SimY+FFmzZk36xrq6utQuC2cyxePxd+/ezZs3b/Xq1aVcxbRFYMUbHBzMfPR37do1c29LS0tVVdXVq1erqqp2797d0dHx4sWLIs4yOjoqIpWVlekbFy1alNpl4Uym9vb2r1+/HjlyJPW+h4IQmBaXy9Xb27tnz55YLHb+/PnW1tba2tpNmzb19fUVdJyxsTERKSsrGxwc9Hq9y5Yte/v2rfkwMBaLWTszSTgcbmtrq6+vP3z4cHE3AQRWvKwPORobG9MHzp07Nzo6euPGjba2trq6uvv379fX14+MjOR/llmzZonI+Ph4MplMJBLmE794PC4is2fPtnYm3dOnT5uammpqai5evDhz5syi7hAITN+cOXO2bt16/PjxSCQSDAY/f/7c0dGR/8sXLlwoItFodOnSpe/fv//w4UN1dfXQ0FBql4UzKf39/Q0NDRUVFdevX1+wYEGJd2A6I7Dfx2az7d27V0T6+/vzf9WKFStEZNIHy2fPnqV2WThjevnypd/vdzgct27d8ng8+S8VmQjstzKf182YUcBt37x5s4hcunRpfHzc3JJIJLq7u0Vky5Yt1s6IyMDAgN/vTyQSN2/erK6uLvZC8a/f/He3/5dS/tB8+vTpffv2XblyZWBgIBaLRaPRUChkfhg7c+ZM/ucyDGPt2rUi0tzcHI1Gh4eHzW9g1NbW/vz509qZN2/eeDye+fPn82dlqxBYLrkDy2rDhg3mzMmTJ7MOrFu3bmxsLP9zGYbR29s76TuEdru9p6fH8pljx4796rq6urqKu4fTHB8RtQSDwa6uru3bty9fvtzpdLpcLp/Pd+LEiZ6enkk/5VNav379vXv3AoHA3LlzXS6X3+8Ph8PmRz7LZ2At/mdfQBHvYIAiAgMUERigiMAARQQGKCIwQBGBAYoIDFBEYIAiAgMUERigiMAARQQGKCIwQBGBAYoIDFBEYICifwAnfbNqPTt/mgAAAABJRU5ErkJggg==",
+  "success": true
 }
 ----
+
+NOTE: Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: `data:image/png;base64,iV...<body>...U5ErkJggg==`
 
 ==== Поиск
 
@@ -1473,16 +1866,151 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/search?state=PU0007&interval_field=created_at&interval_from=2018-12-01&interval_to=2018-12-31" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 09:29:07 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 3098 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "5eb3fd5a38a07fe3247bb6871368e8b52d6bf29f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "total": 2,
+  "parcels": [
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0002",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-12T13:51:10.483000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380667224455",
+          "first_name": "Vasia",
+          "last_name": "pipkin",
+          "id": 0,
+          "email": "pipkin@gmail.com"
+        },
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 16.25
+          }
+        ],
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 15,
+        "ttl_days": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T14:23:51.628901+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0004",
+      "weight": 145,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 350,
+      "checked_in_at": "2018-12-12T14:08:44.447137+00:00",
+      "class": "A.COD.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2019-01-08T09:12:25.375000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380674552233",
+          "first_name": "Peter",
+          "last_name": "Abrmovich",
+          "id": 0,
+          "email": "Abrmovich@gmail.com"
+        },
+        "_dimensions": [
+          250,
+          400,
+          80
+        ],
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "0335d220-fe14-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 5
+          }
+        ],
+        "_comment": "test parcel",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 10,
+        "is_weighed": true,
+        "ttl_days": 0,
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 299,
+      "created_at": "2018-12-12T13:39:28.729083+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1531,16 +2059,149 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/list?id%5B%5D=30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2&id%5B%5D=4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 10:50:56 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 3086 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "6e10481eb926db866fbe64c9332606a9b1b3e37f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "parcels": [
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0004",
+      "weight": 145,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 350,
+      "checked_in_at": "2018-12-12T14:08:44.447137+00:00",
+      "class": "A.COD.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2019-01-08T09:12:25.375000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380666666666",
+          "first_name": "Test",
+          "last_name": "User",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "_dimensions": [
+          250,
+          400,
+          80
+        ],
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "0335d220-fe14-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 5
+          }
+        ],
+        "_comment": "test parcel",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 10,
+        "is_weighed": true,
+        "ttl_days": 0,
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 299,
+      "created_at": "2018-12-12T13:39:28.729083+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0002",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-12T13:51:10.483000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380666666666",
+          "first_name": "Test",
+          "last_name": "User",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 16.25
+          }
+        ],
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 15,
+        "ttl_days": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T14:23:51.628901+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1612,16 +2273,107 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/list?participant=sender&sort_by=state&limit=2" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 09:45:56 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2118 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "eeed0101eb2a9110a6833b9bba8a0f4f63e353b0" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "total": 4,
+  "parcels": [
+    {
+      "address_id": "8579d836-8a2f-11e6-8a66-1b7b94d1a2c3",
+      "code": "T1PR6NA6R",
+      "weight": 1,
+      "agent": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "94936244-3461-406d-b773-f1f0852074bb",
+      "paid_amount": 0,
+      "state": "PU0003",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "undef",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 1,
+      "checked_in_at": "2018-05-14T16:45:52.602469+00:00",
+      "class": "I.PRP.NR.NA.S000",
+      "pentity": "fcf598ce-7cba-47b6-9871-407b6db81ea6",
+      "transfer_via": "9bfdef40-d03d-4041-92fe-c3944650f173",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-08-09T08:32:31.371242+00:00",
+      "additional_data": {
+        "ttl_days": 30,
+        "ttl_days_default": 15,
+        "agent_office": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "checked_in_loc": "9bfdef40-d03d-4041-92fe-c3944650f173"
+      },
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "cod_amount": 0,
+      "created_at": "2018-05-14T16:38:51.780360+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "0c722922-8a1e-11e6-8a66-b356fd9f196a",
+      "code": "T1BR5NB8M",
+      "weight": 2,
+      "agent": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "106c252b-ebb6-426f-920a-ff8f616faf3b",
+      "paid_amount": 0,
+      "state": "PU0003",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "undef",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 0,
+      "checked_in_at": "2018-03-18T14:11:56.539406+00:00",
+      "class": "I.COD.RA.NA.S000",
+      "pentity": "18b98336-3c75-4690-8298-f65545e7df3c",
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-08-09T08:32:31.498520+00:00",
+      "additional_data": {
+        "ttl_days": 20,
+        "ttl_days_default": 10,
+        "agent_office": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253"
+      },
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "cod_amount": 0,
+      "created_at": "2018-03-18T14:04:13.671252+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1638,16 +2390,30 @@ expected_result:: 200 {"success": true, "id": "<PARCEL ID>"}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/parcel" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"type": "fragile", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", "receiver":"6cca769e-f380-4385-805c-84232c51a60c", "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "weight": 1500, "price": 300, "cod_amount": 300}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 09:56:38 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "id": "728827e9-ca3e-49f3-9670-3b752736ecec",
+  "success": true
 }
 ----
 
@@ -1658,7 +2424,7 @@ protocol_method:: PUT
 method_name:: op/parcel
 method_params:: <PARCEL ID>
 request_body:: {"state": "<STATE ID>", "type": <TYPE CODE>, "class": "<CLASS ID>", "sender": "<USER ID>", "receiver":"<USER ID>", "address_id": "<SHIPPING ADDRESS ID>", "transfer_via": "<SHIPPING ADDRESS ID>", "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "paid_amount": <PRICE as DECIMAL(10,2)>, "cod_amount": <PRICE as DECIMAL(10,2)>}
-expected_result:: 200 {"success": true}
+expected_result:: 202 {"success": true}
 
 NOTE: необходимо передавать подмножество описанных параметров для изменения посылки.
 [horizontal]
@@ -1666,16 +2432,29 @@ NOTE: необходимо передавать подмножество опи�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/parcel/728827e9-ca3e-49f3-9670-3b752736ecec" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"state": "PU0001", "type": "foods", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", "receiver":"6cca769e-f380-4385-805c-84232c51a60c", "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "transfer_via": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "weight": 5000, "price": 675, "paid_amount": 675, "cod_amount": 675}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 10:03:23 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -1701,16 +2480,82 @@ NOTE: значения filters: `['returns', 'cancellations']`
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/office-stat" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 12:08:13 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 491 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "97b8b9253b9cda00b159d122ffa5025bee3af665" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "rules": {
+    "delivered": [
+      "PU0007"
+    ],
+    "on_stock": [
+      "PU0003",
+      "PO0003",
+      "PO0004"
+    ],
+    "in": [
+      "PO0010",
+      "PO0011"
+    ],
+    "release": [
+      "PU0004"
+    ],
+    "new": [
+      "PU0000",
+      "PO0001",
+      "PO0002"
+    ],
+    "in_progress": [
+      "PO0005",
+      "PO0006"
+    ],
+    "trans": [
+      "PU0002",
+      "PU0005",
+      "PU0006",
+      "PO0009"
+    ],
+    "out": [
+      "PU0001",
+      "PO0007",
+      "PO0008"
+    ]
+  },
+  "total": 65,
+  "stats": {
+    "delivered": 0,
+    "on_stock": 14,
+    "in": 0,
+    "release": 0,
+    "new": 0,
+    "in_progress": 0,
+    "trans": 2,
+    "out": 42
+  },
+  "success": true,
+  "filters": {
+    "returns": 0,
+    "cancellations": 0
+  }
 }
 ----
 
@@ -1730,16 +2575,177 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/grouped-list?office_id=7dea0898-865d-4f11-af5b-337acf3464f2" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 12:12:50 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 8468 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "5dbd204337166e3104e2671a00257d32a72ca716" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "grouped": [
+    {
+      "group": "inbox",
+      "parcels": [
+        {
+          "address_id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+          "code": "T8BMY33DM",
+          "weight": 0,
+          "agent": "44823a06-067c-4cbc-9193-675abaf35e4b",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "2bab4b39-1a6f-417e-a8e7-4ad59bfbfdd3",
+          "paid_amount": 0,
+          "entity_type": "shelf",
+          "state": "PU0099",
+          "mark": "R",
+          "last_seen_at": "2018-06-26T13:39:30.556186+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 0,
+          "checked_in_at": null,
+          "class": "I.PRP.NR.NA.S000",
+          "pentity": "0223928d-46c1-4d00-940b-63a4e430295e",
+          "transfer_via": null,
+          "sender": "7dea0898-865d-4f11-af5b-337acf3464f2",
+          "nsid": 0,
+          "is_paid": false,
+          "modified_at": "2018-05-03T07:49:31.912000+00:00",
+          "additional_data": {
+            "ttl_days": 15,
+            "ttl_days_default": 15,
+            "agent_office": "7dea0898-865d-4f11-af5b-337acf3464f2",
+            "document_id": "04f1546e-6d55-11e7-94f9-00163e8cc029",
+            "label": "+Возврат-T8-200717/001"
+          },
+          "entity_label": "inbox",
+          "receiver": "1678166e-a050-430b-878a-5244ca5d8659",
+          "cod_amount": 0,
+          "created_at": "2017-07-20T14:09:17.620979+00:00",
+          "goes_back": true
+        },
+        {
+          "address_id": "26b6ea98-4f4a-11e6-b08e-1f448ec92245",
+          "code": "M1A0PE0",
+          "weight": 1000,
+          "agent": "1678166e-a050-430b-878a-5244ca5d8659",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "3a7c9413-4c11-4a89-ac07-4f28e61de5b6",
+          "paid_amount": 0,
+          "entity_type": "shelf",
+          "state": "PU0099",
+          "mark": null,
+          "last_seen_at": "2018-06-26T13:39:25.725169+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 152,
+          "checked_in_at": "2017-09-15T09:35:09.740110+00:00",
+          "class": "I.COD.NR.NA.S000",
+          "pentity": "0223928d-46c1-4d00-940b-63a4e430295e",
+          "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+          "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+          "nsid": 0,
+          "is_paid": false,
+          "modified_at": "2018-05-03T07:55:02.529000+00:00",
+          "additional_data": {
+            "erp_token": "8ce6be3f-157d-4165-a52e-5e0d0f951eea",
+            "_receiver": {
+              "phone": "38063XXXX682",
+              "first_name": "Test",
+              "last_name": "Customer2",
+              "id": 903370,
+              "email": "TestCustomer2@mail.ru"
+            },
+            "return_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "checked_in_loc": "7dea0898-865d-4f11-af5b-337acf3464f2",
+            "agent_office": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "ttl_days_default": 5,
+            "ttl_days": 7
+          },
+          "entity_label": "inbox",
+          "receiver": "ecfb88c6-e753-44e9-83be-6e974ecab82c",
+          "cod_amount": 152,
+          "created_at": "2016-12-28T13:57:21.038967+00:00",
+          "goes_back": true
+        }
+      ]
+    },
+    {
+      "group": "store",
+      "parcels": [
+        {
+          "address_id": "26b6ea98-4f4a-11e6-b08e-1f448ec92245",
+          "code": "M1A009A",
+          "weight": 1000,
+          "agent": "1678166e-a050-430b-878a-5244ca5d8659",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "b0e5b3cc-44cf-41e8-b681-4e039cddbf3b",
+          "paid_amount": 191,
+          "entity_type": "shelf",
+          "state": "PU0007",
+          "mark": null,
+          "last_seen_at": "2018-06-26T13:39:12.792419+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 191,
+          "checked_in_at": "2017-02-05T18:36:48.570000+00:00",
+          "class": "I.COD.NR.NA.S000",
+          "pentity": "240f772c-65d6-4ee5-bb33-73b2f1319725",
+          "transfer_via": "7dea0898-865d-4f11-af5b-337acf3464f2",
+          "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+          "nsid": 0,
+          "is_paid": true,
+          "modified_at": "2018-04-19T10:41:11.068573+00:00",
+          "additional_data": {
+            "erp_token": "8ce6be3f-157d-4165-a52e-5e0d0f951eea",
+            "_receiver": {
+              "phone": "38063XXXX471",
+              "first_name": "Test",
+              "last_name": "Customer",
+              "id": 2300700,
+              "email": "testCustomer@ukr.net"
+            },
+            "return_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "agent_office": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "ttl_days_default": 5,
+            "ttl_days": 5
+          },
+          "entity_label": "01",
+          "receiver": "ae9ad33d-f07a-4694-b414-484095b111da",
+          "cod_amount": 191,
+          "created_at": "2016-12-28T14:27:05.295523+00:00",
+          "goes_back": false
+        }
+      ]
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1757,16 +2763,33 @@ NOTE: значения `on_relese` - это подмножество посыл�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/stat" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 12:27:29 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "59b2fc69991ec211dedb998f5abaeeff438f4281" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "on_release": 0,
+  "sender": 4,
+  "success": true,
+  "receiver": 22
 }
 ----
 
@@ -1787,16 +2810,93 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/track" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 12:30:45 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1510 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "f93ff5a5cee4f3d4ad10ce2ed3ec110a5aa1b757" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "sender": [
+    {
+      "code": "T1PR6NA6R",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lon": 30.45632,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.431722,
+      "id": "94936244-3461-406d-b773-f1f0852074bb"
+    },
+    {
+      "code": "T1BR5NB8M",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lon": 30.679338,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.405237,
+      "id": "106c252b-ebb6-426f-920a-ff8f616faf3b"
+    }
+  ],
+  "success": true,
+  "receiver": [
+    {
+      "code": "K26V49E",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.679338,
+      "state": "PU0099",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.405237,
+      "id": "be803f61-84dc-4be2-8fb2-d687acd4d7bc"
+    },
+    {
+      "code": "K26ZXT0",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.599589,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.450822,
+      "id": "71d73f6a-c0e7-4053-850e-fd22fd445c18"
+    },
+    {
+      "code": "K2700L2",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.599589,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.450822,
+      "id": "24a407c0-7601-4262-a07e-75551959529e"
+    },
+    {
+      "code": "M21B01B",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.520706,
+      "state": "PU0099",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.442561,
+      "id": "8328aba4-1526-4f13-92f5-c6090d184597"
+    }
+  ]
 }
 ----
 
@@ -1859,16 +2959,131 @@ NOTE: в случае указания параметра `all=true` в спис
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/offices?all=true" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 12:55:05 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 45165 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "9cfa686056f0608e98a9f2ac1b9a8a70d5a91d2f" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "offices": [
+    {
+      "address_data": {
+        "index": "02121"
+      },
+      "name": "Киев, Отделение Склад",
+      "descr": "Киев, Отделение Склад",
+      "schedule": {},
+      "is_internal": true,
+      "number": 0,
+      "photos": [],
+      "id": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "pay_cash": null,
+      "phone": "380110000000",
+      "email": "kiev_0@tbt-post.net",
+      "way_photos": [],
+      "optimal_hours": {},
+      "services": [
+        "warehouse"
+      ],
+      "additional_data": {
+        "label": "Склад-0 (МК)",
+        "code_prefix": "T0",
+        "sms_addr": "Kiev, sklad modnaKasta"
+      },
+      "ui_address": "м.Київ, Харківське шосе 201-203к1А",
+      "address": {
+        "lang": "ru",
+        "city": "Киев",
+        "building": "201-203к1А",
+        "area": null,
+        "country": "UA",
+        "region": "Киев",
+        "lon": 30.679338,
+        "geo_object": {},
+        "addr_type": "fc_office",
+        "note": "Отделение Склад",
+        "modified_at": "2016-10-06T11:38:08.992923+00:00",
+        "street": "Харьковское шоссе",
+        "geo_source": "yandex",
+        "lat": 50.405237,
+        "id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+        "accuracy": "exact"
+      },
+      "pay_card": null
+    },
+    {
+      "address_data": {
+        "index": "65011"
+      },
+      "name": "Одесса, Склад №1",
+      "descr": "Одесса, Отделение Склад №1",
+      "schedule": {
+        "1": "09:00-20:00",
+        "2": "09:00-20:00",
+        "3": "09:00-20:00",
+        "4": "09:00-20:00",
+        "5": "09:00-20:00",
+        "6": "09:00-20:00",
+        "7": "-"
+      },
+      "is_internal": true,
+      "number": 0,
+      "photos": [],
+      "id": "b4d9d2da-be3e-4682-b7cf-fd645f14c5e5",
+      "pay_cash": true,
+      "phone": "380111000000",
+      "email": "odessa_0@tbt-post.net",
+      "way_photos": [],
+      "optimal_hours": {},
+      "services": [
+        "warehouse"
+      ],
+      "additional_data": {
+        "uk:label": "Одеса-Склад-1",
+        "label": "Одесса-Cклад-1",
+        "code_prefix": "TK",
+        "uk:sms_addr": "Odessa, viddilennia sklad 1",
+        "sms_addr": "Odessa, otdelenie sklad 1"
+      },
+      "ui_address": "м.Одеса, Базарна вулиця 80",
+      "address": {
+        "lang": "ru",
+        "city": "Одесса",
+        "building": "80",
+        "area": "Одесский городской совет",
+        "country": "UA",
+        "region": "Одесская область",
+        "lon": 30.737777,
+        "geo_object": {},
+        "addr_type": "cc_office",
+        "note": "Склад-1",
+        "modified_at": "2018-05-08T12:12:01.037399+00:00",
+        "street": "Базарная улица",
+        "geo_source": "yandex",
+        "lat": 46.474389,
+        "id": "032af2ee-52b9-11e8-b7d9-93c11d54d8c4",
+        "accuracy": "exact"
+      },
+      "pay_card": false
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -1893,16 +3108,68 @@ fc_office:: агентские отделения
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address/list?id%5B%5D=5acc5178-8bb9-11e6-9a61-83019362fcae&id%5B%5D=032af2ee-52b9-11e8-b7d9-93c11d54d8c4" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 13:12:21 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1331 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "3cc061dde859dd8f779f8f10e98fd468a94f2522" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "address_list": [
+    {
+      "lang": "ru",
+      "city": "Одесса",
+      "building": "80",
+      "area": "Одесский городской совет",
+      "country": "UA",
+      "region": "Одесская область",
+      "lon": 30.737777,
+      "geo_object": {},
+      "id": "032af2ee-52b9-11e8-b7d9-93c11d54d8c4",
+      "note": "Склад-1",
+      "modified_at": "2018-05-08T12:12:01.037399+00:00",
+      "street": "Базарная улица",
+      "geo_source": "yandex",
+      "lat": 46.474389,
+      "addr_type": "cc_office",
+      "accuracy": "exact"
+    },
+    {
+      "lang": "ru",
+      "city": "Киев",
+      "building": "201-203к1А",
+      "area": null,
+      "country": "UA",
+      "region": "Киев",
+      "lon": 30.679338,
+      "geo_object": {},
+      "id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+      "note": "Отделение Склад",
+      "modified_at": "2016-10-06T11:38:08.992923+00:00",
+      "street": "Харьковское шоссе",
+      "geo_source": "yandex",
+      "lat": 50.405237,
+      "addr_type": "fc_office",
+      "accuracy": "exact"
+    }
+  ]
 }
 ----
 
@@ -1924,16 +3191,46 @@ CAUTION: `id` в качестве параметра метода имеет б�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address?region=%D0%9A%D0%B8%D0%B5%D0%B2&city=%D0%9A%D0%B8%D0%B5%D0%B2&street=%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5%20%D1%88%D0%BE%D1%81%D1%81%D0%B5&building=201-203" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 17 Jan 2019 13:16:30 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 525 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "252fb40a97403595bcea1297618cb1432d54adb7" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "lang": "uk",
+  "city": "Київ",
+  "building": "201/203",
+  "success": true,
+  "area": "місто Київ",
+  "country": "UA",
+  "region": null,
+  "lon": 30.6817834,
+  "geo_object": {},
+  "id": "afea6db6-0074-11e9-a8b4-1f50ad4e3573",
+  "note": null,
+  "modified_at": "2018-12-15T14:21:17.909359+00:00",
+  "street": "Харківське шосе",
+  "geo_source": "google",
+  "lat": 50.4035667,
+  "addr_type": "regular",
+  "accuracy": "exact"
 }
 ----
 
