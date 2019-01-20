@@ -3252,16 +3252,55 @@ NOTE: Дополнительный параметр `pattern` используе
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address/filters?field=street&region=%D0%A7%D0%B5%D1%80%D0%BA%D0%B0%D1%81%D1%8C%D0%BA%D0%B0%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C&city=%D0%A7%D0%B5%D1%80%D0%BA%D0%B0%D1%81%D0%B8" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 12:54:00 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2593 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "40e2be2ddfd8b645656f04ee65b10296c6fc5fe7" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "filters": [
+    "бульвар Шевченка",
+    "вулиця Байди Вишневецького",
+    "вулиця Благовісна",
+    "вулиця Вернигори",
+    "вулиця Віталія Вергая",
+    "вулиця В'ячеслава Чорновола",
+    "вулиця Гагаріна",
+    "вулиця Генерала Момота",
+    "вулиця Дахнівська",
+    "вулиця Лесі Українки",
+    "вулиця Луценка",
+    "вулиця Максима Залізняка",
+    "вулиця Надпільна",
+    "вулиця Нарбутівська",
+    "вулиця Небесної Сотні",
+    "вулиця Остафія Дашковича",
+    "вулиця Самійла Кішки",
+    "вулиця Сержанта Волкова",
+    "вулиця Сержанта Смирнова",
+    "вулиця Слави",
+    "вулиця Сумгаїтська",
+    "вулиця Тараскова",
+    "вулиця Чехова"
+  ]
 }
 ----
 
@@ -3295,16 +3334,40 @@ expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<ST
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"region": "Вінницька область","city": "Крижопіль", "street": "вулиця Героїв України", "building": "18", "lang": "ua" }'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 13:04:23 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 583 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "building": "18",
+  "street": "вулиця Героїв України",
+  "lat": 48.3836026,
+  "lang": "ru",
+  "city": "Крижопіль",
+  "success": true,
+  "area": "Крижопільський район",
+  "country": "UA",
+  "region": "Вінницька область",
+  "lon": 28.8663538,
+  "geo_source": "google",
+  "accuracy": "other"
 }
 ----
 
@@ -3321,16 +3384,42 @@ expected_result:: 200 {"success": true, "building": "<BUILDING>", "street": "<ST
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"lat": 48.386047, "lon": 28.865174}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 13:11:18 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 626 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "building": "18",
+  "street": "вулиця Героїв України",
+  "lat": 48.386302,
+  "id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+  "lang": "ru",
+  "city": "Крижопіль",
+  "success": true,
+  "area": "Крижопільський район",
+  "country": "UA",
+  "region": "Вінницька область",
+  "lon": 28.865319,
+  "geo_source": "google",
+  "accuracy": "exact"
 }
 ----
 
@@ -3350,16 +3439,50 @@ NOTE: расширение параметризации метода идент�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 13:40:35 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 738 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "d6acb020c6f10b09190fa38a776c35472dbd7145" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "address_list": [
+    {
+      "building": "18",
+      "city": "Крижопіль",
+      "address_id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+      "apartment": "1",
+      "lang": "ru",
+      "service": "courier",
+      "title": "Крижопіль, вулиця Героїв України, 18",
+      "country": "UA",
+      "notes": "TEST",
+      "area": "Крижопільський район",
+      "modified_at": "2019-01-20T13:50:34.707572+00:00",
+      "lon": 28.865319,
+      "is_default": false,
+      "street": "вулиця Героїв України",
+      "additional_data": {},
+      "lat": 48.386302,
+      "region": "Вінницька область"
+    }
+  ]
 }
 ----
 
@@ -3376,16 +3499,30 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{ "address_id" : "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b", "service": "courier", "title": "Крижопіль, вулиця Героїв України, 18", "apartment": "1", "notes": "TEST"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 13:50:34 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -3405,16 +3542,50 @@ NOTE: расширение параметризации метода идент�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/address/	cf8b0967-f1d3-4e53-aa48-297940415263" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:08:43 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2141 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "b63d0f8a91f618d03e2cbb3213d77c6f6837da72" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "address_list": [
+    {
+      "building": "18",
+      "city": "Крижопіль",
+      "address_id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+      "apartment": "2",
+      "lang": "ru",
+      "service": "courier",
+      "title": "Крижопіль, вулиця Героїв України, 18",
+      "country": "UA",
+      "notes": "TEST",
+      "area": "Крижопільський район",
+      "modified_at": "2019-01-20T13:50:34.707572+00:00",
+      "lon": 28.865319,
+      "is_default": false,
+      "street": "вулиця Героїв України",
+      "additional_data": {},
+      "lat": 48.386302,
+      "region": "Вінницька область"
+    }
+  ]
 }
 ----
 
@@ -3431,16 +3602,30 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/address/86761ba9-be25-47e1-8483-cb43ee3f241e" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{ "address_id" : "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b", "service": "courier", "title": "Крижопіль, вулиця Героїв України, 18", "apartment": "2", "notes": "TEST"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:15:43 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -3549,18 +3734,56 @@ NOTE: получение сущности выполняется или по `<E
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity/95112660-f50e-4b7c-8b81-92139cda3aa4" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
+----
+Или
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity?code=$EC$F0:0006$" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 15:05:05 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 3709 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "e72d99d2e626912b9b524ec818529624a4c4ae91" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "descr": "Киев, курьерское отделение, Ряд 00, Стелаж 00, Ячейка inbox",
+  "parent": "a745e8ab-9733-45cd-9650-776b06d3bbf7",
+  "success": true,
+  "id": "95112660-f50e-4b7c-8b81-92139cda3aa4",
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "cell",
+  "properties": {
+    "path": "00.00/inbox",
+    "bcode": "data:image/png;base64,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",
+    "code": "$EC$F0:0006$",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9",
+      "642fc9dc-XXXX-ac4864b1c452",
+      "a745e8ab-XXXX-776b06d3bbf7"
+    ],
+    "label": "inbox"
+  }
 }
 ----
+
+NOTE: Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: `data:image/png;base64,iV...<body>...U5ErkJggg==`
 
 ==== Получение списка ресурсов
 
@@ -3578,16 +3801,74 @@ NOTE: по-умолчанию office_id берется из данных опе�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity/list" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:51:20 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 5359 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "42a61e2e40bedd8d514632d6a9b4010b4b4367de" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "entities": [
+    {
+      "descr": "Киев, курьерское отделение",
+      "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "id": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "office",
+      "properties": {
+        "label": "F0"
+      }
+    },
+    {
+      "descr": "Киев, курьерское отделение, Ряд 00",
+      "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "id": "642fc9dc-6e45-4916-ba4f-ac4864b1c452",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "row",
+      "properties": {
+        "path": "00",
+        "code": "$ER$F0:0002$",
+        "label": "00",
+        "db_path": [
+          "d4ef2889-XXXX-8dfe1b3cd0f9"
+        ]
+      }
+    },
+    {
+      "descr": "Киев, курьерское отделение, Ряд 00, Стелаж 00, Ячейка inbox",
+      "parent": "a745e8ab-9733-45cd-9650-776b06d3bbf7",
+      "id": "95112660-f50e-4b7c-8b81-92139cda3aa4",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "cell",
+      "properties": {
+        "path": "00.00/inbox",
+        "code": "$EC$F0:0006$",
+        "db_path": [
+          "d4ef2889-XXXX-8dfe1b3cd0f9",
+          "642fc9dc-XXXX-ac4864b1c452",
+          "a745e8ab-XXXX-776b06d3bbf7"
+        ],
+        "label": "inbox"
+      }
+    }
+  ],
+  "success": true
 }
 ----
 
@@ -3605,16 +3886,30 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity/reparent/95112660-f50e-4b7c-8b81-92139cda3aa4" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:59:26 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 78 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -3636,16 +3931,44 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/parcel/states?lang=ru" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:29:06 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1555 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "fb896b919bce41cf32ed9227daba8fea8ab100fd" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "states": {
+    "PU0098": "В процессе обработки",
+    "PU0099": "Отменено",
+    "PU0096": "Расформировано",
+    "PU0097": "Возврат отправителю",
+    "PU0003": "В отделении",
+    "PU0002": "Перемещается между отделениями",
+    "PU0001": "Отправление принято к доставке",
+    "PU0000": "Заявка зарегистрирована в системе",
+    "PU0007": "Доставлено",
+    "PU0006": "Ожидает вручения (в процессе доставки)",
+    "PU0005": "Передано курьеру",
+    "PU0004": "Ожидает выдачи"
+  },
+  "success": true
 }
 ----
 
@@ -3665,16 +3988,44 @@ expected_result:: 200 {
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/parcel/actions?lang=ru" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 20 Jan 2019 14:31:37 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1291 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Etag: "50cc289c90d05c376c7564e44dde2585b3cfbc1b" +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "actions": {
+    "PU0098": "В процессе обработки",
+    "PU0099": "Отмена",
+    "PU0096": "Расформировать",
+    "PU0097": "Вернуть отправителю",
+    "PU0003": "Оприходовать",
+    "PU0002": "Перемещается между отделениями",
+    "PU0001": "Принять к доставке",
+    "PU0000": "Отменить все статусы",
+    "PU0007": "Выдать",
+    "PU0006": "Адресная доставка",
+    "PU0005": "Передать курьеру",
+    "PU0004": "Готово к выдаче"
+  }
 }
 ----
 
