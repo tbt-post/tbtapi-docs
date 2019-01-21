@@ -5,8 +5,8 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5.dev">
-<meta name="author" content="MelKori">
-<title>TbT Classifier</title>
+<meta name="author" content="TabaTa LLC">
+<title>TbT State Codes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -421,21 +421,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>TbT Classifier</h1>
+<h1>TbT State Codes</h1>
 <div class="details">
 <span id="author" class="author">TabaTa LLC</span><br>
 <span id="email" class="email"><a href="mailto:info@tbt-post.net">info@tbt-post.net</a></span><br>
-<span id="revnumber">version 1.3.2,</span>
+<span id="revnumber">version 1,</span>
 <span id="revdate">2018-11-01 (1</span>
-<br><span id="revremark">1.3.2): API Classifier</span>
+<br><span id="revremark">1.3.2): API exchange</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#true-">Классы отправлений</a></li>
-<li><a href="#true--2">Типы отправлений</a></li>
-<li><a href="#true--3">Маркировка</a></li>
-<li><a href="#true--4">Типы доставки</a></li>
+<li><a href="#true-">Состояния</a>
+<ul class="sectlevel2">
+<li><a href="#true--2">Состав</a></li>
+<li><a href="#true--3">Общие коды</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -448,33 +450,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="true-"><a class="anchor" href="#true-"></a>Классы отправлений</h2>
+<h2 id="true-"><a class="anchor" href="#true-"></a>Состояния</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Структура кода</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>&lt;Originator type&gt;.&lt;Payment conditions&gt;.&lt;Returnability&gt;.&lt;Return Payer&gt;.&lt;Insurance&gt;</pre>
-</div>
-</div>
+<div class="sect2">
+<h3 id="true--2"><a class="anchor" href="#true--2"></a>Состав</h3>
 <div class="hdlist">
-<div class="title">Originator Type</div>
+<div class="title">Состав статуса</div>
 <table>
 <tr>
 <td class="hdlist1">
-A
+P
 </td>
 <td class="hdlist2">
-<p>Отправление агентской системы (Agent&#8217;s parcel)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-I
-</td>
-<td class="hdlist2">
-<p>Собственное отправление платформы (Internal)</p>
+<p>Parcel (группа&#8201;&#8212;&#8201;посылки) (позиция 1)</p>
 </td>
 </tr>
 <tr>
@@ -482,280 +470,208 @@ I
 U
 </td>
 <td class="hdlist2">
-<p>Отправление пользователь-курьер (User&#8217;s parcel)</p>
+<p>Universal (признак&#8201;&#8212;&#8201;общедоступный код) (позиция 2)</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+O
+</td>
+<td class="hdlist2">
+<p>Operational (признак&#8201;&#8212;&#8201;операционный код) (позиция 2)</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+S
+</td>
+<td class="hdlist2">
+<p>Service (признак&#8201;&#8212;&#8201;сервисный код) (позиция 2)</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+NNNN
+</td>
+<td class="hdlist2">
+<p>код состояния (позиции 3-6)</p>
 </td>
 </tr>
 </table>
 </div>
-<div class="hdlist">
-<div class="title">Payment conditions</div>
+<div class="admonitionblock caution">
 <table>
 <tr>
-<td class="hdlist1">
-COD
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
 </td>
-<td class="hdlist2">
-<p>наложенный платеж (cash on delivery)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-PRP
-</td>
-<td class="hdlist2">
-<p>предоплаченный заказ (prepaid)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-VCD
-</td>
-<td class="hdlist2">
-<p>наложенный платеж с балланса в системе (virtual coins delivery)</p>
+<td class="content">
+Статусы <code>U</code> и <code>O</code>  формируют серию непересекающихся уникальных значений/состояний для пользователя (внешнего и внутреннего соответственно). <code>S</code>, т.е. <em>сервисные</em> статусы&#8201;&#8212;&#8201;существуют <strong>параллельно</strong> и формируют серию непересекающихся уникальных значений/состояний для системы.
 </td>
 </tr>
 </table>
 </div>
-<div class="hdlist">
-<div class="title">Returnability</div>
-<table>
-<tr>
-<td class="hdlist1">
-NR
-</td>
-<td class="hdlist2">
-<p>невозвратный (no returns)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-SA
-</td>
-<td class="hdlist2">
-<p>возможна частичная выдача (split available)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-RA
-</td>
-<td class="hdlist2">
-<p>возвратный (return available)</p>
-</td>
-</tr>
-</table>
 </div>
-<div class="hdlist">
-<div class="title">Return Payer</div>
-<table>
-<tr>
-<td class="hdlist1">
-SP
-</td>
-<td class="hdlist2">
-<p>отправитель платит (sender pays)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-RP
-</td>
-<td class="hdlist2">
-<p>получатель платит (receiver pays)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-BP
-</td>
-<td class="hdlist2">
-<p>обе стороны платят (both pay)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-NA
-</td>
-<td class="hdlist2">
-<p>не применимо (not available)</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="hdlist">
-<div class="title">Insurance</div>
-<table>
-<tr>
-<td class="hdlist1">
-S000
-</td>
-<td class="hdlist2">
-<p>стандартные уловия страхования, размер покрытия 10-х долях %</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-C000
-</td>
-<td class="hdlist2">
-<p>специальный условия страхования, размер покрытия 10-х долях %</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="literalblock">
-<div class="title">Пример</div>
-<div class="content">
-<pre>A.COD.NR.NA.S000</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="true--2"><a class="anchor" href="#true--2"></a>Типы отправлений</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="true--3"><a class="anchor" href="#true--3"></a>Общие коды</h3>
 <table class="tableblock frame-all grid-all" style="width: 80%;">
-<caption class="title">Table 1. Типы</caption>
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 33.3333%;">
-<col style="width: 33.3334%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">#</th>
-<th class="tableblock halign-left valign-top">Название типа</th>
-<th class="tableblock halign-left valign-top">Описание типа</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">undef</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Без типа</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">papers</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Документы и т.п.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">fragile</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Хрупкое, ломкое, бьющееся</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">goods</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Вещи, товары потребления</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">foods</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Пищевые продукты</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">chemicals</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Хим. товары</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">6</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">special</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Товары, требующие особого внимания</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">7</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">hazard</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Опасный груз</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="true--3"><a class="anchor" href="#true--3"></a>Маркировка</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Для маркировки успользуется от 1 до 2 символов латинского алфавита.
-Маркировка предназначена для фиксации операционного процесса, не влияющего
-прямо или косвенно на классификацию или типизацию самого отправления.</p>
-</div>
-<table class="tableblock frame-all grid-all" style="width: 80%;">
-<caption class="title">Table 2. Маркировка</caption>
+<caption class="title">Table 1. Коды состояний (операционные и общие) (<strong>U</strong> + <strong>O</strong>)</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Символ</th>
+<th class="tableblock halign-left valign-top">Код</th>
 <th class="tableblock halign-left valign-top">Описание</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"O"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Отмены (произв. PO0099)</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Пользовательские</strong></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"Z"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Отказы (произв. PO0098)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0000</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Заявка зарегистрирована в системе</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"R"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Возвраты (произв. PO0097)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Отправление принято к доставке</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"P"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Проблемные (произв. PO0096)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Перемещается между отделениями</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"B"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Поврежденные (произв. PO0095)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">В отделении</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0004</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ожидает выдачи</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0005</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Передано курьеру</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0006</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ожидает вручения (в процессе доставки)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0007</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Доставлено</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0096</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Расформировано</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0097</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Возврат отправителю</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0098</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">В процессе обработки</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PU0099</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Отменено</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Операционные</strong></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0000</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Подбор исполнителя забора</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0001</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Назначен исполнитель забора</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0002</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Забрано</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0003</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Передано в отделение</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0004</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Получателю отправлено уведомление об отправке</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0005</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Передано на упаковку</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0006</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Передано на сортировку</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0007</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Подготовлено к транспортировке</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0008</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Передано в транспортировку</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0009</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Загружено</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0010</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Выгружено в отделении</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0011</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Получателю отправлено уведомление о прибытии</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0012</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Подготовка к выдаче</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0013</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Выдано на просмотр</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0090</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Комплектация</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0095</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Формирование поврежденных</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0096</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Формирование проблемных</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0097</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Формирование возвратов</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0098</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Формирование отказов</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0099</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Формирование отмен</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO0999</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Внутренняя переадресация</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PO9999</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ошибка обработки состояния</p></td>
 </tr>
 </tbody>
-</table>
-</div>
-</div>
-<div class="sect1">
-<h2 id="true--4"><a class="anchor" href="#true--4"></a>Типы доставки</h2>
-<div class="sectionbody">
-<div class="hdlist">
-<div class="title">Delivery Type</div>
-<table>
-<tr>
-<td class="hdlist1">
-W2W
-</td>
-<td class="hdlist2">
-<p>Отправление отделение - отделение</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-W2D
-</td>
-<td class="hdlist2">
-<p>Отправление отделение - двери (курьерская доставка)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-D2W
-</td>
-<td class="hdlist2">
-<p>Отправление двери - отделение (курьерская доставка)</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-D2D
-</td>
-<td class="hdlist2">
-<p>Отправления двери - двери (курьерская доставка x2)</p>
-</td>
-</tr>
 </table>
 </div>
 </div>
@@ -763,8 +679,8 @@ D2D
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.3.2<br>
-Last updated 2019-01-04 20:42:45 EET
+Version 1<br>
+Last updated 2019-01-21 17:20:38 EET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
