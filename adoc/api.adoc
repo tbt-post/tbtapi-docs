@@ -3647,18 +3647,59 @@ expected_result:: 200 {"success": true, "id": "<ENTITY ID>", "type": "<ENTITY TY
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"type": "rack", "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9", "descr": "Test", "label": "test inbox", "path": "tst/test inbox"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 15:03:26 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 333 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+  "descr": "Test",
+  "success": true,
+  "properties": {
+    "code": "$Er$F0:0014$",
+    "path": "test inbox",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9"
+    ],
+    "label": "test inbox"
+  },
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "rack",
+  "id": "afecf905-2b52-4975-9569-51c5068d4b1a"
 }
 ----
+
+[width="35%",cols=1,options="header"]
+|====================
+| Возможные параметры ENTITY_TYPE
+|box: Коробка
+|cell: Ячейка
+|shelf: Полка
+|rack: Стелаж
+|row: Ряд
+|stock: Склад
+|car: Машина
+|office: Отделение
+|====================
+
 
 ==== Изменение ресурса отеления
 
@@ -3676,16 +3717,30 @@ NOTE: требуется указать только необходимые па
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/entity/afecf905-2b52-4975-9569-51c5068d4b1a" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"descr": "New desc", "label": "new inbox", "path": "tst/new_inbox"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 15:06:23 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -3705,16 +3760,29 @@ NOTE: удаление возможно только ресурса, котор�
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X DELETE "https://sandbox-api.tbt-post.net/api/v1/op/entity/afecf905-2b52-4975-9569-51c5068d4b1a" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 15:16:24 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
 
@@ -3741,7 +3809,7 @@ curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity/95112660-f50e-
 Или
 [source, shell]
 ----
-curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity?code=$EC$F0:0006$" \
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity?code=%24EC%24F0%3A0006%24" \
 -H "Content-Type: application/json" \
 -b cookie-jar1.txt
 ----
@@ -3886,7 +3954,7 @@ expected_result:: 200 {"success": true}
 Запрос::
 [source, shell]
 ----
-curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity/reparent/95112660-f50e-4b7c-8b81-92139cda3aa4" \
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity/reparent/afecf905-2b52-4975-9569-51c5068d4b1a" \
 -H "Content-Type: application/json" \
 -b cookie-jar1.txt \
 -d '{"parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9"}'
@@ -3909,7 +3977,20 @@ Access-Control-Allow-Headers: Content-Type +
 [source, json]
 ----
 {
-  "success": true
+  "descr": "New desc",
+  "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+  "success": true,
+  "id": "afecf905-2b52-4975-9569-51c5068d4b1a",
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "rack",
+  "properties": {
+    "path": "new inbox",
+    "code": "$Er$F0:0014$",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9"
+    ],
+    "label": "new inbox"
+  }
 }
 ----
 
@@ -4044,16 +4125,35 @@ expected_result:: 200 {"success": true, "<BATCH_KEY>": {"status": <STATUS_CODE>,
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/batch" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"action":"parcel_update","batches":{"252395d6-5764-4232-baeb-2020db2d8c2c":{"state":"PU0003","delivery_type":"W2W"},"0e1837e3-609f-4bc6-a121-3b21c0f11a5b":{"state":"PU0003","delivery_type":"W2W"}}}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 11:18:36 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 131 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "0e1837e3-609f-4bc6-a121-3b21c0f11a5b": {
+    "status": 202
+  },
+  "252395d6-5764-4232-baeb-2020db2d8c2c": {
+    "status": 202
+  },
+  "success": true
 }
 ----
 
@@ -4066,7 +4166,7 @@ protocol_method:: POST
 method_name:: op/report
 method_params:: ----
 request_body:: <ANY REPORT DATA>
-expected_result:: 202 {"success": true}
+expected_result:: 202 {"success": true, "document_id": "<ID>"}
 
 NOTE: Ограничение объема передаваемых в запросе данных -- 2М
 [horizontal]
@@ -4074,18 +4174,35 @@ NOTE: Ограничение объема передаваемых в запро
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/report" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"state": "PU0001", "type": "foods", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 14:41:18 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 72 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
 
 [source, json]
 ----
 {
-  put text here
+  "success": true,
+  "document_id": "9ccc7232-1d8a-11e9-bda0-00163e8cc029"
 }
 ----
+
+NOTE: Применимо для отправки данных о работе оператора в графическом интерфейсе.
 
 === Клиент->Система
 
@@ -4102,15 +4219,30 @@ expected_result:: 202 {"success": true}
 Запрос::
 [source, shell]
 ----
-put text here
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/ev/parcel/sched/f1a7f050-59f7-4d9e-812a-15940e13560c" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"type" : "receiving", "sched" : "1548060981786"}'
 ----
 
 Ответ::
-put text here
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Mon, 21 Jan 2019 14:36:34 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
 
 [source, json]
 ----
 {
-  put text here
+  "success": true
 }
 ----
+
+NOTE: Требует авторизации. Применимо для запроса на продление срока хранения собственного отправления.

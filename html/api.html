@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5.dev">
-<meta name="author" content="MelKori">
+<meta name="author" content="TabaTa LLC">
 <title>TbT API</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -581,11 +581,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p>во <a href="../README.adoc#_infrastructure">внутренней сети инфраструктуры</a> по
-протоколу HTTP</p>
-</li>
-<li>
-<p>из всех остальных мест <em>вне</em> локальной инфраструктуры - по протоколу HTTPS</p>
+<p>из всех мест <em>вне</em> локальной инфраструктуры - по протоколу HTTPS</p>
 </li>
 </ul>
 </div>
@@ -664,7 +660,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 {get_params}
 </td>
 <td class="hdlist2">
-<p>опциональные GET параметры</p>
+<p>опциональные параметры для метода/обработчика</p>
 </td>
 </tr>
 </table>
@@ -803,6 +799,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </tr>
 </tbody>
 </table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Система использует форматы <code>UUID</code> версий <code>v0</code>,<code>v1</code>,<code>v2</code> и <code>v4</code> (форматы <code>v3</code> и <code>v5</code> поддерживаются, но не используются)
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+В случае явного указания в API и/или протоколе версии для типа <code>UUID</code>, подразумевается использование исключительно указанной версии
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>Для хранения меток времени <code>created_at</code>,<code>modified_at</code> и т.п. используется <a href="https://tools.ietf.org/html/rfc4122#section-4.2.2">uuid версии 1</a></p>
 </div>
@@ -982,7 +1002,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Все методы api с префиксом op/ предназначениы для операторского интерфейса, и требуют от пользователя соответствующих прав доступа.
+Все методы api с префиксом op/ предназначены для операторского интерфейса, и требуют от пользователя соответствующих прав доступа.
 </td>
 </tr>
 </table>
@@ -1019,6 +1039,55 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </td>
 <td class="content">
 Для обозначения пустого (осутствующего) содержимого в описании используется <code>----</code>. Использовать его как значение <strong>НЕ РЕКОМЕНДУЕТСЯ</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, <strong>не ниже 7.47.0</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Запросы без указания <code><strong>-H "Authorization</strong></code> можно выполнить без регистрации.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Для запросов требующих авторизации учетной записи, в т.ч с правами оператора [/op], будут использованы <a href="https://ec.haxx.se/http-cookies.html">HTTP cookies</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Используемое кодирование для кирилицы и спец символов в GET запросах - UTF-8
+В ответе - текст закодированный функцией escape
 </td>
 </tr>
 </table>
@@ -1192,6 +1261,44 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/reg" \
+-H "Content-Type: application/json" \
+-d '{"email":"examplemail1@exampledomain.io","password":"examplepass", "phone": "380666666667", "first_name": "Vasia", "last_name": "Pipkin", "gender": "male", "prefered_lang" : "ru"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sat, 12 Jan 2019 13:20:37 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--6"><a class="anchor" href="#true--6"></a>Создание пользователя оператором</h4>
@@ -1251,6 +1358,58 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Обычно запрос ипользуется для служебных целей.
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/reg" \
+-b cookie-jar.txt \
+-H "Content-Type: application/json" \
+-d '{"email":"examplemail2@exampledomain.io", "phone": "380666666668", "first_name": "Sara", "last_name": "Pipkin", "gender": "female", "prefered_lang" : "ru", "activate": false}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sat, 12 Jan 2019 14:01:19 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 63<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "id": "75c755df-f40a-4c85-a42b-e3c1ddeec93a",
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--7"><a class="anchor" href="#true--7"></a>Потдтверждение регистрации</h4>
@@ -1298,7 +1457,48 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "REGISTRATION", "email": "examplemail2@exampledomain.io"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sat, 12 Jan 2019 14:17:50 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect4">
@@ -1345,7 +1545,48 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "REGISTRATION", "otc": "046e053c-c35c-408f-a422-9fe20f50c35b"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 13:38:19 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -1394,7 +1635,50 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST https://sandbox-api.tbt-post.net/api/v1/auth/login \
+-H "Content-Type: application/json; charset=utf-8" \
+-d '{"username":"examplemail1@exampledomain.io","password":"examplepass","remember_me":"true"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sat, 12 Jan 2019 15:17:55 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 37<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Set-Cookie: TBT_AUTH="2|1:0|10:1547646244|8:TBT_AUTH|48:ODBkYTFkY2EtOThkMy00ODVjLWI4Y2YtOTE4M2MxMDYzMzQ0|9e9a3f3ac84bb2d8ebba1f75ed94ea6898ccf5b4dac2e2bf7faae3772c218685"; Domain=.tbt-post.net; expires=Fri, 15 Feb 2019 15:57:24 GMT; Path=/<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "roles": []
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1441,7 +1725,49 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/auth/logout" \
+-H "Content-Type: application/json"</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sat, 12 Jan 2019 15:21:15 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Cache-Control: no-cache, no-store, must-revalidate<br>
+Etag: "484b3032619fa1acd135d114565b0a5166281c22"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1490,7 +1816,48 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "RESTORE_PASSWORD", "email": "examplemail1@exampledomain.io"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 13:53:09 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -1537,7 +1904,61 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "RESTORE_PASSWORD", "otc": "1a0fd578-fa4b-435d-9f8f-8933d4528f45"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 14:15:35 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Если ОТС не проходит валидацию, ответ будет выглядеть так</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "message": "Invalid OTC",
+  "success": false
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -1584,15 +2005,53 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/profile/password" \
+-H "Content-Type: application/json" \
+-d '{"new_password": "examplepass-new", "otc": "498c9940-4720-40bd-83b2-4edbbed5ed76"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 14:09:20 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 0<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="true--16"><a class="anchor" href="#true--16"></a>Изменение пароля</h3>
-<div class="paragraph">
-<p>Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.</p>
-</div>
 <div class="admonitionblock important">
 <table>
 <tr>
@@ -1600,7 +2059,7 @@ expected_result
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-требует авторизации
+Требует авторизации. Подразумевается самостоятельное изменение авторизированным пользователем пароля, вызванное, напрмер, из пользовательского профиля.
 </td>
 </tr>
 </table>
@@ -1647,7 +2106,49 @@ expected_result
 <p>200 {"success": true}</p>
 </td>
 </tr>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
 </table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/user/profile/password" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"new_password": "examplepass", "old_password": "examplepass-new"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 17:09:29 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1698,6 +2199,81 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/profile" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 13 Jan 2019 10:29:00 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 953<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "03aceef3d3ae3b3eb91cda7ebfa1677c4838dcc5"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "last_name": "Pipkin",
+  "confirmed_at": null,
+  "rate": 0,
+  "roles": [],
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
+  "first_name": "Vasia",
+  "is_confirmed": false,
+  "is_phone_valid": false,
+  "email": "examplemail1@exampledomain.io",
+  "parent": null,
+  "is_disabled": false,
+  "activated_at": "2019-01-16T13:38:19.206955+00:00",
+  "is_active": true,
+  "password_changed": "2019-01-16T17:09:29.347996+00:00",
+  "phone": "380666666667",
+  "birthday": null,
+  "confirmed_by": null,
+  "is_external": false,
+  "nsid": 0,
+  "sourced_by": "local",
+  "gender": "male",
+  "created_at": "2019-01-12T13:20:35.009201+00:00",
+  "modified_at": "2019-01-16T17:09:29.031432+00:00",
+  "success": true,
+  "is_badge": false,
+  "is_poor": false,
+  "additional_data": {
+    "prefered_lang": "ru",
+    "last_login": "2019-01-16T17:08:07.319400+00:00"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--19"><a class="anchor" href="#true--19"></a>Обновление собственного профиля</h4>
@@ -1708,7 +2284,7 @@ expected_result
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-неактуальные для контекста поля&#8201;&#8212;&#8201;игнорируются. Передавать можно только часть параметров из набора.
+Неактуальные для контекста поля&#8201;&#8212;&#8201;игнорируются. Передавать можно только часть параметров из набора.
 </td>
 </tr>
 </table>
@@ -1752,10 +2328,56 @@ request_body
 expected_result
 </td>
 <td class="hdlist2">
-<p>200 {"success": true}</p>
+<p>202 {"success": true}</p>
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/user/profile" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"first_name": "Vasilii", "last_name": "Pypkin", "gender": "male", "birthday": "1980-10-20", "prefered_lang": "ru"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 202 Accepted<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 17:18:50 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -1824,6 +2446,56 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/resolve/6cca769e-f380-4385-805c-84232c51a60c" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Wed, 16 Jan 2019 17:23:28 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 136<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "22d3f11c1121b6ef294a79dcf02f533dd9076ba8"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "phone": "38066XXX6667",
+  "first_name": "Vasilii",
+  "last_name": "Pypkin",
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--21"><a class="anchor" href="#true--21"></a>Получение базовых данных списка пользователей</h4>
@@ -1890,6 +2562,66 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/resolve/list?id%5B%5D=6cca769e-f380-4385-805c-84232c51a60c&amp;id%5B%5D=0d554821-c0ce-43d8-9823-d3ad8d0103fd" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 10:42:35 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 319<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "8aaf42d18c0f6ab1afac029e64660293e9dc709e"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "users": [
+    {
+      "phone": "38066XXX6667",
+      "first_name": "Peter",
+      "last_name": "Abramovich",
+      "id": "6cca769e-f380-4385-805c-84232c51a60c"
+    },
+    {
+      "phone": "38050XXX0752",
+      "first_name": "Сара",
+      "last_name": "Абибок",
+      "id": "0d554821-c0ce-43d8-9823-d3ad8d0103fd"
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -1958,6 +2690,82 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/profile?email=examplemail1@exampledomain.io" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 08:35:55 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 813<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "bec27b54affb5363ee1afcf47720a73b93b55c8f"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "last_name": "Pypkin",
+  "confirmed_at": null,
+  "rate": 0,
+  "roles": [],
+  "id": "6cca769e-f380-4385-805c-84232c51a60c",
+  "first_name": "Vasilii",
+  "is_confirmed": false,
+  "is_phone_valid": false,
+  "email": "examplemail1@exampledomain.io",
+  "parent": null,
+  "is_disabled": false,
+  "activated_at": "2019-01-16T13:38:19.206955+00:00",
+  "is_active": true,
+  "password_changed": "2019-01-16T17:09:29.347996+00:00",
+  "phone": "380666666667",
+  "birthday": "1980-10-20",
+  "confirmed_by": null,
+  "block_status": null,
+  "is_external": false,
+  "nsid": 0,
+  "sourced_by": "local",
+  "gender": "male",
+  "created_at": "2019-01-12T13:20:35.009201+00:00",
+  "modified_at": "2019-01-16T17:18:50.255000+00:00",
+  "success": true,
+  "is_badge": false,
+  "is_poor": false,
+  "additional_data": {
+    "prefered_lang": "ru",
+    "last_login": "2019-01-16T17:08:07.319400+00:00"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--23"><a class="anchor" href="#true--23"></a>Обновление профиля пользователя</h4>
@@ -2012,10 +2820,56 @@ request_body
 expected_result
 </td>
 <td class="hdlist2">
-<p>200 {"success": true}</p>
+<p>202 {"success": true}</p>
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/user/profile/6cca769e-f380-4385-805c-84232c51a60c" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"first_name": "Peter", "last_name": "Abramovich", "gender": "male", "birthday": "1985-05-05", "prefered_lang": "en"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 202 Accepted<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 08:41:10 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2063,6 +2917,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/profile/confirm" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"user_id": "6cca769e-f380-4385-805c-84232c51a60c"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 08:44:02 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2130,6 +3030,115 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/list?id%5B%5D=6cca769e-f380-4385-805c-84232c51a60c&amp;id%5B%5D=0d554821-c0ce-43d8-9823-d3ad8d0103fd" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 10:47:04 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1565<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "6a44d9ea2b31f9974f50d93e413fc4e44648e97a"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "users": [
+    {
+      "last_name": "Abramovich",
+      "confirmed_at": "2019-01-17T08:44:01.981119+00:00",
+      "rate": 0,
+      "id": "6cca769e-f380-4385-805c-84232c51a60c",
+      "first_name": "Peter",
+      "is_confirmed": true,
+      "is_phone_valid": false,
+      "email": "examplemail1@exampledomain.io",
+      "parent": null,
+      "activated_at": "2019-01-16T13:38:19.206955+00:00",
+      "is_active": true,
+      "password_changed": "2019-01-16T17:09:29.347996+00:00",
+      "phone": "380666666667",
+      "birthday": "1985-05-05",
+      "confirmed_by": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "local",
+      "gender": "male",
+      "created_at": "2019-01-12T13:20:35.009201+00:00",
+      "modified_at": "2019-01-17T08:44:01.981201+00:00",
+      "is_badge": false,
+      "is_poor": false,
+      "additional_data": {
+        "prefered_lang": "ru",
+        "last_login": "2019-01-16T17:08:07.319400+00:00"
+      }
+    },
+    {
+      "last_name": "Абибок",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "0d554821-c0ce-43d8-9823-d3ad8d0103fd",
+      "first_name": "Сара",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "email": "SaraAbibok@inbox.com",
+      "parent": null,
+      "activated_at": null,
+      "is_active": false,
+      "password_changed": null,
+      "phone": "380505005002,
+      "birthday": null,
+      "confirmed_by": null,
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "kasta",
+      "gender": "undef",
+      "created_at": "2016-12-10T04:06:19.100235+00:00",
+      "modified_at": "2016-12-10T04:06:19.100247+00:00",
+      "is_badge": false,
+      "is_poor": true,
+      "additional_data": {
+        "foreign_id": 1747577
+      }
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2221,6 +3230,85 @@ expected_result
 </tr>
 </tbody>
 </table>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/search?first_name=Test&amp;last_name=User" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 08:50:38 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 784<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "8d811a61b639ba2f4ce704bd1106e5febada2f0e"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "total": 1,
+  "users": [
+    {
+      "last_name": "User",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "cf8b0967-f1d3-4e53-aa48-297940415263",
+      "first_name": "Test",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "email": "example@example.com",
+      "parent": null,
+      "activated_at": "2016-10-12T08:22:08.871838+00:00",
+      "is_active": false,
+      "password_changed": "2019-01-12T15:04:06.391445+00:00",
+      "phone": "380666666666",
+      "birthday": "1980-01-01",
+      "confirmed_by": null,
+      "is_external": false,
+      "block_status": null,
+      "roles": null,
+      "nsid": 0,
+      "sourced_by": "local",
+      "gender": "male",
+      "created_at": "2016-10-12T08:22:08.871824+00:00",
+      "modified_at": "2019-01-12T15:04:06.073544+00:00",
+      "is_badge": false,
+      "is_poor": true,
+      "additional_data": {
+        "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680"
+      }
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -2254,7 +3342,7 @@ protocol_method
 method_name
 </td>
 <td class="hdlist2">
-<p>otc</p>
+<p>auth/phone</p>
 </td>
 </tr>
 <tr>
@@ -2270,7 +3358,7 @@ method_params
 request_body
 </td>
 <td class="hdlist2">
-<p>{"otc_type": "PHONE_AUTH", "phone": "&lt;PHONE 380XXYYYYYYY&gt;" }</p>
+<p>{"phone": "&lt;PHONE 380XXYYYYYYY&gt;" }</p>
 </td>
 </tr>
 <tr>
@@ -2282,6 +3370,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/auth/phone/new" \
+-H "Content-Type: application/json" \
+-d '{"phone": "380666666667"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 08:54:42 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 64<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "otc": "d346e741-473e-4edf-8a3f-903c3ac99f72",
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2301,7 +3435,7 @@ protocol_method
 method_name
 </td>
 <td class="hdlist2">
-<p>auth</p>
+<p>auth/phone</p>
 </td>
 </tr>
 <tr>
@@ -2309,7 +3443,7 @@ method_name
 method_params
 </td>
 <td class="hdlist2">
-<p>phone-login</p>
+<p>login</p>
 </td>
 </tr>
 <tr>
@@ -2317,7 +3451,7 @@ method_params
 request_body
 </td>
 <td class="hdlist2">
-<p>{"otc": "&lt;OTC&gt;", "phone_code": "&lt;SMS CODE&gt;"}</p>
+<p>{"otc": "&lt;OTC&gt;", "sms_code": "&lt;SMS CODE&gt;", "remember_me": true|false}</p>
 </td>
 </tr>
 <tr>
@@ -2329,6 +3463,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/auth/phone/login" \
+-H "Content-Type: application/json" \
+-d '{"otc": "ec0b678e-728c-4465-a20e-91a6b1d1ea18", "sms_code": "303941890", "remember_me": true}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 11:11:36 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 30<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "roles": []
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2380,6 +3560,65 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"otc_type": "PHONE_CHANGE", "phone": "380666666677"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 11:20:30 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 64<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "otc": "5a266aaa-da39-404e-9c21-11207a1b47a6",
+  "success": true
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+В запросе необходимо указывать необходимый для смены номер.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--31"><a class="anchor" href="#true--31"></a>Подтверждение</h4>
@@ -2398,7 +3637,7 @@ protocol_method
 method_name
 </td>
 <td class="hdlist2">
-<p>auth</p>
+<p>otc</p>
 </td>
 </tr>
 <tr>
@@ -2414,7 +3653,7 @@ method_params
 request_body
 </td>
 <td class="hdlist2">
-<p>{"otc_type": "PHONE_CHANGE", "otc": "&lt;OTC&gt;", "phone_code": "&lt;SMS CODE&gt;"}</p>
+<p>{"otc_type": "PHONE_CHANGE", "otc": "&lt;OTC&gt;", "sms_code": "&lt;SMS CODE&gt;"}</p>
 </td>
 </tr>
 <tr>
@@ -2426,6 +3665,51 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "PHONE_CHANGE", "otc": "5a266aaa-da39-404e-9c21-11207a1b47a6", "sms_code": "872386376"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 11:33:53 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2477,6 +3761,52 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/new" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"otc_type": "EMAIL_CHANGE", "email": "example@exampledomain.io" }'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 11:37:28 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--33"><a class="anchor" href="#true--33"></a>Подтверждение</h4>
@@ -2495,7 +3825,7 @@ protocol_method
 method_name
 </td>
 <td class="hdlist2">
-<p>auth</p>
+<p>otc</p>
 </td>
 </tr>
 <tr>
@@ -2523,6 +3853,51 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/otc/validate" \
+-H "Content-Type: application/json" \
+-d '{"otc_type": "EMAIL_CHANGE", "otc": "8dfe3d63-a9b2-482a-9217-daae0b126f90"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 11:41:54 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2573,6 +3948,56 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/roles" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 13 Jan 2019 10:45:00 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 100<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "cf70b22ea6546b1f69cb5fbc06b683d6932caf92"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "roles": [
+    "user",
+    "operator"
+  ]
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2644,6 +4069,105 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 09:12:04 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1477<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "ab05045ba94b1887181caa4218bd241a30b5702f"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+  "code": "TEST0002",
+  "weight": 1520,
+  "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "is_dirty": false,
+  "is_open": true,
+  "paid_at": null,
+  "closed_at": null,
+  "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+  "paid_amount": 0,
+  "state": "PU0007",
+  "mark": null,
+  "last_seen_at": null,
+  "type": "fragile",
+  "delivery_type": "W2W",
+  "parent": null,
+  "price": 2500,
+  "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+  "class": "A.PRP.NR.NA.S000",
+  "pentity": null,
+  "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+  "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "nsid": 0,
+  "is_paid": false,
+  "modified_at": "2018-12-12T13:51:10.483000+00:00",
+  "success": true,
+  "additional_data": {
+    "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+    "_receiver": {
+      "phone": "380666666666",
+      "first_name": "Test",
+      "last_name": "User",
+      "id": 0,
+      "email": "example@expmail.com"
+    },
+    "invoices": [
+      {
+        "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+        "sms_notifications": 0.6,
+        "office_delivery": 24,
+        "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+        "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+        "main_transportation": 10.01,
+        "delivery_insurance": 16.25
+      }
+    ],
+    "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+    "ttl_days_default": 15,
+    "ttl_days": 15
+  },
+  "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+  "cod_amount": 0,
+  "created_at": "2018-12-11T14:23:51.628901+00:00",
+  "goes_back": false
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--36"><a class="anchor" href="#true--36"></a>Получение графических кодов</h4>
@@ -2707,6 +4231,66 @@ expected_result
 </td>
 <td class="content">
 DATA URI is according to <code>RFC-2397</code>: data:[&lt;media type&gt;][;base64],&lt;data&gt;
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/codes/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 09:16:24 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 4040<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "2b06b6d02fb247c191d703bb325ca1173138a2bd"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "qr": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAACyAQAAAADO8ajFAAAE9klEQVR4nNVXz4fl1xKv7ro8TY0aZvUITxjeqqlWTQxnVG8fTf6GEN52yCpkE7J9hLcaQv6JkNVwWg0jnOtcejU0EYaswmnn0oa6KvuYe2b73ndZPj4+p+pTP74nCR/6bk4/GAb434ufbG5gu7+4fL2Fy93F9vkF3J9cHcVD2kzpYEoZrbA1G5pWj+NFYXD1rpXnyJRExY/graQgzvQ6baCv8BsA0K3CzvaPujyy76/GJ+8er97L9TD3FwZv84u3tpPd3R8Qx/EneYLyl9hhZ98e15/JgNUKBjYrzKNa5lH9p3Cxedef4Q0UfLW/eVOfXsP95rgeyOzRZEy1UOaEIVj9OD+kj+iDWKq2mZTUs41V/iMiHIAyfNbRRafiih+d2aYnSyP1FjLW/NamVVRlQx6TsxAv+dUdc7QiHk6UVD14xQ+cnjxrrz2nNnFAWPEXt5jQB5hW66hZmqzwPUCbhvamXSqnGC/zz97KHFCGxjCs0j3myg/w7Kvb7Z29/sfZZ7++qsSfnl3uVn6Q2pUkajcHLRPIC630TJrQU91HcgB1YY1lP6I4QiWp4eJTEput8JMFotPMhoa1tJk8V/gK6OpAU9PBYKSDLfWbyWCD5mgGvWna2j8KA1WlS1YFIQ1d1PcUiOj6jwPhpz88fkFwp98/odvVPEQgagHGMjowysf0a8PGMcFqS1WOSiGr/BCgaPbpNls1KhXX7+VGOQBpVjAaLWuWsXqv7J9e7Pzgb7/Jb//568ONbeB65TdOKzZH1Tp6KUqTaOkf9jJkAHWzhp7R/CP1ChvNlAXrNCgMSbriVy/dgA3LDOsK3cuiH0/hP9coYOeH9w/bN/cXZwyH11er+lYdPcGxy+w9fWLaUg83iFkJJrlNaUWaLudDl+ZzAgoXpJ7Fci7mA+RoNCWpsSiGdZutLfmreEWJUm106kmZsfADJLYcwc25aBfkAZV1hW+VipUs0dBgNG595TfIliZt9tJj9Cg0jfvSD71maZYaHSJaYMux2KeQQeAEkT3UWRNHNz6O38Dtnq/G1cb2rwjuz24KXR5k5X8yADaD5EFWMI1tcZ+cwu97hXf3ezr56e6n/Zv3j74b+2d1wa+GoGiUA8nIB6Et910CBjZAVmQQK81gub+iiGZYjUAayaE0lv4BmRW1ZdXwbJMi1/wjq0yChjF9DKfksfRzOk4SKMDKhUSz05J/ZiuljsJ9NJ/QlVb3FSTOoZheAWOSOmSHRT43QP/aE5xI9xc70Puz8pqq8NF7fgO/Xf24h6//u5EDwuHu3/Vs/8lY+af2Ku4QIhoji2vRZX4cBhWyItl76qTW1/1bqClIL7WhhTaakUt+kCg0yQemRx9aZln0yykwP7l993c/7N5fnm/2n798uHvzdDk/PUCS2WV61yCrddnvNdSxB1pHEyBz60t/qhSHPjpqZDMU9rK8t4HhEF88+bJt/7bZv/qFf3vx3W6pf3ogz8Fm3tkH1SzLedWQreCMRkUGcc2sy/cO645AVWaAqWSF5b2aaV3BhGlWo0rQ1/sIsKmLFpd0RS4zdTHPT8HGVy+v7+ih7HZC5wd8fqDD8v5Ubh5QqBcD7WU6LPMjqoDDpwUCh88p0Zf1grfzl+uvt9uHcz5/oLPnP3y2X+mxOaKn4CTXLEMkaeH/Ddw8PgfejtudfvPyBm8J4eez1f/gB8P/N//7fwKlha0A3o4jOwAAAABJRU5ErkJggg==",
+  "bcode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAABzCAIAAAC3jEg6AAAGK0lEQVR4nO3cSWgTfRiA8TeaNGpj6gJWMFZIrVAXKrmIqFiJDT1pUTwIRcEePKQnF0Q81JsH6c1qwZPkUJEKgiLi2rhUBDFipbhUEaVougiKmqaNme8wfCFfE9Ms8yqffX43Z97M/GfoQ9Jp0GYYhgDQMeNPLwD4mxEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoMg+5YTNZkv/p/nVqtTG9G9aZd1Y0NEyd/3qCDmWkfVcqYH0l5e+NmuPlvUIWa80x3Gy7so9k2Nj1svJsav0F+a+0il/tApaW9YZSxaTwjsYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBigiMEARgQGKCAxQRGCAIgIDFBEYoIjAAEUEBiiyGYbxp9cA/LV4BwMUERigiMAARQQGKCIwQBGBAYoIDFBEYIAiAgMUERigiMD+49ChQ7acWltbRWRkZCT3QEooFNq4caPb7Xa73T6f7+jRo69evSroXKbHjx83NjZWVFS43e6GhoaHDx9mLr70mXg8fuHChW3btnm9XqfTWVlZuWvXrkgkUvqNnb4MpDl48GDu2xUMBg3DGB4ezj1g2r9/f+bAkiVLCjqXYRiPHj1yOp3puxwOx927d9NXbsnM2bNnM5fhcDguX76sdMP/egSWS3l5uYhMTExM2m4Glkolq9u3b4tIeXl5Z2fnx48fv3///vz581OnTgUCgYLOZRiGz+cTkebm5k+fPg0NDbW0tIjIqlWrksmktTOhUGjHjh3d3d2vX7/+8eNHX19fIBAQkcWLF2ddGKZEYLmUEtiBAwdEpL29vcRzPXnyREQ8Hk88Hje3TExMeL1eEXnw4IG1M5m+fPnicrlEJBKJ5HkhSMfvYFq+ffsmIjU1NSUeJxwOi0hTU1NZWZm5xW6379y5U0Tu3Llj7Uwmt9ttRphMJku8kOmJwLSsXLlSRDo7O83SimY+FFmzZk36xrq6utQuC2cyxePxd+/ezZs3b/Xq1aVcxbRFYMUbHBzMfPR37do1c29LS0tVVdXVq1erqqp2797d0dHx4sWLIs4yOjoqIpWVlekbFy1alNpl4Uym9vb2r1+/HjlyJPW+h4IQmBaXy9Xb27tnz55YLHb+/PnW1tba2tpNmzb19fUVdJyxsTERKSsrGxwc9Hq9y5Yte/v2rfkwMBaLWTszSTgcbmtrq6+vP3z4cHE3AQRWvKwPORobG9MHzp07Nzo6euPGjba2trq6uvv379fX14+MjOR/llmzZonI+Ph4MplMJBLmE794PC4is2fPtnYm3dOnT5uammpqai5evDhz5syi7hAITN+cOXO2bt16/PjxSCQSDAY/f/7c0dGR/8sXLlwoItFodOnSpe/fv//w4UN1dfXQ0FBql4UzKf39/Q0NDRUVFdevX1+wYEGJd2A6I7Dfx2az7d27V0T6+/vzf9WKFStEZNIHy2fPnqV2WThjevnypd/vdzgct27d8ng8+S8VmQjstzKf182YUcBt37x5s4hcunRpfHzc3JJIJLq7u0Vky5Yt1s6IyMDAgN/vTyQSN2/erK6uLvZC8a/f/He3/5dS/tB8+vTpffv2XblyZWBgIBaLRaPRUChkfhg7c+ZM/ucyDGPt2rUi0tzcHI1Gh4eHzW9g1NbW/vz509qZN2/eeDye+fPn82dlqxBYLrkDy2rDhg3mzMmTJ7MOrFu3bmxsLP9zGYbR29s76TuEdru9p6fH8pljx4796rq6urqKu4fTHB8RtQSDwa6uru3bty9fvtzpdLpcLp/Pd+LEiZ6enkk/5VNav379vXv3AoHA3LlzXS6X3+8Ph8PmRz7LZ2At/mdfQBHvYIAiAgMUERigiMAARQQGKCIwQBGBAYoIDFBEYIAiAgMUERigiMAARQQGKCIwQBGBAYoIDFBEYICifwAnfbNqPTt/mgAAAABJRU5ErkJggg==",
+  "success": true
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: <code>data:image/png;base64,iV&#8230;&#8203;&lt;body&gt;&#8230;&#8203;U5ErkJggg==</code>
 </td>
 </tr>
 </table>
@@ -2885,6 +4469,173 @@ expected_result
 </tr>
 </tbody>
 </table>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/search?state=PU0007&amp;interval_field=created_at&amp;interval_from=2018-12-01&amp;interval_to=2018-12-31" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 09:29:07 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 3098<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "5eb3fd5a38a07fe3247bb6871368e8b52d6bf29f"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "total": 2,
+  "parcels": [
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0002",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-12T13:51:10.483000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380667224455",
+          "first_name": "Vasia",
+          "last_name": "pipkin",
+          "id": 0,
+          "email": "pipkin@gmail.com"
+        },
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 16.25
+          }
+        ],
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 15,
+        "ttl_days": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T14:23:51.628901+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0004",
+      "weight": 145,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 350,
+      "checked_in_at": "2018-12-12T14:08:44.447137+00:00",
+      "class": "A.COD.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2019-01-08T09:12:25.375000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380674552233",
+          "first_name": "Peter",
+          "last_name": "Abrmovich",
+          "id": 0,
+          "email": "Abrmovich@gmail.com"
+        },
+        "_dimensions": [
+          250,
+          400,
+          80
+        ],
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "0335d220-fe14-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 5
+          }
+        ],
+        "_comment": "test parcel",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 10,
+        "is_weighed": true,
+        "ttl_days": 0,
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 299,
+      "created_at": "2018-12-12T13:39:28.729083+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true-id-2"><a class="anchor" href="#true-id-2"></a>Получение посылок по списку id</h4>
@@ -2970,6 +4721,172 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/list?id%5B%5D=30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2&amp;id%5B%5D=4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 10:50:56 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 3086<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "6e10481eb926db866fbe64c9332606a9b1b3e37f"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "parcels": [
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0004",
+      "weight": 145,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 350,
+      "checked_in_at": "2018-12-12T14:08:44.447137+00:00",
+      "class": "A.COD.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2019-01-08T09:12:25.375000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380666666666",
+          "first_name": "Test",
+          "last_name": "User",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "_dimensions": [
+          250,
+          400,
+          80
+        ],
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "0335d220-fe14-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 5
+          }
+        ],
+        "_comment": "test parcel",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 10,
+        "is_weighed": true,
+        "ttl_days": 0,
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 299,
+      "created_at": "2018-12-12T13:39:28.729083+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d",
+      "code": "TEST0002",
+      "weight": 1520,
+      "agent": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "4d52c496-9137-4e8a-bb1b-56f378669ac0",
+      "paid_amount": 0,
+      "state": "PU0007",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "fragile",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 2500,
+      "checked_in_at": "2018-12-12T13:50:42.870075+00:00",
+      "class": "A.PRP.NR.NA.S000",
+      "pentity": null,
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-12-12T13:51:10.483000+00:00",
+      "additional_data": {
+        "erp_token": "510ad08a-830e-46aa-ab63-dfade75a00a7",
+        "_receiver": {
+          "phone": "380666666666",
+          "first_name": "Test",
+          "last_name": "User",
+          "id": 0,
+          "email": "example@gmail.com"
+        },
+        "invoices": [
+          {
+            "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+            "sms_notifications": 0.6,
+            "office_delivery": 24,
+            "owner": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "serial": "a6e96cc0-fe04-11e8-8a37-148b3fc90e15",
+            "main_transportation": 10.01,
+            "delivery_insurance": 16.25
+          }
+        ],
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "ttl_days_default": 15,
+        "ttl_days": 15
+      },
+      "receiver": "67719cba-5cd5-4dd0-84c9-6b6864a75066",
+      "cod_amount": 0,
+      "created_at": "2018-12-11T14:23:51.628901+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3093,6 +5010,129 @@ expected_result
 </tr>
 </tbody>
 </table>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/list?participant=sender&amp;sort_by=state&amp;limit=2" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 09:45:56 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 2118<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "eeed0101eb2a9110a6833b9bba8a0f4f63e353b0"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "total": 4,
+  "parcels": [
+    {
+      "address_id": "8579d836-8a2f-11e6-8a66-1b7b94d1a2c3",
+      "code": "T1PR6NA6R",
+      "weight": 1,
+      "agent": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "94936244-3461-406d-b773-f1f0852074bb",
+      "paid_amount": 0,
+      "state": "PU0003",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "undef",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 1,
+      "checked_in_at": "2018-05-14T16:45:52.602469+00:00",
+      "class": "I.PRP.NR.NA.S000",
+      "pentity": "fcf598ce-7cba-47b6-9871-407b6db81ea6",
+      "transfer_via": "9bfdef40-d03d-4041-92fe-c3944650f173",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-08-09T08:32:31.371242+00:00",
+      "additional_data": {
+        "ttl_days": 30,
+        "ttl_days_default": 15,
+        "agent_office": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "checked_in_loc": "9bfdef40-d03d-4041-92fe-c3944650f173"
+      },
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "cod_amount": 0,
+      "created_at": "2018-05-14T16:38:51.780360+00:00",
+      "goes_back": false
+    },
+    {
+      "address_id": "0c722922-8a1e-11e6-8a66-b356fd9f196a",
+      "code": "T1BR5NB8M",
+      "weight": 2,
+      "agent": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "is_dirty": false,
+      "is_open": true,
+      "paid_at": null,
+      "closed_at": null,
+      "id": "106c252b-ebb6-426f-920a-ff8f616faf3b",
+      "paid_amount": 0,
+      "state": "PU0003",
+      "mark": null,
+      "last_seen_at": null,
+      "type": "undef",
+      "delivery_type": "W2W",
+      "parent": null,
+      "price": 0,
+      "checked_in_at": "2018-03-18T14:11:56.539406+00:00",
+      "class": "I.COD.RA.NA.S000",
+      "pentity": "18b98336-3c75-4690-8298-f65545e7df3c",
+      "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "nsid": 0,
+      "is_paid": false,
+      "modified_at": "2018-08-09T08:32:31.498520+00:00",
+      "additional_data": {
+        "ttl_days": 20,
+        "ttl_days_default": 10,
+        "agent_office": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "checked_in_loc": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253"
+      },
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "cod_amount": 0,
+      "created_at": "2018-03-18T14:04:13.671252+00:00",
+      "goes_back": false
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--38"><a class="anchor" href="#true--38"></a>Создание посылки</h4>
@@ -3140,6 +5180,53 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/parcel" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"type": "fragile", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", "receiver":"6cca769e-f380-4385-805c-84232c51a60c", "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "weight": 1500, "price": 300, "cod_amount": 300}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 09:56:38 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 63<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "id": "728827e9-ca3e-49f3-9670-3b752736ecec",
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--39"><a class="anchor" href="#true--39"></a>Изменение посылки</h4>
@@ -3182,7 +5269,7 @@ request_body
 expected_result
 </td>
 <td class="hdlist2">
-<p>200 {"success": true}</p>
+<p>202 {"success": true}</p>
 </td>
 </tr>
 </table>
@@ -3198,6 +5285,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/parcel/728827e9-ca3e-49f3-9670-3b752736ecec" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"state": "PU0001", "type": "foods", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", "receiver":"6cca769e-f380-4385-805c-84232c51a60c", "address_id": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "transfer_via": "f50a7aaa-8a1d-11e6-8a66-83b0de5b609d", "weight": 5000, "price": 675, "paid_amount": 675, "cod_amount": 675}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 202 Accepted<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 10:03:23 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3268,6 +5401,104 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/office-stat" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 12:08:13 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 491<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "97b8b9253b9cda00b159d122ffa5025bee3af665"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "rules": {
+    "delivered": [
+      "PU0007"
+    ],
+    "on_stock": [
+      "PU0003",
+      "PO0003",
+      "PO0004"
+    ],
+    "in": [
+      "PO0010",
+      "PO0011"
+    ],
+    "release": [
+      "PU0004"
+    ],
+    "new": [
+      "PU0000",
+      "PO0001",
+      "PO0002"
+    ],
+    "in_progress": [
+      "PO0005",
+      "PO0006"
+    ],
+    "trans": [
+      "PU0002",
+      "PU0005",
+      "PU0006",
+      "PO0009"
+    ],
+    "out": [
+      "PU0001",
+      "PO0007",
+      "PO0008"
+    ]
+  },
+  "total": 65,
+  "stats": {
+    "delivered": 0,
+    "on_stock": 14,
+    "in": 0,
+    "release": 0,
+    "new": 0,
+    "in_progress": 0,
+    "trans": 2,
+    "out": 42
+  },
+  "success": true,
+  "filters": {
+    "returns": 0,
+    "cancellations": 0
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--41"><a class="anchor" href="#true--41"></a>Сгруппированный список посылок для отделения</h4>
@@ -3317,6 +5548,199 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/parcel/grouped-list?office_id=7dea0898-865d-4f11-af5b-337acf3464f2" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 12:12:50 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 8468<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "5dbd204337166e3104e2671a00257d32a72ca716"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "grouped": [
+    {
+      "group": "inbox",
+      "parcels": [
+        {
+          "address_id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+          "code": "T8BMY33DM",
+          "weight": 0,
+          "agent": "44823a06-067c-4cbc-9193-675abaf35e4b",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "2bab4b39-1a6f-417e-a8e7-4ad59bfbfdd3",
+          "paid_amount": 0,
+          "entity_type": "shelf",
+          "state": "PU0099",
+          "mark": "R",
+          "last_seen_at": "2018-06-26T13:39:30.556186+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 0,
+          "checked_in_at": null,
+          "class": "I.PRP.NR.NA.S000",
+          "pentity": "0223928d-46c1-4d00-940b-63a4e430295e",
+          "transfer_via": null,
+          "sender": "7dea0898-865d-4f11-af5b-337acf3464f2",
+          "nsid": 0,
+          "is_paid": false,
+          "modified_at": "2018-05-03T07:49:31.912000+00:00",
+          "additional_data": {
+            "ttl_days": 15,
+            "ttl_days_default": 15,
+            "agent_office": "7dea0898-865d-4f11-af5b-337acf3464f2",
+            "document_id": "04f1546e-6d55-11e7-94f9-00163e8cc029",
+            "label": "+Возврат-T8-200717/001"
+          },
+          "entity_label": "inbox",
+          "receiver": "1678166e-a050-430b-878a-5244ca5d8659",
+          "cod_amount": 0,
+          "created_at": "2017-07-20T14:09:17.620979+00:00",
+          "goes_back": true
+        },
+        {
+          "address_id": "26b6ea98-4f4a-11e6-b08e-1f448ec92245",
+          "code": "M1A0PE0",
+          "weight": 1000,
+          "agent": "1678166e-a050-430b-878a-5244ca5d8659",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "3a7c9413-4c11-4a89-ac07-4f28e61de5b6",
+          "paid_amount": 0,
+          "entity_type": "shelf",
+          "state": "PU0099",
+          "mark": null,
+          "last_seen_at": "2018-06-26T13:39:25.725169+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 152,
+          "checked_in_at": "2017-09-15T09:35:09.740110+00:00",
+          "class": "I.COD.NR.NA.S000",
+          "pentity": "0223928d-46c1-4d00-940b-63a4e430295e",
+          "transfer_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+          "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+          "nsid": 0,
+          "is_paid": false,
+          "modified_at": "2018-05-03T07:55:02.529000+00:00",
+          "additional_data": {
+            "erp_token": "8ce6be3f-157d-4165-a52e-5e0d0f951eea",
+            "_receiver": {
+              "phone": "38063XXXX682",
+              "first_name": "Test",
+              "last_name": "Customer2",
+              "id": 903370,
+              "email": "TestCustomer2@mail.ru"
+            },
+            "return_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "checked_in_loc": "7dea0898-865d-4f11-af5b-337acf3464f2",
+            "agent_office": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "ttl_days_default": 5,
+            "ttl_days": 7
+          },
+          "entity_label": "inbox",
+          "receiver": "ecfb88c6-e753-44e9-83be-6e974ecab82c",
+          "cod_amount": 152,
+          "created_at": "2016-12-28T13:57:21.038967+00:00",
+          "goes_back": true
+        }
+      ]
+    },
+    {
+      "group": "store",
+      "parcels": [
+        {
+          "address_id": "26b6ea98-4f4a-11e6-b08e-1f448ec92245",
+          "code": "M1A009A",
+          "weight": 1000,
+          "agent": "1678166e-a050-430b-878a-5244ca5d8659",
+          "is_dirty": false,
+          "is_open": true,
+          "paid_at": null,
+          "closed_at": null,
+          "id": "b0e5b3cc-44cf-41e8-b681-4e039cddbf3b",
+          "paid_amount": 191,
+          "entity_type": "shelf",
+          "state": "PU0007",
+          "mark": null,
+          "last_seen_at": "2018-06-26T13:39:12.792419+00:00",
+          "type": "undef",
+          "delivery_type": "W2W",
+          "parent": null,
+          "price": 191,
+          "checked_in_at": "2017-02-05T18:36:48.570000+00:00",
+          "class": "I.COD.NR.NA.S000",
+          "pentity": "240f772c-65d6-4ee5-bb33-73b2f1319725",
+          "transfer_via": "7dea0898-865d-4f11-af5b-337acf3464f2",
+          "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+          "nsid": 0,
+          "is_paid": true,
+          "modified_at": "2018-04-19T10:41:11.068573+00:00",
+          "additional_data": {
+            "erp_token": "8ce6be3f-157d-4165-a52e-5e0d0f951eea",
+            "_receiver": {
+              "phone": "38063XXXX471",
+              "first_name": "Test",
+              "last_name": "Customer",
+              "id": 2300700,
+              "email": "testCustomer@ukr.net"
+            },
+            "return_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "agent_office": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+            "ttl_days_default": 5,
+            "ttl_days": 5
+          },
+          "entity_label": "01",
+          "receiver": "ae9ad33d-f07a-4694-b414-484095b111da",
+          "cod_amount": 191,
+          "created_at": "2016-12-28T14:27:05.295523+00:00",
+          "goes_back": false
+        }
+      ]
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3369,6 +5793,55 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/stat" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 12:27:29 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 63<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "59b2fc69991ec211dedb998f5abaeeff438f4281"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "on_release": 0,
+  "sender": 4,
+  "success": true,
+  "receiver": 22
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--43"><a class="anchor" href="#true--43"></a>Трекинговая информация о пользовательских посылках</h4>
@@ -3411,6 +5884,116 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/parcel/track" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 12:30:45 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1510<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "f93ff5a5cee4f3d4ad10ce2ed3ec110a5aa1b757"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "sender": [
+    {
+      "code": "T1PR6NA6R",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lon": 30.45632,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.431722,
+      "id": "94936244-3461-406d-b773-f1f0852074bb"
+    },
+    {
+      "code": "T1BR5NB8M",
+      "sender": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lon": 30.679338,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.405237,
+      "id": "106c252b-ebb6-426f-920a-ff8f616faf3b"
+    }
+  ],
+  "success": true,
+  "receiver": [
+    {
+      "code": "K26V49E",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.679338,
+      "state": "PU0099",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.405237,
+      "id": "be803f61-84dc-4be2-8fb2-d687acd4d7bc"
+    },
+    {
+      "code": "K26ZXT0",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.599589,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.450822,
+      "id": "71d73f6a-c0e7-4053-850e-fd22fd445c18"
+    },
+    {
+      "code": "K2700L2",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.599589,
+      "state": "PU0003",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.450822,
+      "id": "24a407c0-7601-4262-a07e-75551959529e"
+    },
+    {
+      "code": "M21B01B",
+      "sender": "1678166e-a050-430b-878a-5244ca5d8659",
+      "lon": 30.520706,
+      "state": "PU0099",
+      "goes_back": false,
+      "receiver": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+      "lat": 50.442561,
+      "id": "8328aba4-1526-4f13-92f5-c6090d184597"
+    }
+  ]
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -3518,6 +6101,154 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/offices?all=true" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 12:55:05 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 45165<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "9cfa686056f0608e98a9f2ac1b9a8a70d5a91d2f"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "offices": [
+    {
+      "address_data": {
+        "index": "02121"
+      },
+      "name": "Киев, Отделение Склад",
+      "descr": "Киев, Отделение Склад",
+      "schedule": {},
+      "is_internal": true,
+      "number": 0,
+      "photos": [],
+      "id": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "pay_cash": null,
+      "phone": "380110000000",
+      "email": "kiev_0@tbt-post.net",
+      "way_photos": [],
+      "optimal_hours": {},
+      "services": [
+        "warehouse"
+      ],
+      "additional_data": {
+        "label": "Склад-0 (МК)",
+        "code_prefix": "T0",
+        "sms_addr": "Kiev, sklad modnaKasta"
+      },
+      "ui_address": "м.Київ, Харківське шосе 201-203к1А",
+      "address": {
+        "lang": "ru",
+        "city": "Киев",
+        "building": "201-203к1А",
+        "area": null,
+        "country": "UA",
+        "region": "Киев",
+        "lon": 30.679338,
+        "geo_object": {},
+        "addr_type": "fc_office",
+        "note": "Отделение Склад",
+        "modified_at": "2016-10-06T11:38:08.992923+00:00",
+        "street": "Харьковское шоссе",
+        "geo_source": "yandex",
+        "lat": 50.405237,
+        "id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+        "accuracy": "exact"
+      },
+      "pay_card": null
+    },
+    {
+      "address_data": {
+        "index": "65011"
+      },
+      "name": "Одесса, Склад №1",
+      "descr": "Одесса, Отделение Склад №1",
+      "schedule": {
+        "1": "09:00-20:00",
+        "2": "09:00-20:00",
+        "3": "09:00-20:00",
+        "4": "09:00-20:00",
+        "5": "09:00-20:00",
+        "6": "09:00-20:00",
+        "7": "-"
+      },
+      "is_internal": true,
+      "number": 0,
+      "photos": [],
+      "id": "b4d9d2da-be3e-4682-b7cf-fd645f14c5e5",
+      "pay_cash": true,
+      "phone": "380111000000",
+      "email": "odessa_0@tbt-post.net",
+      "way_photos": [],
+      "optimal_hours": {},
+      "services": [
+        "warehouse"
+      ],
+      "additional_data": {
+        "uk:label": "Одеса-Склад-1",
+        "label": "Одесса-Cклад-1",
+        "code_prefix": "TK",
+        "uk:sms_addr": "Odessa, viddilennia sklad 1",
+        "sms_addr": "Odessa, otdelenie sklad 1"
+      },
+      "ui_address": "м.Одеса, Базарна вулиця 80",
+      "address": {
+        "lang": "ru",
+        "city": "Одесса",
+        "building": "80",
+        "area": "Одесский городской совет",
+        "country": "UA",
+        "region": "Одесская область",
+        "lon": 30.737777,
+        "geo_object": {},
+        "addr_type": "cc_office",
+        "note": "Склад-1",
+        "modified_at": "2018-05-08T12:12:01.037399+00:00",
+        "street": "Базарная улица",
+        "geo_source": "yandex",
+        "lat": 46.474389,
+        "id": "032af2ee-52b9-11e8-b7d9-93c11d54d8c4",
+        "accuracy": "exact"
+      },
+      "pay_card": false
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--46"><a class="anchor" href="#true--46"></a>Список адресов отделений</h4>
@@ -3595,6 +6326,90 @@ fc_office
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address/list?id%5B%5D=5acc5178-8bb9-11e6-9a61-83019362fcae&amp;id%5B%5D=032af2ee-52b9-11e8-b7d9-93c11d54d8c4" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 13:12:21 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1331<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "3cc061dde859dd8f779f8f10e98fd468a94f2522"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "address_list": [
+    {
+      "lang": "ru",
+      "city": "Одесса",
+      "building": "80",
+      "area": "Одесский городской совет",
+      "country": "UA",
+      "region": "Одесская область",
+      "lon": 30.737777,
+      "geo_object": {},
+      "id": "032af2ee-52b9-11e8-b7d9-93c11d54d8c4",
+      "note": "Склад-1",
+      "modified_at": "2018-05-08T12:12:01.037399+00:00",
+      "street": "Базарная улица",
+      "geo_source": "yandex",
+      "lat": 46.474389,
+      "addr_type": "cc_office",
+      "accuracy": "exact"
+    },
+    {
+      "lang": "ru",
+      "city": "Киев",
+      "building": "201-203к1А",
+      "area": null,
+      "country": "UA",
+      "region": "Киев",
+      "lon": 30.679338,
+      "geo_object": {},
+      "id": "5acc5178-8bb9-11e6-9a61-83019362fcae",
+      "note": "Отделение Склад",
+      "modified_at": "2016-10-06T11:38:08.992923+00:00",
+      "street": "Харьковское шоссе",
+      "geo_source": "yandex",
+      "lat": 50.405237,
+      "addr_type": "fc_office",
+      "accuracy": "exact"
+    }
+  ]
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3675,6 +6490,68 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address?region=%D0%9A%D0%B8%D0%B5%D0%B2&amp;city=%D0%9A%D0%B8%D0%B5%D0%B2&amp;street=%D0%A5%D0%B0%D1%80%D1%8C%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%BE%D0%B5%20%D1%88%D0%BE%D1%81%D1%81%D0%B5&amp;building=201-203" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Thu, 17 Jan 2019 13:16:30 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 525<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "252fb40a97403595bcea1297618cb1432d54adb7"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "lang": "uk",
+  "city": "Київ",
+  "building": "201/203",
+  "success": true,
+  "area": "місто Київ",
+  "country": "UA",
+  "region": null,
+  "lon": 30.6817834,
+  "geo_object": {},
+  "id": "afea6db6-0074-11e9-a8b4-1f50ad4e3573",
+  "note": null,
+  "modified_at": "2018-12-15T14:21:17.909359+00:00",
+  "street": "Харківське шосе",
+  "geo_source": "google",
+  "lat": 50.4035667,
+  "addr_type": "regular",
+  "accuracy": "exact"
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--48"><a class="anchor" href="#true--48"></a>Получение списка фильтров (агрегации) адресов</h4>
@@ -3742,8 +6619,88 @@ expected_result
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>Дополнительный параметр <code>pattern</code> используется для дополнительной фильтрации результирующего списка фильтров.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Дополнительный параметр <code>pattern</code> используется для дополнительной фильтрации результирующего списка фильтров.
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/address/filters?field=street&amp;region=%D0%A7%D0%B5%D1%80%D0%BA%D0%B0%D1%81%D1%8C%D0%BA%D0%B0%20%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C&amp;city=%D0%A7%D0%B5%D1%80%D0%BA%D0%B0%D1%81%D0%B8" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 12:54:00 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 2593<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "40e2be2ddfd8b645656f04ee65b10296c6fc5fe7"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "filters": [
+    "бульвар Шевченка",
+    "вулиця Байди Вишневецького",
+    "вулиця Благовісна",
+    "вулиця Вернигори",
+    "вулиця Віталія Вергая",
+    "вулиця В'ячеслава Чорновола",
+    "вулиця Гагаріна",
+    "вулиця Генерала Момота",
+    "вулиця Дахнівська",
+    "вулиця Лесі Українки",
+    "вулиця Луценка",
+    "вулиця Максима Залізняка",
+    "вулиця Надпільна",
+    "вулиця Нарбутівська",
+    "вулиця Небесної Сотні",
+    "вулиця Остафія Дашковича",
+    "вулиця Самійла Кішки",
+    "вулиця Сержанта Волкова",
+    "вулиця Сержанта Смирнова",
+    "вулиця Слави",
+    "вулиця Сумгаїтська",
+    "вулиця Тараскова",
+    "вулиця Чехова"
+  ]
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3839,6 +6796,63 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"region": "Вінницька область","city": "Крижопіль", "street": "вулиця Героїв України", "building": "18", "lang": "ua" }'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 13:04:23 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 583<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "building": "18",
+  "street": "вулиця Героїв України",
+  "lat": 48.3836026,
+  "lang": "ru",
+  "city": "Крижопіль",
+  "success": true,
+  "area": "Крижопільський район",
+  "country": "UA",
+  "region": "Вінницька область",
+  "lon": 28.8663538,
+  "geo_source": "google",
+  "accuracy": "other"
+}</code></pre>
+</div>
+</div>
 <div class="paragraph">
 <p>Для обратного кодирования в теле запроса необходимо указывать координаты.</p>
 </div>
@@ -3885,6 +6899,64 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"lat": 48.386047, "lon": 28.865174}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 13:11:18 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 626<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "building": "18",
+  "street": "вулиця Героїв України",
+  "lat": 48.386302,
+  "id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+  "lang": "ru",
+  "city": "Крижопіль",
+  "success": true,
+  "area": "Крижопільський район",
+  "country": "UA",
+  "region": "Вінницька область",
+  "lon": 28.865319,
+  "geo_source": "google",
+  "accuracy": "exact"
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -3953,6 +7025,73 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/user/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 13:40:35 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 738<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "d6acb020c6f10b09190fa38a776c35472dbd7145"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "address_list": [
+    {
+      "building": "18",
+      "city": "Крижопіль",
+      "address_id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+      "apartment": "1",
+      "lang": "ru",
+      "service": "courier",
+      "title": "Крижопіль, вулиця Героїв України, 18",
+      "country": "UA",
+      "notes": "TEST",
+      "area": "Крижопільський район",
+      "modified_at": "2019-01-20T13:50:34.707572+00:00",
+      "lon": 28.865319,
+      "is_default": false,
+      "street": "вулиця Героїв України",
+      "additional_data": {},
+      "lat": 48.386302,
+      "region": "Вінницька область"
+    }
+  ]
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--51"><a class="anchor" href="#true--51"></a>Добавление пользовательского адреса</h4>
@@ -3999,6 +7138,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/user/address" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{ "address_id" : "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b", "service": "courier", "title": "Крижопіль, вулиця Героїв України, 18", "apartment": "1", "notes": "TEST"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 13:50:34 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -4067,6 +7252,73 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/user/address/	cf8b0967-f1d3-4e53-aa48-297940415263" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:08:43 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 2141<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "b63d0f8a91f618d03e2cbb3213d77c6f6837da72"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "address_list": [
+    {
+      "building": "18",
+      "city": "Крижопіль",
+      "address_id": "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b",
+      "apartment": "2",
+      "lang": "ru",
+      "service": "courier",
+      "title": "Крижопіль, вулиця Героїв України, 18",
+      "country": "UA",
+      "notes": "TEST",
+      "area": "Крижопільський район",
+      "modified_at": "2019-01-20T13:50:34.707572+00:00",
+      "lon": 28.865319,
+      "is_default": false,
+      "street": "вулиця Героїв України",
+      "additional_data": {},
+      "lat": 48.386302,
+      "region": "Вінницька область"
+    }
+  ]
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--53"><a class="anchor" href="#true--53"></a>Добавление пользовательского адреса произвольного пользователя</h4>
@@ -4113,6 +7365,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/user/address/86761ba9-be25-47e1-8483-cb43ee3f241e" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{ "address_id" : "2ce89d5e-1cb5-11e9-88a7-ab8c8bd7420b", "service": "courier", "title": "Крижопіль, вулиця Героїв України, 18", "apartment": "2", "notes": "TEST"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:15:43 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -4177,6 +7475,101 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"type": "rack", "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9", "descr": "Test", "label": "test inbox", "path": "tst/test inbox"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 15:03:26 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 333<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+  "descr": "Test",
+  "success": true,
+  "properties": {
+    "code": "$Er$F0:0014$",
+    "path": "test inbox",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9"
+    ],
+    "label": "test inbox"
+  },
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "rack",
+  "id": "afecf905-2b52-4975-9569-51c5068d4b1a"
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all" style="width: 35%;">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Возможные параметры ENTITY_TYPE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">box: Коробка</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">cell: Ячейка</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">shelf: Полка</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">rack: Стелаж</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">row: Ряд</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">stock: Склад</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">car: Машина</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">office: Отделение</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="true--56"><a class="anchor" href="#true--56"></a>Изменение ресурса отеления</h4>
@@ -4243,6 +7636,52 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/op/entity/afecf905-2b52-4975-9569-51c5068d4b1a" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"descr": "New desc", "label": "new inbox", "path": "tst/new_inbox"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 15:06:23 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -4311,6 +7750,51 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X DELETE "https://sandbox-api.tbt-post.net/api/v1/op/entity/afecf905-2b52-4975-9569-51c5068d4b1a" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 15:16:24 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--58"><a class="anchor" href="#true--58"></a>Получение описания ресурса</h4>
@@ -4374,6 +7858,90 @@ expected_result
 </td>
 <td class="content">
 получение сущности выполняется или по <code>&lt;ENTITY ID&gt;</code> в method_params или по &lt;ENTITY BARCODE&gt; в get_params
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity/95112660-f50e-4b7c-8b81-92139cda3aa4" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Или</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity?code=%24EC%24F0%3A0006%24" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 15:05:05 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 3709<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "e72d99d2e626912b9b524ec818529624a4c4ae91"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "descr": "Киев, курьерское отделение, Ряд 00, Стелаж 00, Ячейка inbox",
+  "parent": "a745e8ab-9733-45cd-9650-776b06d3bbf7",
+  "success": true,
+  "id": "95112660-f50e-4b7c-8b81-92139cda3aa4",
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "cell",
+  "properties": {
+    "path": "00.00/inbox",
+    "bcode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAaIAAABzCAIAAABVfJEGAAAIn0lEQVR4nO3dX0zNfxzH8Xf/RP9bVJSxikazYrMRm5J0aMOWq9aFFo1xh02GicaFzZY/V4yNuUCsGyebmSgq+VdmmpSmRZ1YU4mOU+d38d3vrNXp+JYT3/PZ83HF9/P+fj6f76f26vT9fj942e12AQB1ef/rCQDA1CLmACiOmAOgOGIOgOKIOQCKI+YAKI6YA6A4Yg6A4og5AIoj5gAozve3FV5eXiP/qm0OcxwcuVfM6cHxetN/otMJTPRER4F20HW9i1b9M/znV+q0QM/cnM7BxRCuTxxZ4/pEp3Nz0bnTJtc1Lg46ndV4TS7WTc+FO21ycTmua0ZelJ4JO52562nr/+Z3MbfxxnLRj55vCT3bVfk0B0BxxBwAxRFzABRHzAFQHDEHQHHEHADFEXMAFEfMAVAcMQdAccQcAMURcwAUR8wBUBwxB0BxxBwAxRFzABRHzAFQHDEHQHHEHADFEXMAFEfMAVAcMQdAccQcAMURcwAUR8wBUBwxB0BxxBwAxRFzABRHzAFQHDEHQHHEHADFEXMAFEfMAVAcMQdAccQcAMURcwAUR8wBUBwxB0BxxBwAxRFzABRHzAFQHDEHQHHEHADFEXMAFEfMAVAcMQdAccQcAMURcwAUR8wBUBwxB0BxxBwAxRFzABRHzAFQHDEHQHHEHADFEXMAFEfMAVAcMQdAccQcAMURcwAU52W32//1HABgCvFpDoDiiDkAiiPmACiOmAOgOGIOgOKIOQCKI+YAKI6YA6A4Yg6A4og5g6qtrV29evXY41++fPEax549e0YV37p1KzMzMyIiIigoKCUl5cSJE729vfrHEhGTyeR0rISEhJFlz549M5lMoaGhISEhmZmZNTU1k7tqPf24q2ZgYODo0aNJSUkBAQGRkZGFhYXt7e1OZ+VifeAZ7DCkmpqaVatWjT3e3d093pdy9+7djrLh4eEdO3aMrTl+/Lj+sex2e1ZWltOx4uPjHTV1dXX+/v4jW/38/B49ejTRS9bTj7tqenp6kpOTR11UTk6O04m5WB94BGLOcMxm87p168LCwry8vBITE3ft2tXQ0OBo1WIuJibGdSfnzp0TkcDAwLNnz3Z1dQ0ODr5582b//v1nzpzRP5b9/5i7d++ei7GWLVsmInl5eZ2dnRaLpaCgQESSkpKGh4cndOF6+nFXTX5+vohER0eXlZX19fX19PRcvXp13759o6b02/WBRyDmjOXUqVNjPzqFhoY6CvTEnNVqjYyMFJGbN2/+yVh2HTH34sULEYmNjR0cHNSO/Pr1Ky4uTkQeP36s44on0I+7ajo7O318fHx8fJ4/f/6H6wOPwL05A7FarcXFxb6+vteuXausrExNTW1ubr548eLSpUsn1M+DBw8sFktiYuLWrVuneqyHDx+KyJYtW6ZNm6Yd8fX1zcnJ0abh3n7cVWM2m4eGhjZt2qR97nPKXesDIyDmDMRisfT395tMptzcXH9/f+1Of0FBwYTyQkTq6+tFJD09/S+M9e7dOxFZsmTJyIPabS+taaTa2lrtCUZ1dfUk+nFXTUNDg4hkZ2e7uC53rQ+MgJgzkDlz5gQEBHR1df22sqOjY+zTz7t37zpaRWT+/PluGUtEMjMzR41VWVmpNX39+lVEoqKiRtZrvzJrTTrp6cddNdpVJyUlXbhwISEhwd/fPy4ubu/evSMfQ09ofWBwxJyBeHt7FxUV1dfXZ2dn37lzx2az2Sf1j54ODAyIyIwZM/7CWD9//hSRadOmdXR0xMXFzZs3r7W1VXvQ+ePHD/f2464abX3Ky8sLCwtbWlqsVuuHDx9Onz6dlpY2ODjo3vWBERBzxnLo0KHLly+3traWlJTU1dVFRUXl5+ePfZ/L6SMIk8mktQYEBIiOlNE5ljh7BJGWlqY1TZ8+XUSsVuvw8LDNZtOeZmphMTZnV6xYoZ0+9jU0Pf24q0a7bVdaWlpcXPzp06fe3l6z2RwdHf3y5csrV65MYn1gcMSc4Wzbtu3t27cVFRXazSCz2bx48WLtAaJOMTExItLW1vYXxoqIiBCRrq6uuXPnfvz4sb29PT4+3mKxOJrc2I+7asLDw0Vk48aNR44cmT17dnBw8IYNG44dOyYi9+/fd+/6wAiIOYMKCwuLioo6efJkVVVVf3//4cOH9Z+7fPlyEXHcPpvSsRYuXCgir1+/HnmwsbHR0eTGftxVo23hGPV6cGJiooxzP/FP1gdGQMwZXWxsrLe39/v37/Wfkp6ePnPmzKamptu3b0/1WGvWrBGR8vJyq9WqHbHZbGVlZfK7R72T6MddNampqfJ/9jk0NTWJyKxZs1xMchLrA0OYulfyMFEtLS0ZGRk3btzo6OioqalJTU1ta2vLzc0Vkc2bN2s1OndBlJaWikhQUND58+e1dyNevXp18OBBxy4IPWPZ9e2CSElJEZG8vLyurq7u7m5t18GiRYuGhoZGVTr2llZVVU2uH7fU2Gw27YXhkpKSz58/9/X1affmROTSpUsTWh94BGLOQJqbmx0/fvz8/Bx/DgkJaWxs1Gpc7Gkdue9yaGhI2880imNPq56x7Ppi7smTJ6P2kPr6+lZWVo6tdB1zevpxV01FRYWPj8+oxVm5cqXVap3Q+sAjEHMGMjw8XFVVtXPnzpSUlMDAQG9v7wULFmzfvr29vd1RozPmNNevX1+7dm14eHhgYGBycnJJScm3b9/0j2XXF3N2u/3p06fr168PDg4OCgrKyMgYb5uX65jT2Y+7aqqrq7OyssLCwvz8/BISEoqKir5//+5o1bk+8Aj8d9QGVV1dfeDAgbG7BTx9LE/E+ng6HkEYlLf33/vS/M2xPBHr4+n4+hmUl5eXkmN5ItbH0/FLKwDF8WkOgOKIOQCKI+YAKI6YA6A4Yg6A4og5AIoj5gAojpgDoDhiDoDiiDkAiiPmACiOmAOgOGIOgOKIOQCKI+YAKO4/Z1YN/bO2iEAAAAAASUVORK5CYII=",
+    "code": "$EC$F0:0006$",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9",
+      "642fc9dc-XXXX-ac4864b1c452",
+      "a745e8ab-XXXX-776b06d3bbf7"
+    ],
+    "label": "inbox"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: <code>data:image/png;base64,iV&#8230;&#8203;&lt;body&gt;&#8230;&#8203;U5ErkJggg==</code>
 </td>
 </tr>
 </table>
@@ -4445,6 +8013,96 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/op/entity/list" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:51:20 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 5359<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "42a61e2e40bedd8d514632d6a9b4010b4b4367de"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "entities": [
+    {
+      "descr": "Киев, курьерское отделение",
+      "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "id": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "office",
+      "properties": {
+        "label": "F0"
+      }
+    },
+    {
+      "descr": "Киев, курьерское отделение, Ряд 00",
+      "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+      "id": "642fc9dc-6e45-4916-ba4f-ac4864b1c452",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "row",
+      "properties": {
+        "path": "00",
+        "code": "$ER$F0:0002$",
+        "label": "00",
+        "db_path": [
+          "d4ef2889-XXXX-8dfe1b3cd0f9"
+        ]
+      }
+    },
+    {
+      "descr": "Киев, курьерское отделение, Ряд 00, Стелаж 00, Ячейка inbox",
+      "parent": "a745e8ab-9733-45cd-9650-776b06d3bbf7",
+      "id": "95112660-f50e-4b7c-8b81-92139cda3aa4",
+      "owner": "6beaa91b-XXXX-d8f89d700e4c",
+      "type": "cell",
+      "properties": {
+        "path": "00.00/inbox",
+        "code": "$EC$F0:0006$",
+        "db_path": [
+          "d4ef2889-XXXX-8dfe1b3cd0f9",
+          "642fc9dc-XXXX-ac4864b1c452",
+          "a745e8ab-XXXX-776b06d3bbf7"
+        ],
+        "label": "inbox"
+      }
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true-e"><a class="anchor" href="#true-e"></a>Пeреназначение иерархии для ресурса отделения</h4>
@@ -4500,6 +8158,65 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/entity/reparent/afecf905-2b52-4975-9569-51c5068d4b1a" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:59:26 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 78<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "descr": "New desc",
+  "parent": "d4ef2889-2dea-48ad-b86e-8dfe1b3cd0f9",
+  "success": true,
+  "id": "afecf905-2b52-4975-9569-51c5068d4b1a",
+  "owner": "6beaa91b-XXXX-d8f89d700e4c",
+  "type": "rack",
+  "properties": {
+    "path": "new inbox",
+    "code": "$Er$F0:0014$",
+    "db_path": [
+      "d4ef2889-XXXX-8dfe1b3cd0f9"
+    ],
+    "label": "new inbox"
+  }
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -4553,6 +8270,66 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/parcel/states?lang=ru" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:29:06 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1555<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "fb896b919bce41cf32ed9227daba8fea8ab100fd"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "states": {
+    "PU0098": "В процессе обработки",
+    "PU0099": "Отменено",
+    "PU0096": "Расформировано",
+    "PU0097": "Возврат отправителю",
+    "PU0003": "В отделении",
+    "PU0002": "Перемещается между отделениями",
+    "PU0001": "Отправление принято к доставке",
+    "PU0000": "Заявка зарегистрирована в системе",
+    "PU0007": "Доставлено",
+    "PU0006": "Ожидает вручения (в процессе доставки)",
+    "PU0005": "Передано курьеру",
+    "PU0004": "Ожидает выдачи"
+  },
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="true--62"><a class="anchor" href="#true--62"></a>Сообщения для действий по отправлениям</h4>
@@ -4602,6 +8379,66 @@ expected_result
 </td>
 </tr>
 </table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/parcel/actions?lang=ru" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 20 Jan 2019 14:31:37 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 1291<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Etag: "50cc289c90d05c376c7564e44dde2585b3cfbc1b"<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "actions": {
+    "PU0098": "В процессе обработки",
+    "PU0099": "Отмена",
+    "PU0096": "Расформировать",
+    "PU0097": "Вернуть отправителю",
+    "PU0003": "Оприходовать",
+    "PU0002": "Перемещается между отделениями",
+    "PU0001": "Принять к доставке",
+    "PU0000": "Отменить все статусы",
+    "PU0007": "Выдать",
+    "PU0006": "Адресная доставка",
+    "PU0005": "Передать курьеру",
+    "PU0004": "Готово к выдаче"
+  }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -4654,6 +8491,58 @@ expected_result
 <div class="paragraph">
 <p>Для action = <code>parcel_update</code> &lt;BATCH_KEY&gt; является <code>parcel_id</code>, для action = <code>entity_reparent</code> &lt;BATCH_KEY&gt; является <code>entity_id</code></p>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/batch" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"action":"parcel_update","batches":{"252395d6-5764-4232-baeb-2020db2d8c2c":{"state":"PU0003","delivery_type":"W2W"},"0e1837e3-609f-4bc6-a121-3b21c0f11a5b":{"state":"PU0003","delivery_type":"W2W"}}}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 11:18:36 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 131<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "0e1837e3-609f-4bc6-a121-3b21c0f11a5b": {
+    "status": 202
+  },
+  "252395d6-5764-4232-baeb-2020db2d8c2c": {
+    "status": 202
+  },
+  "success": true
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4701,7 +8590,7 @@ request_body
 expected_result
 </td>
 <td class="hdlist2">
-<p>202 {"success": true}</p>
+<p>202 {"success": true, "document_id": "&lt;ID&gt;"}</p>
 </td>
 </tr>
 </table>
@@ -4714,6 +8603,65 @@ expected_result
 </td>
 <td class="content">
 Ограничение объема передаваемых в запросе данных&#8201;&#8212;&#8201;2М
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/op/report" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt \
+-d '{"state": "PU0001", "type": "foods", "class": "A.PRP.NR.NA.S000", "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 14:41:18 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 72<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true,
+  "document_id": "9ccc7232-1d8a-11e9-bda0-00163e8cc029"
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Применимо для отправки данных о работе оператора в графическом интерфейсе.
 </td>
 </tr>
 </table>
@@ -4767,6 +8715,64 @@ expected_result
 </tr>
 </table>
 </div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/ev/parcel/sched/f1a7f050-59f7-4d9e-812a-15940e13560c" \
+-H "Content-Type: application/json" \
+-b cookie-jar.txt \
+-d '{"type" : "receiving", "sched" : "1548060981786"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 202 Accepted<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 21 Jan 2019 14:36:34 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br>
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS<br>
+Access-Control-Max-Age: 600<br>
+Access-Control-Allow-Credentials: true<br>
+Access-Control-Allow-Origin: <a href="https://sandbox-ui.tbt-post.net" class="bare">https://sandbox-ui.tbt-post.net</a><br>
+Access-Control-Allow-Headers: Content-Type<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Требует авторизации. Применимо для запроса на продление срока хранения собственного отправления.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -4775,7 +8781,7 @@ expected_result
 <div id="footer">
 <div id="footer-text">
 Version 1.3.2<br>
-Last updated 2019-01-04 20:42:20 EET
+Last updated 2019-01-21 17:20:08 EET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
