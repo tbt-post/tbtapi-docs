@@ -433,6 +433,40 @@ Access-Control-Allow-Headers: Content-Type +
 
 NOTE: Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: `data:image/png;base64,iV...<body>...U5ErkJggg==`
 
+==== Получения PDF этикетки заказа
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/print-renderer
+method_params:: compile
+get_params:: pid=<parcel_id> [, cell=<sort_cell_id>]
+request_body:: ----
+expected_result:: 200 <pdf file data>
+
+[]
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/print-renderer/compile/kp?pid=30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2" --output test.pdf \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 18 Feb 2019 12:31:13 GMT +
+Content-Type: application/pdf +
+Content-Length: 35836 +
+Connection: keep-alive +
+Content-Disposition: attachment; filename="tabata_58x81" +
+Vary: Accept-Encoding +
+Etag: "ab6ffba98c9ff360e5cbc4952ef99a7646e980cd" +
+Cache-Control: no-cache +
+
+
+NOTE: Результатом выполнения запроса будет загрузка PDF в файл, указанный в `--output`
 
 ==== Состояние посылки
 

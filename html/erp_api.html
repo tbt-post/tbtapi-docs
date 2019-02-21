@@ -446,6 +446,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#true-c-id">Получение cписка посылок по списку id</a></li>
 <li><a href="#true-c">Получение cписка посылок по участию</a></li>
 <li><a href="#true--4">Получение кодов</a></li>
+<li><a href="#true-pdf">Получения PDF этикетки заказа</a></li>
 <li><a href="#true--5">Состояние посылки</a></li>
 <li><a href="#true--6">История изменения состояний</a></li>
 <li><a href="#true--7">История изменения состояний всех посылок</a></li>
@@ -1321,6 +1322,102 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </td>
 <td class="content">
 Если вставить полученный код в строке браузера, напримпр: "Crhome", то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: <code>data:image/png;base64,iV&#8230;&#8203;&lt;body&gt;&#8230;&#8203;U5ErkJggg==</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="true-pdf"><a class="anchor" href="#true-pdf"></a>Получения PDF этикетки заказа</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+protocol_method
+</td>
+<td class="hdlist2">
+<p>GET</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_name
+</td>
+<td class="hdlist2">
+<p>agent/print-renderer</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_params
+</td>
+<td class="hdlist2">
+<p>compile</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+get_params
+</td>
+<td class="hdlist2">
+<p>pid=&lt;parcel_id&gt; [, cell=&lt;sort_cell_id&gt;]</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+request_body
+</td>
+<td class="hdlist2">
+<p>----</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+expected_result
+</td>
+<td class="hdlist2">
+<p>200 &lt;pdf file data&gt;</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/print-renderer/compile/kp?pid=30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2" --output test.pdf \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 18 Feb 2019 12:31:13 GMT<br>
+Content-Type: application/pdf<br>
+Content-Length: 35836<br>
+Connection: keep-alive<br>
+Content-Disposition: attachment; filename="tabata_58x81"<br>
+Vary: Accept-Encoding<br>
+Etag: "ab6ffba98c9ff360e5cbc4952ef99a7646e980cd"<br>
+Cache-Control: no-cache<br></p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Результатом выполнения запроса будет загрузка PDF в файл, указанный в <code>--output</code>
 </td>
 </tr>
 </table>
@@ -3691,7 +3788,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 <div id="footer">
 <div id="footer-text">
 Version 1.3.2<br>
-Last updated 2019-01-21 17:20:28 EET
+Last updated 2019-02-18 14:36:57 EET
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
