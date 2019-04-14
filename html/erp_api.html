@@ -445,53 +445,49 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#true-id-code">Получение по id/code</a></li>
 <li><a href="#true-c-id">Получение cписка посылок по списку id</a></li>
 <li><a href="#true-c">Получение cписка посылок по участию</a></li>
+<li><a href="#true-items">Получение списка items</a></li>
 <li><a href="#true--4">Получение кодов</a></li>
 <li><a href="#true-pdf">Получения PDF этикетки заказа</a></li>
 <li><a href="#true--5">Состояние посылки</a></li>
 <li><a href="#true--6">История изменения состояний</a></li>
 <li><a href="#true--7">История изменения состояний всех посылок</a></li>
-<li><a href="#true--8">Модификация зарегистрированой посылки</a></li>
-<li><a href="#true--9">Запрос на изменение посылки после принятия к доставке</a></li>
-<li><a href="#true--10">Подтверждение платежа</a></li>
-<li><a href="#true--11">Установка времени хранения посылки на отделении</a></li>
-<li><a href="#true--12">Пометка посылки к отмене на отделении</a></li>
-<li><a href="#true--13">Проверка условий доставки для посылки перед регистрацией</a></li>
+<li><a href="#true--8">Модификация зарегистрированой посылки</a>
+<ul class="sectlevel4">
+<li><a href="#true--9">Модификация содержимого отправления</a></li>
 </ul>
 </li>
-<li><a href="#truequasi-parcel">Quasi-parcel</a>
+<li><a href="#true--10">Запрос на изменение посылки после принятия к доставке</a></li>
+<li><a href="#true--11">Подтверждение платежа</a></li>
+<li><a href="#true--12">Установка времени хранения посылки на отделении</a></li>
+<li><a href="#true--13">Пометка посылки к отмене на отделении</a></li>
+<li><a href="#true--14">Проверка условий доставки для посылки перед регистрацией</a></li>
+</ul>
+</li>
+<li><a href="#true--15">Отделения и адреса</a>
 <ul class="sectlevel3">
-<li><a href="#true-quasi-parcel">Создание заявки на новый quasi-parcel</a></li>
-<li><a href="#true-quasi-parcel-2">Создание quasi-parcel вместе с предоставляемыми данными внешнего перевозчика</a></li>
-<li><a href="#true--14">Добавление ссылок на документы сопровождения - стикеры, ттн, и т.д.</a></li>
-<li><a href="#true--15">Добавление описи содержимого посылки</a></li>
-<li><a href="#true-quasi-parcel-3">Отмена quasi-parcel</a></li>
+<li><a href="#true--16">Получения данных отделений</a></li>
+<li><a href="#true--17">Получение данных адреса из справочника</a></li>
 </ul>
 </li>
-<li><a href="#true--16">Отделения и адреса</a>
+<li><a href="#true--18">Пользователи</a>
 <ul class="sectlevel3">
-<li><a href="#true--17">Получения данных отделений</a></li>
-<li><a href="#true--18">Получение данных адреса из справочника</a></li>
+<li><a href="#true--19">Регистрация пользователя</a></li>
+<li><a href="#true--20">Поиск пользователя</a></li>
 </ul>
 </li>
-<li><a href="#true--19">Пользователи</a>
+<li><a href="#true--21">Контрагенты</a>
 <ul class="sectlevel3">
-<li><a href="#true--20">Регистрация пользователя</a></li>
-<li><a href="#true--21">Поиск пользователя</a></li>
+<li><a href="#true--22">Регистрация контрагента</a></li>
+<li><a href="#true--23">Модификация контрагента</a></li>
+<li><a href="#true--24">Информация о контрагенте</a></li>
+<li><a href="#true--25">Справочник контрагентов</a></li>
 </ul>
 </li>
-<li><a href="#true--22">Контрагенты</a>
-<ul class="sectlevel3">
-<li><a href="#true--23">Регистрация контрагента</a></li>
-<li><a href="#true--24">Модификация контрагента</a></li>
-<li><a href="#true--25">Информация о контрагенте</a></li>
-<li><a href="#true--26">Справочник контрагентов</a></li>
-</ul>
-</li>
-<li><a href="#true--27">Финансовые транзакции</a>
+<li><a href="#true--26">Финансовые транзакции</a>
 <ul class="sectlevel3">
 <li><a href="#true-id">Получение финансовой транзакции по id</a></li>
-<li><a href="#true--28">Получение списка финансовых транзакций за период</a></li>
-<li><a href="#true--29">Получение списка финансовых транзакций по посылке</a></li>
+<li><a href="#true--27">Получение списка финансовых транзакций за период</a></li>
+<li><a href="#true--28">Получение списка финансовых транзакций по посылке</a></li>
 </ul>
 </li>
 </ul>
@@ -656,7 +652,7 @@ expected_result
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-описание <code>PARCEL_ITEM_SPEC</code>: {"barcode": "&lt;UNIQ BARCODE&gt;", "sku": "&lt;SUPPLIER SKU NAME&gt;", "name": "&lt;NAME&gt;", "brand": "&lt;BRAND&gt;", "size": "&lt;SIZE&gt;", "quantity": &lt;QUANTITY as INTEGER&gt;, "weight": &lt;WEIGHT GRAM as INTEGER&gt;, "price": &lt;PRICE as DECIMAL(10,2)&gt;, "comment": "&lt;OPTIONAL COMMENT&gt;", "photo": "&lt;OPTIONAL PHOTO&gt;"}
+описание <code>PARCEL_ITEM_SPEC</code>: {"barcode": "&lt;UNIQ BARCODE&gt;", "sku": "&lt;SUPPLIER SKU NAME&gt;", "name": "&lt;NAME&gt;", "brand": "&lt;BRAND&gt;", "size": "&lt;SIZE&gt;", "quantity": &lt;QUANTITY as INTEGER&gt;, "weight": &lt;WEIGHT GRAM as INTEGER&gt;, "price": &lt;PRICE as DECIMAL(10,2)&gt;, "comment": "&lt;OPTIONAL COMMENT&gt;", "photos":["&lt;OPTIONAL PHOTO_URL_LIST&gt;"]}
 </td>
 </tr>
 </table>
@@ -1229,6 +1225,111 @@ Access-Control-Allow-Headers: Content-Type<br></p>
       "PARCEL SPEC",
       "created_at": "2018-12-11T10:32:02.238169+00:00",
       "goes_back": false
+    }
+  ],
+  "success": true
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="true-items"><a class="anchor" href="#true-items"></a>Получение списка items</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+protocol_method
+</td>
+<td class="hdlist2">
+<p>GET</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_name
+</td>
+<td class="hdlist2">
+<p>agent/parcel/item/list</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_params
+</td>
+<td class="hdlist2">
+<p>&lt;parcel_id&gt;</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+get_params
+</td>
+<td class="hdlist2">
+<p>----</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+request_body
+</td>
+<td class="hdlist2">
+<p>----</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+expected_result
+</td>
+<td class="hdlist2">
+<p>200 {"items":[{"sku":"&lt;SUPPLIER SKU NAME&gt;","name":"&lt;NAME&gt;","weight":&lt;WEIGHT GRAM as INTEGER&gt;,"modified_at":"&lt;DATE&gt;","brand":"&lt;BRAND&gt;","barcode":"&lt;UNIQ BARCODE&gt;","additional_data":{"photos":["&lt;OPTIONAL PHOTO_URL_LIST&gt;"]},"quantity":&lt;QUANTITY as INTEGER&gt;,"price":&lt;PRICE as DECIMAL(10,2)&gt;,"size":"&lt;SIZE&gt;"}],"success":true}</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/list/	cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Authorization: Basic NTEwYWQwOGEtODMwZS00NmFhLWFiNjMtZGZhZGU3NWEwMGE3OmtSZnR2dzdX"</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 14 Apr 2019 14:35:08 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 513<br>
+Connection: keep-alive<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "items": [
+    {
+      "sku": "123_adidas_xl",
+      "name": "Куртка",
+      "weight": 1500,
+      "modified_at": "2019-04-14T14:21:09.904880+00:00",
+      "brand": "Adidas",
+      "barcode": "123456789",
+      "additional_data": {
+        "photos": [
+          "https://m3.ttest.net/imgw/loc/518939a431.jpg", "https://m4.test.net/imgw/325a9fa.jpg"
+        ]
+      },
+      "quantity": 1,
+      "price": 2050,
+      "size": "XS"
     }
   ],
   "success": true
@@ -1900,9 +2001,198 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </tr>
 </table>
 </div>
+<div class="sect4">
+<h5 id="true--9"><a class="anchor" href="#true--9"></a>Модификация содержимого отправления</h5>
+<div class="sect5">
+<h6 id="true-item"><a class="anchor" href="#true-item"></a>Добавление/обновление item</h6>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+protocol_method
+</td>
+<td class="hdlist2">
+<p>PUT</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_name
+</td>
+<td class="hdlist2">
+<p>agent/parcel/item/add</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_params
+</td>
+<td class="hdlist2">
+<p>&lt;PARCEL ID&gt;</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+request_body
+</td>
+<td class="hdlist2">
+<p>{"barcode": "&lt;UNIQ BARCODE&gt;", "sku": "&lt;SUPPLIER SKU NAME&gt;", "name": "&lt;NAME&gt;", "brand": "&lt;BRAND&gt;", "size": "&lt;SIZE&gt;", "quantity": &lt;QUANTITY as INTEGER&gt;, "weight": &lt;WEIGHT GRAM as INTEGER&gt;, "price": &lt;PRICE as DECIMAL(10,2)&gt;, "comment": "&lt;OPTIONAL COMMENT&gt;", "photos": [&lt;OPTIONAL PHOTO_URL_LIST&gt;]}</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+expected_result
+</td>
+<td class="hdlist2">
+<p>200 {"success": true}</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Параметры <code>quantity</code>, <code>price</code>, <code>weight (gramm)</code>, <code>photos</code>, <code>comment</code> - опциональны
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+При добавлении <code>item</code> с тем же <code>barcode</code>, данные будут обновлены.
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/add/cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"barcode": "123456789", "sku": "123_adidas_xl", "name": "Куртка", "brand": "Adidas", "size": "XS", "quantity": 1, "weight": 1500, "price": 2050, "photos": ["https://m3.ttest.net/imgw/loc/518939a431.jpg", "https://m4.test.net/imgw/325a9fa.jpg"]}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 14 Apr 2019 14:18:08 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="true-item-2"><a class="anchor" href="#true-item-2"></a>Удаление item</h6>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+protocol_method
+</td>
+<td class="hdlist2">
+<p>PUT</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_name
+</td>
+<td class="hdlist2">
+<p>agent/parcel/item/del</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_params
+</td>
+<td class="hdlist2">
+<p>&lt;PARCEL ID&gt;</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+request_body
+</td>
+<td class="hdlist2">
+<p>{"barcode": "&lt;UNIQ BARCODE&gt;"}</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+expected_result
+</td>
+<td class="hdlist2">
+<p>200 {"success": true}</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Пример запроса/ответа</dt>
+<dt class="hdlist1">Запрос</dt>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/del/cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"barcode": "12345678910"}'</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Sun, 14 Apr 2019 14:30:21 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 17<br>
+Connection: keep-alive<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "success": true
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="true--9"><a class="anchor" href="#true--9"></a>Запрос на изменение посылки после принятия к доставке</h4>
+<h4 id="true--10"><a class="anchor" href="#true--10"></a>Запрос на изменение посылки после принятия к доставке</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2012,7 +2302,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--10"><a class="anchor" href="#true--10"></a>Подтверждение платежа</h4>
+<h4 id="true--11"><a class="anchor" href="#true--11"></a>Подтверждение платежа</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2110,7 +2400,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--11"><a class="anchor" href="#true--11"></a>Установка времени хранения посылки на отделении</h4>
+<h4 id="true--12"><a class="anchor" href="#true--12"></a>Установка времени хранения посылки на отделении</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2220,7 +2510,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--12"><a class="anchor" href="#true--12"></a>Пометка посылки к отмене на отделении</h4>
+<h4 id="true--13"><a class="anchor" href="#true--13"></a>Пометка посылки к отмене на отделении</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2306,7 +2596,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--13"><a class="anchor" href="#true--13"></a>Проверка условий доставки для посылки перед регистрацией</h4>
+<h4 id="true--14"><a class="anchor" href="#true--14"></a>Проверка условий доставки для посылки перед регистрацией</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2407,489 +2697,9 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="truequasi-parcel"><a class="anchor" href="#truequasi-parcel"></a>Quasi-parcel</h3>
+<h3 id="true--15"><a class="anchor" href="#true--15"></a>Отделения и адреса</h3>
 <div class="sect3">
-<h4 id="true-quasi-parcel"><a class="anchor" href="#true-quasi-parcel"></a>Создание заявки на новый quasi-parcel</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-protocol_method
-</td>
-<td class="hdlist2">
-<p>POST</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_name
-</td>
-<td class="hdlist2">
-<p>agent/quasi-parcel</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_params
-</td>
-<td class="hdlist2">
-<p>----</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-request_body
-</td>
-<td class="hdlist2">
-<p>{"delivery_service":"tabata", "order_id": "&lt;EXT Order ID&gt;", "receiver": { "id": "&lt;EXT User ID&gt;", "phone": &lt;PHONE 380XXYYYYYYY&gt;, "email" : "&lt;USER EMAIL&gt;", "first name" : &lt;FIRST NAME&gt;, "last_name": "&lt;LAST NAME&gt;"}, "delivery_type": &lt;DELIVERY TYPE&gt;, "dest" : [ &lt;LATITUDE&gt;, &lt;LONGITUDE&gt;], "dest_apartment": "&lt;DEST APARTMENT&gt;", "weight" : &lt;WEIGHT GRAM as INTEGER&gt;, "price" : &lt;PRICE as DECIMAL(10,2)&gt;, "cod_amount" : &lt;PRICE as DECIMAL(10,2)&gt;, "type" : "&lt;TYPE CODE&gt;:&lt;CLASS CODE&gt;", "note" : "&lt;USER NOTE&gt;", "created_at": "&lt;DATE TIME in ISO 8601&gt;", "contragent_id" : &lt;CONTRAGENT ID&gt;, "dimensions": [&lt;WIDTH&gt;, &lt;HEIGHT&gt;, &lt;DEPTH&gt;], "_comment" : "&lt;SENDER&#8217;s comment&gt;", "items": [&lt;PARCEL ITEM SPEC&gt;, &#8230;&#8203;]}</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-expected_result
-</td>
-<td class="hdlist2">
-<p>200 { "success": true, "id": "&lt;quasi-parcel uuid&gt;" }</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Пример запроса/ответа</dt>
-<dt class="hdlist1">Запрос</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"delivery_service":"tabata", "order_id": "TEST0010", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'</code></pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ответ</dt>
-<dd>
-<p>HTTP/1.1 200 OK<br>
-Server: nginx/1.10.3<br>
-Date: Fri, 22 Feb 2019 12:22:19 GMT<br>
-Content-Type: application/json; charset=utf-8<br>
-Content-Length: 63<br>
-Connection: keep-alive<br></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
-  "id": "737a4427-e0d1-458e-b2dc-54ce53f63d5f",
-  "success": true
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Возможные значения для параметра <code>delivery_service</code>:<br>
-<code>_any</code>,
-<code>tabata</code>,
-<code>novaposhta</code>,
-<code>meest</code>,
-<code>ukrposhta</code>,
-<code>intime</code>
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-Параметры данного запроса схожи с параметрами запроса на создание посылки: /agent/parcel/new
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="true-quasi-parcel-2"><a class="anchor" href="#true-quasi-parcel-2"></a>Создание quasi-parcel вместе с предоставляемыми данными внешнего перевозчика</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-protocol_method
-</td>
-<td class="hdlist2">
-<p>POST</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_name
-</td>
-<td class="hdlist2">
-<p>agent/quasi-parcel/register</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_params
-</td>
-<td class="hdlist2">
-<p>----</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-request_body
-</td>
-<td class="hdlist2">
-<p>{"delivery_service":"tabata", "tn_id": "&lt;ttn-barcode&gt;", "tn_body": "str", "tn_content_type": "text/xml" |"application/json", "order_id": "&lt;EXT Order ID&gt;", "receiver": { "id": "&lt;EXT User ID&gt;", "phone": &lt;PHONE 380XXYYYYYYY&gt;, "email" : "&lt;USER EMAIL&gt;", "first name" : &lt;FIRST NAME&gt;, "last_name": "&lt;LAST NAME&gt;"}, "delivery_type": &lt;DELIVERY TYPE&gt;, "dest" : [ &lt;LATITUDE&gt;, &lt;LONGITUDE&gt;], "dest_apartment": "&lt;DEST APARTMENT&gt;", "weight" : &lt;WEIGHT GRAM as INTEGER&gt;, "price" : &lt;PRICE as DECIMAL(10,2)&gt;, "cod_amount" : &lt;PRICE as DECIMAL(10,2)&gt;, "type" : "&lt;TYPE CODE&gt;:&lt;CLASS CODE&gt;", "note" : "&lt;USER NOTE&gt;", "created_at": "&lt;DATE TIME in ISO 8601&gt;", "contragent_id" : &lt;CONTRAGENT ID&gt;, "dimensions": [&lt;WIDTH&gt;, &lt;HEIGHT&gt;, &lt;DEPTH&gt;], "_comment" : "&lt;SENDER&#8217;s comment&gt;", "items": [&lt;PARCEL ITEM SPEC&gt;, &#8230;&#8203;]}</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-expected_result
-</td>
-<td class="hdlist2">
-<p>200 { "success": true, "id": "&lt;quasi-parcel uuid&gt;" }</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Пример запроса/ответа</dt>
-<dt class="hdlist1">Запрос</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/register" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"delivery_service":"tabata", "tn_id": "0010", "tn_body": "test_ttn_name", "tn_content_type": "application/json", "order_id": "TEST0010", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'</code></pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ответ</dt>
-<dd>
-<p>HTTP/1.1 200 OK<br>
-Server: nginx/1.10.3<br>
-Date: Fri, 22 Feb 2019 12:34:39 GMT<br>
-Content-Type: application/json; charset=utf-8<br>
-Content-Length: 63<br>
-Connection: keep-alive<br></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}</code></pre>
-</div>
-</div>
-<table class="tableblock frame-all grid-all" style="width: 80%;">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">параметр</th>
-<th class="tableblock halign-left valign-top">значение</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"tn_id": "&lt;ttn-barcode&gt;"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ттн номер внешней службы</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"tn_body": "str"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">дополнительные данный о ттн</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">"tn_content_type": "text/xml" or "application/json"</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">тип tn-body</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="true--14"><a class="anchor" href="#true--14"></a>Добавление ссылок на документы сопровождения - стикеры, ттн, и т.д.</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-protocol_method
-</td>
-<td class="hdlist2">
-<p>PUT</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_name
-</td>
-<td class="hdlist2">
-<p>agent/quasi-parcel/&lt;parcel_id&gt;/attachment</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_params
-</td>
-<td class="hdlist2">
-<p>----</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-request_body
-</td>
-<td class="hdlist2">
-<p>{"attachments": ["&lt;url-to-pdf-1&gt;", "&lt;url-to-pdf-2&gt;", &#8230;&#8203;]}</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-expected_result
-</td>
-<td class="hdlist2">
-<p>200 { "success": true, "id": "&lt;quasi-parcel uuid&gt;" }</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Пример запроса/ответа</dt>
-<dt class="hdlist1">Запрос</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/attachment" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"attachments": ["https://example.com/pdf/test1.pdf", "https://example.com/pdf/test2.pdf"]}'</code></pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ответ</dt>
-<dd>
-<p>HTTP/1.1 200 OK<br>
-Server: nginx/1.10.3<br>
-Date: Fri, 22 Feb 2019 12:58:31 GMT<br>
-Content-Type: application/json; charset=utf-8<br>
-Content-Length: 63<br>
-Connection: keep-alive<br></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="true--15"><a class="anchor" href="#true--15"></a>Добавление описи содержимого посылки</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-protocol_method
-</td>
-<td class="hdlist2">
-<p>PUT</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_name
-</td>
-<td class="hdlist2">
-<p>agent/quasi-parcel/&lt;parcel_id&gt;/content-registry</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_params
-</td>
-<td class="hdlist2">
-<p>----</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-request_body
-</td>
-<td class="hdlist2">
-<p>{"items":{"&lt;item barcode&gt;":"&lt;cod price&gt;"},"services":{"cod":false|true,"cod_amount":"&lt;price&gt;","delivery":"&lt;price&gt;"}}</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-expected_result
-</td>
-<td class="hdlist2">
-<p>200 { "success": true, "id": "&lt;quasi-parcel uuid&gt;" }</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Пример запроса/ответа</dt>
-<dt class="hdlist1">Запрос</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/content-registry" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"items":{"50000220048158":"83"},"services":{"cod":false,"cod_amount":"234.56","delivery":"122"}}'</code></pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ответ</dt>
-<dd>
-<p>HTTP/1.1 200 OK<br>
-Server: nginx/1.10.3<br>
-Date: Fri, 22 Feb 2019 13:15:29 GMT<br>
-Content-Type: application/json; charset=utf-8<br>
-Content-Length: 63<br>
-Connection: keep-alive<br></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-note" title="Note"></i>
-</td>
-<td class="content">
-<code>items</code> - единицы заказа со стоимостю, <code>services</code> - стоимость дополнительных услуг
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="true-quasi-parcel-3"><a class="anchor" href="#true-quasi-parcel-3"></a>Отмена quasi-parcel</h4>
-<div class="hdlist">
-<table>
-<tr>
-<td class="hdlist1">
-protocol_method
-</td>
-<td class="hdlist2">
-<p>PUT</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_name
-</td>
-<td class="hdlist2">
-<p>/agent/quasi-parcel/&lt;parcel_id&gt;/cancel</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-method_params
-</td>
-<td class="hdlist2">
-<p>----</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-request_body
-</td>
-<td class="hdlist2">
-<p>{&lt;null&gt;}</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-expected_result
-</td>
-<td class="hdlist2">
-<p>200 { , "success": true }</p>
-</td>
-</tr>
-</table>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Пример запроса/ответа</dt>
-<dt class="hdlist1">Запрос</dt>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/cancel" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{}'</code></pre>
-</div>
-</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1">Ответ</dt>
-<dd>
-<p>HTTP/1.1 200 OK<br>
-Server: nginx/1.10.3<br>
-Date: Fri, 22 Feb 2019 13:15:29 GMT<br>
-Content-Type: application/json; charset=utf-8<br>
-Content-Length: 63<br>
-Connection: keep-alive<br></p>
-</dd>
-</dl>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
-  "success": true
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="true--16"><a class="anchor" href="#true--16"></a>Отделения и адреса</h3>
-<div class="sect3">
-<h4 id="true--17"><a class="anchor" href="#true--17"></a>Получения данных отделений</h4>
+<h4 id="true--16"><a class="anchor" href="#true--16"></a>Получения данных отделений</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3131,7 +2941,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--18"><a class="anchor" href="#true--18"></a>Получение данных адреса из справочника</h4>
+<h4 id="true--17"><a class="anchor" href="#true--17"></a>Получение данных адреса из справочника</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3259,9 +3069,9 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="true--19"><a class="anchor" href="#true--19"></a>Пользователи</h3>
+<h3 id="true--18"><a class="anchor" href="#true--18"></a>Пользователи</h3>
 <div class="sect3">
-<h4 id="true--20"><a class="anchor" href="#true--20"></a>Регистрация пользователя</h4>
+<h4 id="true--19"><a class="anchor" href="#true--19"></a>Регистрация пользователя</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3348,7 +3158,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--21"><a class="anchor" href="#true--21"></a>Поиск пользователя</h4>
+<h4 id="true--20"><a class="anchor" href="#true--20"></a>Поиск пользователя</h4>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">protocol_method</dt>
@@ -3431,9 +3241,9 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="true--22"><a class="anchor" href="#true--22"></a>Контрагенты</h3>
+<h3 id="true--21"><a class="anchor" href="#true--21"></a>Контрагенты</h3>
 <div class="sect3">
-<h4 id="true--23"><a class="anchor" href="#true--23"></a>Регистрация контрагента</h4>
+<h4 id="true--22"><a class="anchor" href="#true--22"></a>Регистрация контрагента</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3537,7 +3347,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--24"><a class="anchor" href="#true--24"></a>Модификация контрагента</h4>
+<h4 id="true--23"><a class="anchor" href="#true--23"></a>Модификация контрагента</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3645,7 +3455,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--25"><a class="anchor" href="#true--25"></a>Информация о контрагенте</h4>
+<h4 id="true--24"><a class="anchor" href="#true--24"></a>Информация о контрагенте</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3743,7 +3553,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--26"><a class="anchor" href="#true--26"></a>Справочник контрагентов</h4>
+<h4 id="true--25"><a class="anchor" href="#true--25"></a>Справочник контрагентов</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -3858,7 +3668,7 @@ expected_result
 </div>
 </div>
 <div class="sect2">
-<h3 id="true--27"><a class="anchor" href="#true--27"></a>Финансовые транзакции</h3>
+<h3 id="true--26"><a class="anchor" href="#true--26"></a>Финансовые транзакции</h3>
 <div class="sect3">
 <h4 id="true-id"><a class="anchor" href="#true-id"></a>Получение финансовой транзакции по id</h4>
 <div class="hdlist">
@@ -3994,7 +3804,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--28"><a class="anchor" href="#true--28"></a>Получение списка финансовых транзакций за период</h4>
+<h4 id="true--27"><a class="anchor" href="#true--27"></a>Получение списка финансовых транзакций за период</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -4139,7 +3949,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--29"><a class="anchor" href="#true--29"></a>Получение списка финансовых транзакций по посылке</h4>
+<h4 id="true--28"><a class="anchor" href="#true--28"></a>Получение списка финансовых транзакций по посылке</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -4277,7 +4087,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 <div id="footer">
 <div id="footer-text">
 Version 1.3.2<br>
-Last updated 2019-02-22 15:40:56 EET
+Last updated 2019-04-14 17:47:24 EEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
