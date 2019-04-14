@@ -575,7 +575,7 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
-.Типы параметров поиска::
+.Типы параметров logout::
 [width="80%",cols=2,options="header"]
 |====================
 | параметр

@@ -48,7 +48,7 @@ method_params:: new
 request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
 expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
-NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photo": "<OPTIONAL PHOTO>"}
+NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"]}
 
 NOTE: ключи `cod_amount`, `contragent_id`, `dimensions`, `_comment`, `items` -- опциональны. +
 `contragent_id` - необходимо указывать если в `type=COD`
@@ -388,6 +388,58 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Получение списка items
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/item/list
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"items":[{"sku":"<SUPPLIER SKU NAME>","name":"<NAME>","weight":<WEIGHT GRAM as INTEGER>,"modified_at":"<DATE>","brand":"<BRAND>","barcode":"<UNIQ BARCODE>","additional_data":{"photos":["<OPTIONAL PHOTO_URL_LIST>"]},"quantity":<QUANTITY as INTEGER>,"price":<PRICE as DECIMAL(10,2)>,"size":"<SIZE>"}],"success":true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/list/	cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Authorization: Basic NTEwYWQwOGEtODMwZS00NmFhLWFiNjMtZGZhZGU3NWEwMGE3OmtSZnR2dzdX"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 14 Apr 2019 14:35:08 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 513 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "items": [
+    {
+      "sku": "123_adidas_xl",
+      "name": "Куртка",
+      "weight": 1500,
+      "modified_at": "2019-04-14T14:21:09.904880+00:00",
+      "brand": "Adidas",
+      "barcode": "123456789",
+      "additional_data": {
+        "photos": [
+          "https://m3.ttest.net/imgw/loc/518939a431.jpg", "https://m4.test.net/imgw/325a9fa.jpg"
+        ]
+      },
+      "quantity": 1,
+      "price": 2050,
+      "size": "XS"
+    }
+  ],
+  "success": true
+}
+----
+
 ==== Получение кодов
 
 [horizontal]
@@ -711,6 +763,85 @@ Access-Control-Allow-Headers: Content-Type +
 
 NOTE: Если состояние отправления не позволяет выполнить запрос, будет получена ошибка с кодом `409` и сообщением {"message":"Inappropriate parcel state","success":false}
 
+===== Модификация содержимого отправления
+
+====== Добавление/обновление item
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/item/add
+method_params:: <PARCEL ID>
+request_body:: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos": [<OPTIONAL PHOTO_URL_LIST>]}
+expected_result:: 200 {"success": true}
+
+NOTE: Параметры `quantity`, `price`, `weight (gramm)`, `photos`, `comment` - опциональны
+
+NOTE: При добавлении `item` с тем же `barcode`, данные будут обновлены.
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/add/cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"barcode": "123456789", "sku": "123_adidas_xl", "name": "Куртка", "brand": "Adidas", "size": "XS", "quantity": 1, "weight": 1500, "price": 2050, "photos": ["https://m3.ttest.net/imgw/loc/518939a431.jpg", "https://m4.test.net/imgw/325a9fa.jpg"]}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 14 Apr 2019 14:18:08 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
+====== Удаление item
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/item/del
+method_params:: <PARCEL ID>
+request_body:: {"barcode": "<UNIQ BARCODE>"}
+expected_result:: 200 {"success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/del/cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{"barcode": "12345678910"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 14 Apr 2019 14:30:21 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+
+
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
 
 ==== Запрос на изменение посылки после принятия к доставке
 
@@ -921,216 +1052,6 @@ Access-Control-Allow-Headers: Content-Type +
 ----
 {
   "transfer_via": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
-  "success": true
-}
-----
-=== Quasi-parcel
-
-==== Создание заявки на новый quasi-parcel
-
-[horizontal]
-protocol_method:: POST
-method_name:: agent/quasi-parcel
-method_params:: ----
-request_body:: {"delivery_service":"tabata", "order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
-expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
-
-[]
-Пример запроса/ответа::
-Запрос::
-[source, shell]
-----
-curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"delivery_service":"tabata", "order_id": "TEST0010", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'
-----
-
-Ответ::
-HTTP/1.1 200 OK +
-Server: nginx/1.10.3 +
-Date: Fri, 22 Feb 2019 12:22:19 GMT +
-Content-Type: application/json; charset=utf-8 +
-Content-Length: 63 +
-Connection: keep-alive +
-
-
-[source, json]
-----
-{
-  "id": "737a4427-e0d1-458e-b2dc-54ce53f63d5f",
-  "success": true
-}
-----
-
-NOTE: Возможные значения для параметра `delivery_service`: +
-`_any`,
-`tabata`,
-`novaposhta`,
-`meest`,
-`ukrposhta`,
-`intime`
-
-NOTE: Параметры данного запроса схожи с параметрами запроса на создание посылки: /agent/parcel/new
-
-==== Создание quasi-parcel вместе с предоставляемыми данными внешнего перевозчика
-
-[horizontal]
-protocol_method:: POST
-method_name:: agent/quasi-parcel/register
-method_params:: ----
-request_body:: {"delivery_service":"tabata", "tn_id": "<ttn-barcode>", "tn_body": "str", "tn_content_type": "text/xml" |"application/json", "order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
-expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
-
-[]
-Пример запроса/ответа::
-Запрос::
-[source, shell]
-----
-curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/register" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"delivery_service":"tabata", "tn_id": "0010", "tn_body": "test_ttn_name", "tn_content_type": "application/json", "order_id": "TEST0010", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'
-----
-
-Ответ::
-HTTP/1.1 200 OK +
-Server: nginx/1.10.3 +
-Date: Fri, 22 Feb 2019 12:34:39 GMT +
-Content-Type: application/json; charset=utf-8 +
-Content-Length: 63 +
-Connection: keep-alive +
-
-
-[source, json]
-----
-{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}
-----
-
-[width="80%",cols=2,options="header"]
-|====================
-| параметр
-| значение
-
-| "tn_id": "<ttn-barcode>"
-| ттн номер внешней службы
-
-| "tn_body": "str"
-| дополнительные данный о ттн
-
-| "tn_content_type": "text/xml" or "application/json"
-| тип tn-body
-|====================
-
-==== Добавление ссылок на документы сопровождения - стикеры, ттн, и т.д.
-
-[horizontal]
-protocol_method:: PUT
-method_name:: agent/quasi-parcel/<parcel_id>/attachment
-method_params:: ----
-request_body:: {"attachments": ["<url-to-pdf-1>", "<url-to-pdf-2>", ...]}
-expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
-
-[]
-Пример запроса/ответа::
-Запрос::
-[source, shell]
-----
-curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/attachment" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"attachments": ["https://example.com/pdf/test1.pdf", "https://example.com/pdf/test2.pdf"]}'
-----
-
-Ответ::
-HTTP/1.1 200 OK +
-Server: nginx/1.10.3 +
-Date: Fri, 22 Feb 2019 12:58:31 GMT +
-Content-Type: application/json; charset=utf-8 +
-Content-Length: 63 +
-Connection: keep-alive +
-
-
-[source, json]
-----
-{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}
-----
-
-==== Добавление описи содержимого посылки
-
-[horizontal]
-protocol_method:: PUT
-method_name:: agent/quasi-parcel/<parcel_id>/content-registry
-method_params:: ----
-request_body:: {"items":{"<item barcode>":"<cod price>"},"services":{"cod":false|true,"cod_amount":"<price>","delivery":"<price>"}}
-expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
-
-[]
-Пример запроса/ответа::
-Запрос::
-[source, shell]
-----
-curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/content-registry" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"items":{"50000220048158":"83"},"services":{"cod":false,"cod_amount":"234.56","delivery":"122"}}'
-----
-
-Ответ::
-HTTP/1.1 200 OK +
-Server: nginx/1.10.3 +
-Date: Fri, 22 Feb 2019 13:15:29 GMT +
-Content-Type: application/json; charset=utf-8 +
-Content-Length: 63 +
-Connection: keep-alive +
-
-
-[source, json]
-----
-{
-  "id": "784af970-5a0f-409b-bed0-bfaea85df559",
-  "success": true
-}
-----
-NOTE: `items` - единицы заказа со стоимостю, `services` - стоимость дополнительных услуг
-
-==== Отмена quasi-parcel
-
-[horizontal]
-protocol_method:: PUT
-method_name:: /agent/quasi-parcel/<parcel_id>/cancel
-method_params:: ----
-request_body:: {<null>}
-expected_result:: 200 { , "success": true }
-
-[]
-Пример запроса/ответа::
-Запрос::
-[source, shell]
-----
-curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/784af970-5a0f-409b-bed0-bfaea85df559/cancel" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{}'
-----
-
-Ответ::
-HTTP/1.1 200 OK +
-Server: nginx/1.10.3 +
-Date: Fri, 22 Feb 2019 13:15:29 GMT +
-Content-Type: application/json; charset=utf-8 +
-Content-Length: 63 +
-Connection: keep-alive +
-
-[source, json]
-----
-{
   "success": true
 }
 ----
