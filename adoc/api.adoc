@@ -542,14 +542,14 @@ Access-Control-Allow-Headers: Content-Type +
 protocol_method:: GET
 method_name:: auth
 method_params:: logout
-request_body:: ----
+get_params:: [mode=full|other|self]
 expected_result:: 200 {"success": true}
 
 Пример запроса/ответа::
 Запрос::
 [source, shell]
 ----
-curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/auth/logout" \
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/auth/logout?mode=full" \
 -H "Content-Type: application/json" 
 ----
 
@@ -574,6 +574,22 @@ Access-Control-Allow-Headers: Content-Type +
   "success": true
 }
 ----
+
+.Типы параметров logout::
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| self
+| по-умолчанию, выход из текущей сессии
+
+| full
+| завершение всех сессий
+
+| other
+| завершение других сессий, кроме собственной
+|====================
 
 === Восстановление пароля
 
