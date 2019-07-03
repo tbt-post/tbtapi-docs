@@ -45,12 +45,12 @@ WARNING: Для проверки запросов в командной стро
 protocol_method:: POST
 method_name:: agent/parcel
 method_params:: new
-request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
+request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
 expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
-NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"]}
+NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>"}
 
-NOTE: ключи `cod_amount`, `contragent_id`, `dimensions`, `_comment`, `items` -- опциональны. +
+NOTE: ключи `cod_amount`, `contragent_id`, `sender`, `dimensions`, `_comment`, `items` -- опциональны. +
 `contragent_id` - необходимо указывать если в `type=COD`
 
 NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах. `cod_amount` не может быть больше чем `price`
@@ -396,7 +396,7 @@ method_name:: agent/parcel/item/list
 method_params:: <parcel_id>
 get_params:: ----
 request_body:: ----
-expected_result:: 200 {"items":[{"sku":"<SUPPLIER SKU NAME>","name":"<NAME>","weight":<WEIGHT GRAM as INTEGER>,"modified_at":"<DATE>","brand":"<BRAND>","barcode":"<UNIQ BARCODE>","additional_data":{"photos":["<OPTIONAL PHOTO_URL_LIST>"]},"quantity":<QUANTITY as INTEGER>,"price":<PRICE as DECIMAL(10,2)>,"size":"<SIZE>"}],"success":true}
+expected_result:: 200 {"items":[{"sku":"<SUPPLIER SKU NAME>","name":"<NAME>","weight":<WEIGHT GRAM as INTEGER>,"modified_at":"<DATE>","brand":"<BRAND>","barcode":"<UNIQ BARCODE>","additional_data":{"photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "comment": "<OPTIONAL COMMENT>"}, "quantity":<QUANTITY as INTEGER>,"price":<PRICE as DECIMAL(10,2)>,"size":"<SIZE>"}],"success":true}
 
 []
 Пример запроса/ответа::
@@ -723,7 +723,7 @@ Access-Control-Allow-Headers: Content-Type +
 protocol_method:: PUT
 method_name:: agent/parcel/alter
 method_params:: <PARCEL ID>
-request_body:: { "receiver": { "id": "<MK User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>"}
+request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
 expected_result:: 202 {"success": true}
 
 NOTE: Все ключи -- опциональны, некоторые ключи имеют в зависимостях другие ключи: например `dest` связан с `delivery_type`, `dest_apartment`
@@ -771,10 +771,10 @@ NOTE: Если состояние отправления не позволяет
 protocol_method:: PUT
 method_name:: agent/parcel/item/add
 method_params:: <PARCEL ID>
-request_body:: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos": [<OPTIONAL PHOTO_URL_LIST>]}
+request_body:: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos": [<OPTIONAL PHOTO_URL_LIST>], "color": "<OPTIONAL COLOR NAME>"}
 expected_result:: 200 {"success": true}
 
-NOTE: Параметры `quantity`, `price`, `weight (gramm)`, `photos`, `comment` - опциональны
+NOTE: Параметры `quantity`, `price`, `weight (gramm)`, `photos`, `comment`, `color` - опциональны
 
 NOTE: При добавлении `item` с тем же `barcode`, данные будут обновлены.
 
@@ -849,7 +849,7 @@ Connection: keep-alive +
 protocol_method:: PUT
 method_name:: agent/parcel/update
 method_params:: <PARCEL ID>
-request_body:: { "receiver": { "id": "<MK User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
+request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
 expected_result:: 202 {"success": true}
 
 NOTE: `receiver` опциональный, `cod_amount` и `paid_amount` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD
@@ -1315,6 +1315,8 @@ method_name:: agent/user/new
 method_params:: ----
 request_body:: { "email": "<EMAIL>", "phone": "<PHONE>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "male|female|undef", "birthday": "1970-01-01", "company": { "name": "<COMPANY NAME>", "reg_id": "<REG ID>", "tax_id": "<TAX ID>", "type": "company|pe" } }
 expected_result:: 200 { "user_id": "<USER ID>", "success": true }
+
+NOTE: поле `company` является опциональным
 
 []
 Пример запроса/ответа::
