@@ -4069,6 +4069,52 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Словарь сервисов отделения
+
+[horizontal]
+protocol_method:: GET
+method_name:: dict/office
+method_params:: services
+get_params:: lang=<ru|uk|en> default: ru
+expected_result:: 200 {
+  "services": {
+    "<SERVICE>": "<PARAM>", "<SERVICE>": "<PARAM>", ...},
+  "success": true
+}
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/office/services?lang=ru" -H "Content-Type: application/json" -H "Authorization: Basic NTEwYWQwOGEt"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 08 Jul 2019 13:40:51 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 852 +
+Connection: keep-alive +
+Etag: "23c750d9fc1a4a44d4feb5a6ebe73cd25fcdfa96" +
+
+
+
+[source, json]
+----
+{
+  "services": {
+    "electronics_m": "Электроника (M)",
+    "bioauth_face_m": "Биометрия лица (стандартная)",
+    "bioauth_face_l": "Биометрия лица (полная)",
+    "bioauth_face_s": "Биометрия лица (базовая)",
+    "electronics_s": "Электроника (S)",
+    "e_test_bed": "Место для проверки электроники"
+  },
+  "success": true
+}
+----
+
 ==== Сообщения для действий по отправлениям
 
 [horizontal]
