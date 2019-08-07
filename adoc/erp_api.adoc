@@ -1062,7 +1062,7 @@ Access-Control-Allow-Headers: Content-Type +
 
 [horizontal]
 protocol_method:: GET
-method_name:: offices
+method_name:: agent/offices
 get_params:: <lang>
 request_body:: ----
 expected_result:: 200
@@ -1110,7 +1110,7 @@ expected_result:: 200
 Запрос::
 [source, shell]
 ----
-curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/offices?lang=ru" \
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/offices" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
