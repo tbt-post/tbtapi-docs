@@ -64,7 +64,7 @@ NOTE: параметр `delivery_type` имеет значение по-умол
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/new" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"order_id": "TEST0001", "receiver": { "id": 0, "phone": "380662225577", "email" : "example@gmail.com", "first_name" : "test", "last_name": "user"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 1520, "price" : 2500, "cod_amount" : 0, "type" : "fragile:A.PRP.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00"}'
+-d '{"order_id":"TEST0001","receiver":{"id":0,"phone":"380663325577","email":"example@gmail.com","first_name":"test","last_name":"user"},"delivery_type":"W2W","dest":["50.405237","30.679338"],"dest_apartment":"26b10dbb-4f1b-4d45-9c19-ec3cb85d4253","weight":1520,"price":2500,"cod_amount":0,"type":"fragile:A.PRP.NR.NA.S000","note":"","created_at":"2019-08-08T11:45:00+00:00","items": [{"barcode": "123456789", "sku": "123456", "name": "Шорты", "brand": "NoBrand", "size": "XXL", "quantity": 1, "weight": 50, "price": 99.99, "photos":["https://google.com/images/test.jpg"], "color": "black"}]}'
 ----
 
 В параметрах "Authorization" Необходимо указать токен и пароль в формате base64. +
