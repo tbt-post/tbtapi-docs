@@ -545,18 +545,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#true--60">Словари</a>
 <ul class="sectlevel3">
 <li><a href="#true--61">Сообщения для состояний отправлений</a></li>
-<li><a href="#true--62">Сообщения для действий по отправлениям</a></li>
+<li><a href="#true--62">Словарь сервисов отделения</a></li>
+<li><a href="#true--63">Сообщения для действий по отправлениям</a></li>
 </ul>
 </li>
 <li><a href="#true-batch">Множественная (batch) обработка действий</a></li>
 </ul>
 </li>
-<li><a href="#true--63">Уведомления</a>
+<li><a href="#true--64">Уведомления</a>
 <ul class="sectlevel2">
-<li><a href="#true--64">Отчет интерфейса оператора</a></li>
-<li><a href="#true--65">Клиент&#8594;Система</a>
+<li><a href="#true--65">Отчет интерфейса оператора</a></li>
+<li><a href="#true--66">Клиент&#8594;Система</a>
 <ul class="sectlevel3">
-<li><a href="#true--66">Забор отправления в отделении</a></li>
+<li><a href="#true--67">Забор отправления в отделении</a></li>
 </ul>
 </li>
 </ul>
@@ -8359,7 +8360,105 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="true--62"><a class="anchor" href="#true--62"></a>Сообщения для действий по отправлениям</h4>
+<h4 id="true--62"><a class="anchor" href="#true--62"></a>Словарь сервисов отделения</h4>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+protocol_method
+</td>
+<td class="hdlist2">
+<p>GET</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_name
+</td>
+<td class="hdlist2">
+<p>dict/office</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+method_params
+</td>
+<td class="hdlist2">
+<p>services</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+get_params
+</td>
+<td class="hdlist2">
+<p>lang=&lt;ru|uk|en&gt; default: ru</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+expected_result
+</td>
+<td class="hdlist2">
+<p>200 {
+  "services": {
+    "&lt;SERVICE&gt;": "&lt;PARAM&gt;", "&lt;SERVICE&gt;": "&lt;PARAM&gt;", &#8230;&#8203;},
+  "success": true
+}</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Пример запроса/ответа
+<br>
+Запрос
+</td>
+<td class="hdlist2">
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/dict/office/services?lang=ru" -H "Content-Type: application/json" -H "Authorization: Basic NTEwYWQwOGEt"</code></pre>
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Ответ</dt>
+<dd>
+<p>HTTP/1.1 200 OK<br>
+Server: nginx/1.10.3<br>
+Date: Mon, 08 Jul 2019 13:40:51 GMT<br>
+Content-Type: application/json; charset=utf-8<br>
+Content-Length: 852<br>
+Connection: keep-alive<br>
+Etag: "23c750d9fc1a4a44d4feb5a6ebe73cd25fcdfa96"<br></p>
+</dd>
+</dl>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json" data-lang="json">{
+  "services": {
+    "electronics_m": "Электроника (M)",
+    "bioauth_face_m": "Биометрия лица (стандартная)",
+    "bioauth_face_l": "Биометрия лица (полная)",
+    "bioauth_face_s": "Биометрия лица (базовая)",
+    "electronics_s": "Электроника (S)",
+    "e_test_bed": "Место для проверки электроники"
+  },
+  "success": true
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="true--63"><a class="anchor" href="#true--63"></a>Сообщения для действий по отправлениям</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -8574,10 +8673,10 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="true--63"><a class="anchor" href="#true--63"></a>Уведомления</h2>
+<h2 id="true--64"><a class="anchor" href="#true--64"></a>Уведомления</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="true--64"><a class="anchor" href="#true--64"></a>Отчет интерфейса оператора</h3>
+<h3 id="true--65"><a class="anchor" href="#true--65"></a>Отчет интерфейса оператора</h3>
 <div class="hdlist">
 <table>
 <tr>
@@ -8695,9 +8794,9 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="true--65"><a class="anchor" href="#true--65"></a>Клиент&#8594;Система</h3>
+<h3 id="true--66"><a class="anchor" href="#true--66"></a>Клиент&#8594;Система</h3>
 <div class="sect3">
-<h4 id="true--66"><a class="anchor" href="#true--66"></a>Забор отправления в отделении</h4>
+<h4 id="true--67"><a class="anchor" href="#true--67"></a>Забор отправления в отделении</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -8808,7 +8907,7 @@ Access-Control-Allow-Headers: Content-Type<br></p>
 <div id="footer">
 <div id="footer-text">
 Version 1.3.2<br>
-Last updated 2019-04-14 17:47:35 EEST
+Last updated 2019-08-08 18:40:42 EEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css">
