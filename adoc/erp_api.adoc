@@ -55,7 +55,8 @@ NOTE: ключи `cod_amount`, `contragent_id`, `sender`, `dimensions`, `_commen
 
 NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах. `cod_amount` не может быть больше чем `price`
 
-NOTE: параметр `delivery_type` имеет значение по-умолчанию *W2W*, в случае значений *W2D* и *D2D* необходимо передать ключ `dest_apartment`
+NOTE: параметр `delivery_type` имеет значение по-умолчанию *W2W*, в случае значений *W2D* и *D2D* необходимо передать ключ `dest_apartment` (номер квартиры).+
+Например: `"dest_apartment": "102"`
 
 Пример запроса/ответа::
 Запрос::
@@ -64,7 +65,7 @@ NOTE: параметр `delivery_type` имеет значение по-умол
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/new" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"order_id": "TEST0001", "receiver": { "id": 0, "phone": "380662225577", "email" : "example@gmail.com", "first_name" : "test", "last_name": "user"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 1520, "price" : 2500, "cod_amount" : 0, "type" : "fragile:A.PRP.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00"}'
+-d '{"order_id":"TEST0001","receiver":{"id":0,"phone":"380663325577","email":"example@gmail.com","first_name":"test","last_name":"user"},"delivery_type":"W2W","dest":["50.405237","30.679338"],"weight":1520,"price":2500,"cod_amount":0,"type":"fragile:A.PRP.NR.NA.S000","note":"","created_at":"2019-08-08T11:45:00+00:00","items": [{"barcode": "123456789", "sku": "123456", "name": "Шорты", "brand": "NoBrand", "size": "XXL", "quantity": 1, "weight": 50, "price": 99.99, "photos":["https://google.com/images/test.jpg"], "color": "black"}]}'
 ----
 
 В параметрах "Authorization" Необходимо указать токен и пароль в формате base64. +
@@ -1302,7 +1303,7 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
-NOTE: Используемое кодирование для кирилицы в запросе - UTF-8 +
+NOTE: Используемое кодирование для кирилицы в запросе - UTF-8 (URL encoded format), принудительная кодировка необходима в некторых User-Agent +
 В ответе - текст закодированный функцией escape
 
 === Пользователи
