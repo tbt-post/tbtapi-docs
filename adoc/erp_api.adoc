@@ -1064,7 +1064,7 @@ Access-Control-Allow-Headers: Content-Type +
 [horizontal]
 protocol_method:: GET
 method_name:: agent/offices
-get_params:: <lang>
+get_params:: [lang = uk|ru], [city=<name>], [region=<name>]
 request_body:: ----
 expected_result:: 200
 {
@@ -1105,6 +1105,8 @@ expected_result:: 200
     ],
     "success": true
 }
+
+NOTE: Параметры в [ ] опциональны. По умолначию lang=uk.
 
 []
 Пример запроса/ответа::
