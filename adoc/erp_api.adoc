@@ -850,7 +850,7 @@ Connection: keep-alive +
 protocol_method:: PUT
 method_name:: agent/parcel/update
 method_params:: <PARCEL ID>
-request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
+request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "items": [<PARCEL ITEM SPEC>, ...]}
 expected_result:: 202 {"success": true}
 
 NOTE: `receiver` опциональный, `cod_amount` и `paid_amount` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD
@@ -862,10 +862,11 @@ IMPORTANT: Запрос на модификацию возможен в сост
 Запрос::
 [source, shell]
 ----
-curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/update/30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"price" : 350, "cod_amount" : 299}'
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/update/7963bf92-a74a-431a-bf3e-284953dd30e9" \
+> -H "Content-Type: application/json" \
+> -H "Authorization: Basic dG9rZW46cGFzc3dk" \
+> -d '{"price" : 5, "cod_amount" : 5, "items": [{"barcode": "123456789", "sku": "123456", "name": "shoes", "brand": "NoBrand", "size": "45", "quantity": 1, "weight": 50, "price": 99.99, "photos":["https://example.com/images/test.jpg"], "color": "black"}]}'
+
 ----
 
 Ответ::
