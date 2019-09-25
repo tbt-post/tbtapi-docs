@@ -862,10 +862,11 @@ IMPORTANT: Запрос на модификацию возможен в сост
 Запрос::
 [source, shell]
 ----
-curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/update/30ca60d8-7d9b-47b3-a7b7-e40ff2fdefd2" \
--H "Content-Type: application/json" \
--H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"price" : 350, "cod_amount" : 299}'
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/update/7963bf92-a74a-431a-bf3e-284953dd30e9" \
+> -H "Content-Type: application/json" \
+> -H "Authorization: Basic dG9rZW46cGFzc3dk" \
+> -d '{"price" : 5, "cod_amount" : 5}'
+
 ----
 
 Ответ::
@@ -1064,7 +1065,7 @@ Access-Control-Allow-Headers: Content-Type +
 [horizontal]
 protocol_method:: GET
 method_name:: agent/offices
-get_params:: <lang>
+get_params:: [lang = uk|ru], [city=<name>], [region=<name>]
 request_body:: ----
 expected_result:: 200
 {
@@ -1105,6 +1106,8 @@ expected_result:: 200
     ],
     "success": true
 }
+
+NOTE: Параметры в [ ] опциональны. По умолначию lang=ru.
 
 []
 Пример запроса/ответа::
