@@ -2916,6 +2916,236 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+=== Стоимость услуг
+
+==== Получение общих данных стоимости услуг
+
+[horizontal]
+protocol_method:: GET
+method_name:: service-prices
+method_params:: ----
+get_params:: -----
+request_body:: ----
+expected_result:: 200 {
+  "success": true,
+  "warehousing": {
+    "period_days": <DAY>,
+    "price": <PRICE>
+  },
+  "cash_payments": {
+    "price": <PRICE>,
+    "fee": <PRICE>
+  },
+  "office_delivery": {
+    "local_delivery_prices": [
+      {
+        "price": <PRICE>,
+        "weight": 500
+      },
+      {
+        "price": <PRICE>,
+        "weight": 1000
+      }
+    ],
+    "return_delivery_price_ratio": 0.8,
+    "intercity_delivery_prices": [
+      {
+        "price": <PRICE>,
+        "weight": 500
+      },
+      {
+        "price": <PRICE>,
+        "weight": 1000
+      }
+    ],
+    "delivery_limits": {
+      "volume": 125000,
+      "dimension": 70,
+      "weight": 30000
+    }
+  },
+  "explicit_redirect": {
+    "price": <PRICE>
+  },
+  "delivery_insurance": {
+    "price": <PRICE>,
+    "mediation": 0.005
+  }
+}
+
+.Параметры ответа
+[width="80%",cols=2,options="header"]
+|====================
+| Параметр
+| Свойства
+
+
+| warehousing
+| Храниние посылки на отделении. День - Цена.
+
+
+| cash_payments
+| Комиссия за перевод средств. Например: 1 + cod_amount × 0.012
+
+
+| office_delivery (local_delivery_prices)
+| Цены на доставку в пределах города. Цена - Вес.
+
+
+| office_delivery (intercity_delivery_prices)
+| Цены на доставку между городами. Цена - Вес.
+
+
+| return_delivery_price_ratio
+| Соотношение цены обратной доставки к доставке.
+
+
+| delivery_limits
+| Лимиты на доставку. Вес в граммах, размеры и объем в сантиметрах
+
+
+| explicit_redirect
+| Цена на переадресацию груза.
+
+| delivery_insurance
+| Страхование, от заявленной стоимости.
+
+|====================
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/service-prices"
+----
+
+Ответ::
+HTTP/1.1 200 OK + 
+Server: nginx/1.10.3 +
+Date: Tue, 12 Nov 2019 10:31:31 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 865 +
+Connection: keep-alive +
+Etag: "60d8ea3549e0af7d7a960ded2680290353489a49" +
+
+
+
+[source, json]
+----
+{
+  "success": true,
+  "warehousing": {
+    "period_days": 1,
+    "price": 10
+  },
+  "cash_payments": {
+    "price": 1,
+    "fee": 0.012
+  },
+  "office_delivery": {
+    "local_delivery_prices": [
+      {
+        "price": 30,
+        "weight": 500
+      },
+      {
+        "price": 35,
+        "weight": 1000
+      }
+    ],
+    "return_delivery_price_ratio": 0.8,
+    "intercity_delivery_prices": [
+      {
+        "price": 40,
+        "weight": 500
+      },
+      {
+        "price": 45,
+        "weight": 1000
+      }
+    ],
+    "delivery_limits": {
+      "volume": 125000,
+      "dimension": 70,
+      "weight": 30000
+    }
+  },
+  "explicit_redirect": {
+    "price": 15
+  },
+  "delivery_insurance": {
+    "price": 0,
+    "mediation": 0.005
+  }
+}
+----
+
+==== Расчет стоимости услуг
+
+
+[horizontal]
+protocol_method:: POST
+method_name:: parcel-delivery-cost
+method_params:: ----
+get_params:: -----
+request_body:: {"cod_amount":<PRICE>,"declared_price":<PRICE>,"receiver_office_id":"<OFFICE_ID>","sender_office_id":"OFFICE_ID","weight":<WEIGHT>,"width":<WIDTH>,"height":<HEIGHT>,"depth":<DEPTH>}
+expected_result:: 200 {"cod_payments_cost":<PRICE>,"delivery_cost":<PRICE>,"success":true,"return_delivery_cost":<PRICE>}
+
+NOTE: cod_amount - опционально, если COD установлен. Вес в граммах. 
+размер в сантиметрах. 
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/parcel-delivery-cost" \
+-H "Content-Type: application/json" \
+-d '{"cod_amount":2510,"declared_price":3222,"receiver_office_id":"93ccfdec-f886-4f1c-9d04-6d1d8ef502f3","sender_office_id":"26b10dbb-4f1b-4d45-9c19-ec3cb85d4253","weight":2000,"width":20,"height":20,"depth":50}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 12 Nov 2019 11:21:09 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 100 +
+Connection: keep-alive +
+
+
+
+
+[source, json]
+----
+{
+  "cod_payments_cost": 31.12,
+  "delivery_cost": 66.11,
+  "success": true,
+  "return_delivery_cost": 56.11
+}
+----
+
+.Параметры ответа
+[width="80%",cols=2,options="header"]
+|====================
+| Параметр
+| Свойства
+
+
+| cod_payments_cost
+| стоимость наложенного платежа
+
+
+| delivery_cost
+| стоимость доставки
+
+
+| return_delivery_cost
+| стоимость обратной доставки
+|====================
+
+
 === Адреса и отделения
 
 Справочники адресов для разных языков могут отличаться. Для получения информации на конкретном языке в строке запроса можно специфировать язык при помощи параметра `lang=<LANG>`.
