@@ -1,6 +1,6 @@
 = TbT ERP API
-TabaTa LLC <info@tbt-post.net>
-1.3.2, 2018-11-01 (1:1.3.2): ERP API
+Kasta Group LLC <info@tbt-post.net>
+1.3.3, 2019-11-01: Public API
 :toc: right
 :toclevels: 4
 {empty}
@@ -32,8 +32,6 @@ TabaTa LLC <info@tbt-post.net>
     {get_params}:: опциональные GET параметры
 
 WARNING: Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
-
-[horizontal]
 
 == API
 
