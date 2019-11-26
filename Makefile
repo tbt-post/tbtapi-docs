@@ -1,14 +1,15 @@
 BUILD_DIR = build
+DOC_DIR = adoc
 
 all: acompile
         @:
 
-acompile:
+acompile: clean
 	@echo "-- Building docs at" ${BUILD_DIR}
 	@mkdir -p ${BUILD_DIR}
-	@for doc in $(shell ls -1 adoc/*.adoc); do \
+	@for doc in $(shell cd ${DOC_DIR} && ls -1 *.adoc); do \
         	echo "Copiling doc:" $$doc; \
-        	asciidoc -b html5 -a data-uri -a icons -a toc2 -a theme=flask -o ${BUILD_DIR}/$$doc.html $$doc; \
+		asciidoc -b html5 -a data-uri -a icons -a toc2 -a theme=flask -o ${BUILD_DIR}/$$doc.html ${DOC_DIR}/$$doc; \
 	done
 
 clean:

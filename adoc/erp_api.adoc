@@ -33,8 +33,6 @@ TabaTa LLC <info@tbt-post.net>
 
 WARNING: Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
 
-[horizontal]
-
 == API
 
 === Посылки
