@@ -1,6 +1,6 @@
 = TbT API
-TabaTa LLC <info@tbt-post.net>
-1.3.2, 2018-11-01 (1:1.3.2): Public API
+Kasta Group LLC <info@tbt-post.net>
+1.3.3, 2019-11-01 (1:1.3.3): Public API
 :toc: right
 :toclevels: 4
 {empty}
@@ -10,11 +10,11 @@ TabaTa LLC <info@tbt-post.net>
 
 Доступ к API осуществляется:
 
-    * из всех мест _вне_ локальной инфраструктуры - по протоколу HTTPS
+    * из всех мест _вне_ локальной инфраструктуры - исключительно по протоколу HTTPS
 
 Внешний доступ к текущему апи -- https://api.tbt-post.net
 
-Следующая версия апи -- http://api-next.tbt-post.net
+Версия апи для приложений платформы -- http://api-next.tbt-post.net
 
 Версия для разработки -- http://sandbox-api.tbt-post.net
 
