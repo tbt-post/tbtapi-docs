@@ -1,0 +1,13 @@
+= TbT Platform Developer Guide
+
+image::https://staging.tbt-post.net/img/tbt-logo.87b6b9e.png[]
+
+Public API description for https://tbt-post.net[TbT Platform] services
+
+Описание публичного API для сервисов https://tbt-post.net[платформы TbT]
+
+== Copyrights
+
+&copy; 2016-2018 TabaTa LLC
+
+&copy; 2019 Kasta Group LLC
