@@ -1,4 +1,4 @@
-= TbT ERP API
+= BMS ERP API
 Kasta Group LLC <info@tbt-post.net>
 1.3.3, 2019-11-01: Public API
 :toc: right
@@ -643,7 +643,7 @@ request_body:: ----
 expected_result:: 200 {"logs": [{"<TIMESTAMP UTC>" : {"code" : "<CODE ID>", "geo" : [ <LATITUDE>, <LONGITUDE>], "state_desc" : "<STATE DESCR>"}, "id": <PARCEL ID>}, {"<TIMESTAMP UTC>" :  {…​}, …​}, …], "success": true}
 
 
-, 
+,
 
 
 NOTE: Временные параметры `ts_from`, `ts_to` задаются в формате timestamp UTS *in miliseconds*.
@@ -1254,7 +1254,7 @@ get_params:: <lang, <lat,lon> | <region,city,street,building>>
 request_body:: ----
 expected_result:: 200 {"success": true, "lang": "<LANG>", "city": "<CITY>", "building": "<BUILDING>", "area": "<ADDRESS AREA or null>", "country": "<COUNTRY CODE>", "region": "<CITY REGION or null>", "lon": <LONGITUDE>, "lat": <LONGITUDE>, "id": "<SHIPPING ADDRESS ID>", "note": "<TEXT or null>", "modified_at": "<TIMESTAMP UTC>", "street": "<STREET>", "addr_type": "<TYPE ID>", "accuracy": "<ADDRESS ACCURACY>", "geo_source": "<google|yandex|osm>", "geo_object": {<ADDITIONAL GEO DATA>}}
 
-NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ cоставные части адреса `region`, `city`, `street`, `building` 
+NOTE: в качестве get-параметров указывается _либо_ пара гео-координат, _либо_ cоставные части адреса `region`, `city`, `street`, `building`
 
 []
 Пример запроса/ответа::

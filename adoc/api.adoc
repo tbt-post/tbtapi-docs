@@ -1,4 +1,4 @@
-= TbT API
+= Common API
 Kasta Group LLC <info@tbt-post.net>
 1.3.3, 2019-11-01: Public API
 :toc: right
@@ -171,7 +171,7 @@ http://www.ietf.org/assignments/http-status-codes/http-status-codes.xml[IETF RFC
 
 | 204
 | No Content
-| Запрос был успешно обработан, но нет необходимости возвращать какие-либо данные. Так же в ответе может возвращаться новая, или обновленная информация, однако в итоге она не будет отличаться о того, что было изначально послано на сервер и, таким образом, считается что клиент и так обладает актуальной информацией. 
+| Запрос был успешно обработан, но нет необходимости возвращать какие-либо данные. Так же в ответе может возвращаться новая, или обновленная информация, однако в итоге она не будет отличаться о того, что было изначально послано на сервер и, таким образом, считается что клиент и так обладает актуальной информацией.
 
 | 301
 | Moved Permanently
@@ -179,7 +179,7 @@ http://www.ietf.org/assignments/http-status-codes/http-status-codes.xml[IETF RFC
 
 | 304
 | Not Modified
-| Если клиент выполнил условный запрос GET и доступ разрешен, но документ не был изменен, сервер должен ответить, используя этот код состояния. 
+| Если клиент выполнил условный запрос GET и доступ разрешен, но документ не был изменен, сервер должен ответить, используя этот код состояния.
 
 
 | 400
@@ -550,7 +550,7 @@ expected_result:: 200 {"success": true}
 [source, shell]
 ----
 curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/auth/logout?mode=full" \
--H "Content-Type: application/json" 
+-H "Content-Type: application/json"
 ----
 
 Ответ::
@@ -3021,7 +3021,7 @@ curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/service-prices"
 ----
 
 Ответ::
-HTTP/1.1 200 OK + 
+HTTP/1.1 200 OK +
 Server: nginx/1.10.3 +
 Date: Tue, 12 Nov 2019 10:31:31 GMT +
 Content-Type: application/json; charset=utf-8 +
@@ -3092,8 +3092,8 @@ get_params:: -----
 request_body:: {"cod_amount":<PRICE>,"declared_price":<PRICE>,"receiver_office_id":"<OFFICE_ID>","sender_office_id":"OFFICE_ID","weight":<WEIGHT>,"width":<WIDTH>,"height":<HEIGHT>,"depth":<DEPTH>}
 expected_result:: 200 {"cod_payments_cost":<PRICE>,"delivery_cost":<PRICE>,"success":true,"return_delivery_cost":<PRICE>}
 
-NOTE: cod_amount - опционально, если COD установлен. Вес в граммах. 
-размер в сантиметрах. 
+NOTE: cod_amount - опционально, если COD установлен. Вес в граммах.
+размер в сантиметрах.
 
 [horizontal]
 Пример запроса/ответа::
