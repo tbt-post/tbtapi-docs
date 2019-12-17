@@ -490,7 +490,7 @@ NOTE: Если вставить полученный код в строке бр
 protocol_method:: GET
 method_name:: agent/print-renderer
 method_params:: compile
-get_params:: pid=<parcel_id> [, cell=<sort_cell_id>]
+get_params:: pid=<parcel_id> [cell=<sort_cell_id>], [office=<office-id>]
 request_body:: ----
 expected_result:: 200 <pdf file data>
 
@@ -518,6 +518,10 @@ Cache-Control: no-cache +
 
 
 NOTE: Результатом выполнения запроса будет загрузка PDF в файл, указанный в `--output`
+
+NOTE: Для ускорения обработки отправление есть опциональные параметры: +
+`cell` - № сортировочной ячейки; +
+`office` - отделение, с которого будет происходить отправка.
 
 ==== Состояние посылки
 
