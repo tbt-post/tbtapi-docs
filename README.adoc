@@ -10,4 +10,4 @@ Public API description for https://tbt-post.net[TbT Platform] services
 
 &copy; 2016-2018 TabaTa LLC
 
-&copy; 2019 Kasta Group LLC
+&copy; 2019-2020 Kasta Group LLC

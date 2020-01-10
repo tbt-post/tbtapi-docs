@@ -43,15 +43,16 @@ WARNING: Для проверки запросов в командной стро
 protocol_method:: POST
 method_name:: agent/parcel
 method_params:: new
-request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
+request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...], "rolling_payments": <BOOLEAN>}
 expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
-NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>"}
+NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "contragent_id": "<CONTRAGENT_ID>"}
 
-NOTE: ключи `cod_amount`, `contragent_id`, `sender`, `dimensions`, `_comment`, `items` -- опциональны. +
-`contragent_id` - необходимо указывать если в `type=COD`
+NOTE: Ключи: +
+`cod_amount`, `contragent_id`, `sender`, `dimensions`, `_comment`, `items`, `rolling_payments` -- *опциональны.* +
+`contragent_id` - необходимо указывать если в `type=COD`, так же в теле `item`, если `rolling_payments: true`
 
-NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах. `cod_amount` не может быть больше чем `price`
+NOTE: Для посылок с классификатором оплаты `COD` в качестве значения `cod_amount` будет подставляться параметр `price` в случае отсутствия явного его указания в параметрах. *`cod_amount` не может быть больше чем `price`*
 
 NOTE: параметр `delivery_type` имеет значение по-умолчанию *W2W*, в случае значений *W2D* и *D2D* необходимо передать ключ `dest_apartment` (номер квартиры).+
 Например: `"dest_apartment": "102"`
@@ -403,7 +404,7 @@ expected_result:: 200 {"items":[{"sku":"<SUPPLIER SKU NAME>","name":"<NAME>","we
 [source, shell]
 ----
 curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/item/list/	cc52d435-ba59-4d5f-982c-09e0ff9cacad" \
--H "Authorization: Basic NTEwYWQwOGEtODMwZS00NmFhLWFiNjMtZGZhZGU3NWEwMGE3OmtSZnR2dzdX"
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
 
 Ответ::
@@ -438,6 +439,85 @@ Connection: keep-alive +
   "success": true
 }
 ----
+
+==== Получение статусов items
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/items-delivery-status
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"items":[{"sku":"<SUPPLIER SKU NAME>","status": "<item status>","name":"<NAME>","weight":<WEIGHT GRAM as INTEGER>,"modified_at":"<DATE>","brand":"<BRAND>","barcode":"<UNIQ BARCODE>","additional_data":{"photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "comment": "<OPTIONAL COMMENT>"}, "is_paid": <BOOLEAN>, "quantity":<QUANTITY as INTEGER>,"price":<PRICE as DECIMAL(10,2)>,"size":"<SIZE>"}],"success":true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/items-delivery-status/112e78c4-b974-47d3-be2b-107749a961d6" -H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK + 
+Server: nginx/1.10.3 +
+Date: Sat, 21 Dec 2019 09:28:51 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 393 +
+Connection: keep-alive +
+Etag: "c5c7eae7e98727ae5d1b4e0b67dbba7f17ac7737" +
+
+
+[source, json]
+----
+{
+  "items": [
+    {
+      "sku": "123456",
+      "status": "delivered",
+      "name": "Шорты",
+      "weight": 50,
+      "modified_at": "2019-12-05T17:59:51.277637+00:00",
+      "brand": "NoBrand",
+      "barcode": "123456789",
+      "additional_data": {
+        "color": "black",
+        "photos": [
+          "https://google.com/images/test.jpg"
+        ]
+      },
+      "is_paid": true,
+      "quantity": 1,
+      "return_data": {
+        "code": "TQRZ9XJP3",
+        "label": "-Возврат-TQ-201219/002",
+        "money_back": false,
+        "money_dest": "card",
+        "problem": "",
+        "reason": "difference"
+      },
+      "price": 99.99,
+      "size": "XXL"
+    }
+  ],
+  "success": true,
+  "transactions": []
+}
+
+----
+
+
+NOTE: Каждый item имеет поля: +
+`is_paid = true | false - статус оплачености` +
+`status = delivered | returned | rejected | cancelled` +
+`transactions - список транакций оплаты  айтема, связанный с rolling_payments`
+
+NOTE: *return_data* - данные о возврате. + 
+`"money_back", "money_dest", "code", "label", "reason", "problem", "comment", 
+"is_processing = true  - в случае не завершенной обработки ячейки.`
+
+IMPORTANT: Посылка должна быть в состояниях PU0007, PU0099, PU0096, (выдана или отменена) для успешного ответа.
+
 
 ==== Получение кодов
 
@@ -490,7 +570,7 @@ NOTE: Если вставить полученный код в строке бр
 protocol_method:: GET
 method_name:: agent/print-renderer
 method_params:: compile
-get_params:: pid=<parcel_id> [, cell=<sort_cell_id>]
+get_params:: pid=<parcel_id> [cell=<sort_cell_id>], [office=<office-id>]
 request_body:: ----
 expected_result:: 200 <pdf file data>
 
@@ -518,6 +598,10 @@ Cache-Control: no-cache +
 
 
 NOTE: Результатом выполнения запроса будет загрузка PDF в файл, указанный в `--output`
+
+NOTE: Для ускорения обработки отправление есть опциональные параметры: +
+`cell` - № сортировочной ячейки; +
+`office` - отделение, с которого будет происходить отправка.
 
 ==== Состояние посылки
 
