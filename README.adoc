@@ -2,9 +2,9 @@
 
 image::https://staging.tbt-post.net/img/tbt-logo.87b6b9e.png[]
 
-Public API description for https://tbt-post.net[TbT Platform] services
+Public API description for https://tbt-post.net[TbT Platform] services and data schemas for ERP-systems
 
-Описание публичного API для сервисов https://tbt-post.net[платформы TbT]
+Описание публичного API для сервисов https://tbt-post.net[платформы TbT] и схемы данных для ERP-систем.
 
 == Copyrights
 
