@@ -1,4 +1,4 @@
-= TbT Platform Developer Guide
+= TbT Platform Developer Suite
 
 image::https://staging.tbt-post.net/img/tbt-logo.87b6b9e.png[]
 
