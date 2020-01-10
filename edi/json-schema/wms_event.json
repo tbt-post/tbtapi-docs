@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "WMS event",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "uuid_v1": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
+  "type": "object",
+  "required": [
+    "serial",
+    "items",
+    "condition"
+  ],
+  "properties": {
+    "serial": {
+      "$ref": "#/definitions/uuid_v1"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "exception", "transition", "exchange", "action"
+      ]
+    },
+    "ev_type": {
+      "type": "string",
+      "enum": [
+        "creating",
+        "scanning",
+        "marking",
+        "placing",
+        "processing",
+        "sorting",
+        "searching",
+        "classifying",
+        "packing",
+        "inventing",
+        "unloading",
+        "correcting"
+      ]
+    },
+    "ev_task": {
+      "type": "string"
+    },
+    "ev_stage": {
+      "type": "string"
+    },
+    "coordinates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "flow": {
+      "type": "string",
+      "enum": [
+        "empty", "auto", "unidirectional", "bidirectional"
+      ]
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "direct", "reverse"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/definitions/uuid"
+    },
+    "owner": {
+      "$ref": "#/definitions/uuid"
+    }
+  }
+}

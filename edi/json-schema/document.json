@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "External document",
+  "required": [
+     "sender", "timestamp", "doctype", "id", "body"
+  ],
+  "properties": {
+    "sender": {
+      "type": "string",
+      "description": "Sender name",
+      "enum": ["tabata","tbt"]
+    },
+    "timestamp": {
+      "description": "Send time",
+      "type": "string"
+    },
+    "doctype": {
+      "type": "string",
+      "description": "Document type identifier",
+      "enum": ["DocReturnOrders"]
+    },
+    "id": {
+      "type": "string",
+      "description": "Document indentifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "body": {
+      "anyOf": [
+        { "type": "string" },
+        { "type": "object" }
+      ],
+      "description": "Document body"
+    },
+    "checksum": {
+      "type": "string",
+      "description": "MD5 hash of the stringified document's body",
+      "pattern": "^[0-9a-f]{32}$"
+    }
+  }
+}

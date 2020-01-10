@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Percel event",
+  "oneOf": [
+    {"$ref": "#/definitions/order_return"},
+    {"$ref": "#/definitions/change_state"}
+  ],
+
+  "definitions": {
+    "order_return": {
+      "type": "object",
+      "required": [
+         "sender", "timestamp", "msgtype",
+         "id", "order_id", "reason", "items",
+         "total_price", "money_back", "money_dest"
+      ],
+      "properties": {
+        "sender": {
+          "type": "string",
+          "description": "Sender name",
+          "enum": ["tabata", "tabata_wms", "tbt", "tbt_bms", "tbt_wms"]
+        },
+        "timestamp": {
+          "description": "Send time",
+          "type": "string"
+        },
+        "msgtype": {
+          "type": "string",
+          "description": "Message type identificator",
+          "enum": ["OrderReturn", "OrderCancel"]
+        },
+        "id": {
+          "type": "string",
+          "description": "Parcel identificator",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "order_id": {
+          "type": "string",
+          "description": "Parcel code (i.e. order ID)"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason",
+          "default": "other",
+          "enum": ["other", "properties", "defects", "manufact_defects", "difference", "size", "size_plus", "size_minus", "color", "wrong"]
+        },
+        "items": {
+          "type": "array",
+          "description": "Items codes",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "total_price": {
+          "type": "number",
+          "description": "Money to return",
+          "maximum": 100000,
+          "minimum": 0,
+          "default": 0.0
+        },
+        "money_back": {
+          "type": "boolean",
+          "description": "Is money return required",
+          "default": false
+        },
+        "money_dest": {
+          "type": "string",
+          "description": "Money destination identifier",
+          "default": "card",
+          "enum": ["card", "wallet", "account", "ukrpost"]
+        },
+        "document_id": {
+          "type": "string",
+          "description": "Corresonding document identifier"
+        }
+      }
+    },
+
+    "change_state": {
+      "type": "object",
+      "required": ["sender", "timestamp", "msgtype", "id", "state"],
+      "properties": {
+        "sender": {
+          "type": "string",
+          "enum": ["tabata", "tabata_wms", "tbt", "tbt_bms", "tbt_wms"]
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "msgtype": {
+          "type": "string",
+          "enum": ["ChangeState"]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+
+        "state": {
+          "type": "string",
+          "description": "New state identifier"
+        },
+        "pentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "description": "Entity identification where object will be placed"
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2000000,
+          "description": "Parcel weight"
+        },
+        "dimensions": {
+          "type": "array",
+          "minLength": 3,
+          "maxLength": 3,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2000000
+          },
+          "description": "Parcel dimensions (width, height, depth), mm"
+        },
+        "parcel_source": {
+          "type": "string",
+          "description": "Parcel source (i.e. for some circumstances)",
+          "enum": ["external"]
+        },
+        "delivery_service": {
+          "type": "string",
+          "description": "Delivery service",
+          "enum": ["tabata", "ukrposhta", "novaposhta", "meest", "intime", "kastapost"]
+        },
+        "is_quasi" : {
+          "type": "boolean",
+          "description": "Is the parcel is of quasi-parcel type",
+          "default": false
+        }
+      }
+    }
+  }
+}

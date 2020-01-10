@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "WMS Registry events",
+  "required": [
+     "source", "timestamp", "generated", "serial", "uid", "userial", "state"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "Source identifier",
+      "enum": ["tabata", "erp_api", "wms_exchange", "external_api", "tbt", "tbt_bms", "tbt_wms"]
+    },
+    "timestamp": {
+      "description": "Send time",
+      "type": "string"
+    },
+    "generated": {
+      "type": "integer",
+      "description": "Registry identifier:generated (timestamp base e.g. 1531752070460)",
+      "minimum": 0
+    },
+    "serial": {
+      "type": "integer",
+      "description": "Registry identifier:serial (timestamp random component)",
+      "minimum": 0
+    },
+    "uid": {
+      "type": "string",
+      "description": "Registry unique identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "userial": {
+      "type": "string",
+      "description": "Registry unique serial identifier (uuid v1)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "state": {
+      "type": "string",
+      "description": "Event",
+      "enum": ["created", "updated", "closed"]
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Parcel transaction event",
+  "required": [
+     "sender", "timestamp", "id", "parcel_id", "contragent_id",
+     "posop", "posorder_id", "merchant_id", "amount"
+  ],
+  "properties": {
+    "sender": {
+      "type": "string",
+      "description": "Sender name",
+      "enum": ["tabata", "tbt"]
+    },
+    "timestamp": {
+      "description": "Send time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "id": {
+      "type": "string",
+      "description": "Transaction identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "parcel_id": {
+      "type": "string",
+      "description": "Parcel identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "contragent_id": {
+      "type": "string",
+      "description": "Contragent identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "posop": {
+      "type": "string",
+      "description": "Payment processor identifier",
+      "enum": ["fcs_term"]
+    },
+    "posorder_id": {
+      "type": "string",
+      "description": "Payment system transaction identifier"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Payment system contragent identifier"
+    },
+    "amount": {
+      "type": ["string", "number"],
+      "description": "Transaction money total",
+      "pattern": "^[0-9]{1,5}(\\.[0-9]{1,2})?$",
+      "maximum": 100000,
+      "minimum": 0
+    },
+    "payer_phone": {
+      "type": "string",
+      "description": "Payer phone number",
+      "pattern": "^380[0-9]{9}$"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Additional info"
+    }
+  }
+}

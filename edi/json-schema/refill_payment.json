@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Wallet replenishment event",
+  "required": [
+     "sender", "timestamp", "id", "payer_phone", "dest",
+     "posop", "posorder_id", "merchant_id", "amount"
+  ],
+  "properties": {
+    "sender": {
+      "type": "string",
+      "description": "Sender name",
+      "enum": ["tabata", "tbt"]
+    },
+    "timestamp": {
+      "description": "Transaction time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "id": {
+      "type": "string",
+      "description": "Transaction identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "payer_phone": {
+      "type": "string",
+      "description": "Payer phone number",
+      "pattern": "^380[0-9]{9}$"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Payer identifier"
+    },
+    "dest": {
+      "type": "string",
+      "description": "Replenishment destination",
+      "enum": ["wallet", "card"]
+    },
+    "posop": {
+      "type": "string",
+      "description": "Payment processor identifier",
+      "enum": ["fcs_term"]
+    },
+    "posorder_id": {
+      "type": "string",
+      "description": "Payment system transaction identifier"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Payment system contragent identifier"
+    },
+    "amount": {
+      "type": "string",
+      "description": "Transaction money total",
+      "pattern": "^[0-9]{1,5}(\\.[0-9]{1,2})?$"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Additional info"
+    }
+  }
+}
