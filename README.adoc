@@ -6,6 +6,16 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 
 Описание публичного API для сервисов https://tbt-post.net[платформы TbT] и схемы данных для ERP-систем.
 
+== Additional resources
+
+=== Media Channels
+
+https://www.linkedin.com/company/kasta-group-llc[LinkedIn official]
+
+https://t.me/tbtpost[Telegram Channel]
+
+https://twitter.com/tbtpost[Twitter Feed]
+
 == Copyrights
 
 &copy; 2016-2018 TabaTa LLC
