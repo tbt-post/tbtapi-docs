@@ -1,0 +1,800 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "task_fulfill": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "fulfill"
+          ]
+        },
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$": {
+              "type": "object",
+              "required": [
+                "items"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "color_model_cmyk": {
+      "type": "object",
+      "properties": {
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "cmyk"
+          ]
+        },
+        "color_value": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
+    "uuid_v1": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "task": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/task_common"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/task_store"
+            },
+            {
+              "$ref": "#/definitions/task_unload"
+            },
+            {
+              "$ref": "#/definitions/task_fulfill"
+            }
+          ]
+        }
+      ]
+    },
+    "color_model_rgb": {
+      "type": "object",
+      "properties": {
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "rgb"
+          ]
+        },
+        "color_value": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "color_model",
+        "color_value"
+      ]
+    },
+    "task_store": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "store"
+          ]
+        },
+        "spec": {
+          "type": "object",
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "box_code": {
+              "type": "string",
+              "description": "external box barcode",
+              "pattern": "^[^ ]{6,32}$"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "unique sku code or ref to item-class"
+              }
+            }
+          }
+        }
+      }
+    },
+    "color_class_common": {
+      "type": "object",
+      "required": [
+        "type",
+        "color_name",
+        "color_model",
+        "color_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "color_class"
+          ]
+        },
+        "color_name": {
+          "type": "string"
+        },
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "undef",
+            "rgb",
+            "hsl",
+            "lab",
+            "cmyk"
+          ]
+        },
+        "color_value": {},
+        "color_id": {
+          "type": "string",
+          "description": "reference to color in external system, e.g. 87463234"
+        }
+      }
+    },
+    "color_model_lab": {
+      "type": "object",
+      "properties": {
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "lab"
+          ]
+        },
+        "color_value": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "number",
+              "minimum": -100,
+              "maximum": 100
+            },
+            {
+              "type": "number",
+              "minimum": -100,
+              "maximum": 100
+            }
+          ],
+          "additionalItems": false,
+          "minItems": 3
+        }
+      },
+      "required": [
+        "color_model",
+        "color_value"
+      ]
+    },
+    "color_class": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/color_class_common"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/color_model_undef"
+            },
+            {
+              "$ref": "#/definitions/color_model_rgb"
+            },
+            {
+              "$ref": "#/definitions/color_model_hsl"
+            },
+            {
+              "$ref": "#/definitions/color_model_lab"
+            },
+            {
+              "$ref": "#/definitions/color_model_cmyk"
+            }
+          ]
+        }
+      ]
+    },
+    "uuid_v4": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "color_model_hsl": {
+      "type": "object",
+      "properties": {
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "hsl"
+          ]
+        },
+        "color_value": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 360
+            },
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          ],
+          "additionalItems": false,
+          "minItems": 3
+        }
+      },
+      "required": [
+        "color_model",
+        "color_value"
+      ]
+    },
+    "color_model_undef": {
+      "type": "object",
+      "properties": {
+        "color_model": {
+          "type": "string",
+          "enum": [
+            "undef"
+          ]
+        },
+        "color_value": {
+          "type": "null"
+        }
+      }
+    },
+    "item_class": {
+      "type": "object",
+      "required": [
+        "type",
+        "weight",
+        "dimensions",
+        "description"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "item_class"
+          ]
+        },
+        "weight": {
+          "type": "integer",
+          "description": "weight, in grams"
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "width, height, depth, in mm"
+        },
+        "description": {
+          "type": "object",
+          "required": [
+            "article",
+            "code",
+            "name",
+            "brand",
+            "type",
+            "size",
+            "size_class",
+            "color",
+            "origin",
+            "composition",
+            "info",
+            "product_id",
+            "photos"
+          ],
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[^ ]{3,24}$"
+              },
+              "maxItems": 30,
+              "description": "e.g. additional marks to help identify the item"
+            },
+            "color": {
+              "type": "object",
+              "required": [
+                "$ref"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "product_id": {
+              "type": "string",
+              "description": "e.g. 431231234"
+            },
+            "name": {
+              "type": "string",
+              "description": "e.g. Cargo"
+            },
+            "article": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "description": "e.g. shoes"
+            },
+            "size": {
+              "type": "string",
+              "description": "e.g. 42"
+            },
+            "brand": {
+              "type": "string",
+              "description": "e.g. Adidas"
+            },
+            "lang": {
+              "type": "string",
+              "enum": [
+                "ru",
+                "uk",
+                "en"
+              ]
+            },
+            "season": {
+              "type": "string",
+              "enum": [
+                "winter",
+                "summer",
+                "spring",
+                "fall",
+                "demi-season",
+                "demi-season-summer",
+                "demi-season-winter",
+                "all-season"
+              ]
+            },
+            "photos": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "fragile": {
+              "type": "boolean"
+            },
+            "info": {
+              "type": "string",
+              "description": "verbose description"
+            },
+            "code": {
+              "type": "string",
+              "description": "EAN-13 manufacturer barcode, e.g. 978020137962"
+            },
+            "size_class": {
+              "type": "string",
+              "description": "size chart used, e.g. EU"
+            },
+            "origin": {
+              "type": "string",
+              "description": "manufacturer country e.g. Singapore"
+            },
+            "composition": {
+              "type": "string",
+              "description": "string with delimiter ';', material substance in '%'"
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "female",
+                "male",
+                "unisex"
+              ]
+            },
+            "price": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 9999999999.99,
+              "multipleOf": 0.01
+            }
+          }
+        }
+      }
+    },
+    "task_unload": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "unload"
+          ]
+        },
+        "spec": {
+          "type": "object",
+          "required": [
+            "items",
+            "type",
+            "class",
+            "delivery_type",
+            "sender",
+            "receiver",
+            "address_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "delivery_service": {
+              "type": "string",
+              "enum": [
+                "self_delivery",
+                "kastapost",
+                "novaposhta",
+                "ukrposhta",
+                "meest",
+                "intime",
+                "justin"
+              ]
+            },
+            "dest_branch_id": {
+              "type": "string",
+              "pattern": "^[^ ]{2,128}$"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "undef",
+                "papers",
+                "fragile",
+                "goods",
+                "foods",
+                "chemicals",
+                "special",
+                "hazard"
+              ]
+            },
+            "cod_amount": {
+              "type": "number",
+              "minimum": 0.01,
+              "maximum": 9999999999.99,
+              "multipleOf": 0.01
+            },
+            "note": {
+              "type": "string"
+            },
+            "dest_apartment": {
+              "type": "string"
+            },
+            "class": {
+              "type": "string",
+              "description": "parcel class, e.g. I.PRP.NR.NA.S000"
+            },
+            "sender": {
+              "$ref": "#/definitions/uuid"
+            },
+            "address_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "parcel_code": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "description": "some parcel group code, e.g. order id or delivery reg @ external ERP",
+                  "pattern": "^[^ ]{6,32}$"
+                }
+              ]
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "unique sku code, e.g. MK0A123456789012",
+                "pattern": "^[^ ]{6,32}$"
+              }
+            },
+            "receiver": {
+              "$ref": "#/definitions/uuid"
+            },
+            "delivery_type": {
+              "type": "string",
+              "enum": [
+                "W2W",
+                "W2D",
+                "D2W",
+                "D2D"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "task_common": {
+      "type": "object",
+      "required": [
+        "action",
+        "spec"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "store",
+            "unload",
+            "fulfill"
+          ]
+        },
+        "spec": {}
+      }
+    }
+  },
+  "additionalProperties": false,
+  "dependencies": {
+    "items": {
+      "required": [
+        "definitions",
+        "total"
+      ]
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "origin",
+        "generated",
+        "serial"
+      ]
+    },
+    {
+      "required": [
+        "origin",
+        "generated",
+        "uid"
+      ]
+    },
+    {
+      "required": [
+        "origin",
+        "userial"
+      ]
+    }
+  ],
+  "properties": {
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 255
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "registry_of": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "direct",
+            "reverse-normal",
+            "reverse-problem",
+            "internal"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/color_class"
+            },
+            {
+              "$ref": "#/definitions/item_class"
+            }
+          ]
+        }
+      }
+    },
+    "req_rac": {
+      "type": "boolean"
+    },
+    "req_pproc": {
+      "type": "boolean"
+    },
+    "uid": {
+      "$ref": "#/definitions/uuid"
+    },
+    "is_announce": {
+      "type": "boolean"
+    },
+    "userial": {
+      "$ref": "#/definitions/uuid_v1"
+    },
+    "generated": {
+      "type": "integer",
+      "description": "timestamp e.g. 1531752070460",
+      "minimum": 0
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/task"
+      }
+    },
+    "serial": {
+      "type": "integer",
+      "description": "timestamp e.g. 145481128145898",
+      "minimum": 0
+    },
+    "workflow": {
+      "type": "string",
+      "enum": [
+        "divergence"
+      ]
+    },
+    "total": {
+      "type": "integer",
+      "description": "e.g. 10"
+    },
+    "items_owner": {
+      "$ref": "#/definitions/uuid_v4"
+    },
+    "origin": {
+      "$ref": "#/definitions/uuid_v4"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^[^ ]{8,32}$",
+            "description": "code, e.g. MK0A123456789012"
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "quantity",
+              "class",
+              "weight",
+              "dimensions"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "item"
+                ]
+              },
+              "code": {
+                "type": "string",
+                "pattern": "^[^ ]{8,32}$",
+                "description": "code, e.g. MK0A123456789012"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "class": {
+                "type": "object",
+                "required": [
+                  "$ref"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "$ref": {
+                    "$ref": "#/definitions/uuid",
+                    "description": "e.g. 730b6997-0b46-4f75-a749-e2f512be25ff"
+                  }
+                }
+              },
+              "weight": {
+                "type": "integer",
+                "description": "weight, in grams",
+                "minimum": 0
+              },
+              "dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "minItems": 3,
+                "maxItems": 3,
+                "description": "width, height, depth, in mm"
+              },
+              "note": {
+                "type": "string",
+                "description": "text comment, optional"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "produced_by": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "kp",
+            "up",
+            "np",
+            "me",
+            "it"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}
