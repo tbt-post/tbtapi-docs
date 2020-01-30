@@ -132,7 +132,7 @@
         "delivery_service": {
           "type": "string",
           "description": "Delivery service",
-          "enum": ["tabata", "ukrposhta", "novaposhta", "meest", "intime", "kastapost"]
+          "enum": ["tabata", "ukrposhta", "novaposhta", "meest", "intime", "kastapost", "justin"]
         },
         "is_quasi" : {
           "type": "boolean",
