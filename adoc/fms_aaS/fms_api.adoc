@@ -1,0 +1,316 @@
+= FMS API
+Kasta Group LLC <info@tbt-post.net>
+1.3.3, 2019-11-01: Public API
+:toc: right
+:toclevels: 4
+{empty}
+
+== Общая информация
+
+Финансовый API предназначен для интеграции финансовых систем бизнес-агентов в сервисы TbT.
+
+Для подключения к системе необходимо:
+
+* Иметь запись финансового процессора в системе - **fin_processor_id**
+* Иметь регистрационную запись в системе с установленным признаком **fin_processor** + 
+с привязкой к **fin_processor_id**
+* ID учетной записи финансового агента (UUID)
+* Уникальный токен и пароль (или одноразовый сессионный код) для клиентского подключения (передаются в заголовке для Basic Auth)
+
+
+=== Формат URL для отправки запросов к API
+
+    https://api.tbt-post.net/api/v{v_number}/{method_name}/{method_params}?{get_params}
+
+где::
+
+[horizontal]
+    {v_number}:: номер версии API в виде числа
+    {method_name}:: название метода
+    {method_params}:: параметры метода в URI
+    {get_params}:: опциональные GET параметры
+
+WARNING: Для проверки запросов в командной строке/терминале, используйте User-Agent: curl, *не ниже 7.47.0*
+
+== API
+
+=== Контрагенты
+
+==== Получения данных контрагента по id
+
+[horizontal]
+protocol_method:: GET
+method_name:: fin/contragent
+method_params:: ----
+get_params:: merchant_id=<merchant_id> [processor=<fin_processor_id>]
+request_body:: ----
+expected_result:: 200 {"bank_name":"<BANK NAME>","name":"<CONTRAGENT NAME>","success":true,"modified_at":"TIMESTAMP UTC","enabled":<true|false>,"reg_id":"<REGISTRATION ID>","bank_mfo":"<BANK MFO CODE>","bank_account":"<ACCOUNT ID>","id":"<INTERNAL CONTRAGENT ID>","vat":<VALUE ADDED TAX INT(%)>,"tax_id":"<TAX ID>"}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/contragent?merchant_id=11111" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 14:43:48 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 571 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "bank_name": "Bank Name",
+  "name": "TEST TEST TEST ФОП",
+  "success": true,
+  "modified_at": "2019-08-30T13:48:08.899002+03:00",
+  "enabled": true,
+  "reg_id": "0123456789",
+  "bank_mfo": "123456",
+  "bank_account": "012345678912",
+  "id": "05xxx054-2xxa-4xx7-803e-b75cxx7c5",
+  "vat": 0,
+  "tax_id": "0123456789"
+}
+----
+
+NOTE: `processor` - название финансовой системы, которую представляет фин-компания. Указывается, если мерчант принадлежит другой финансовой системе, например: +
+[source, url]
+----
+/fin/contragent?merchant_id=<other merchant id>&processor=<other fin_processor_id>
+----
+
+==== Получения данных контрагентов
+
+[horizontal]
+protocol_method:: GET
+method_name:: fin/contragent/translation
+method_params:: list
+get_params:: [merchant_ids=<id1|id2|id3...>],[processor=<fin_processor_id>]
+request_body:: ----
+expected_result:: 200 {"bank_name":"<BANK NAME>","name":"<CONTRAGENT NAME>","success":true,"modified_at":"TIMESTAMP UTC","enabled":<true|false>,"reg_id":"<REGISTRATION ID>","bank_mfo":"<BANK MFO CODE>","bank_account":"<ACCOUNT ID>","id":"<INTERNAL CONTRAGENT ID>","vat":<VALUE ADDED TAX INT(%)>,"tax_id":"<TAX ID>"}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/contragent/translation/list?merchant_ids=kastaua_0123456789|11111&" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2="
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 15:21:40 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1361 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "translations": [
+    {
+  "bank_name": "Bank Name1",
+  "name": "TEST TEST TEST ФОП1",
+  "success": true,
+  "modified_at": "2019-08-30T13:48:08.899002+03:00",
+  "enabled": true,
+  "reg_id": "0123456789",
+  "bank_mfo": "123456",
+  "bank_account": "012345678912",
+  "id": "05xxx054-2xxa-4xx7-803e-b75cxx7c5",
+  "vat": 0,
+  "tax_id": "0123456789"
+},
+    {
+  "bank_name": "Bank Name2",
+  "name": "TEST TEST TEST ФОП2",
+  "success": true,
+  "modified_at": "2019-08-30T13:48:08.899002+03:00",
+  "enabled": true,
+  "reg_id": "0123456784",
+  "bank_mfo": "123454",
+  "bank_account": "012345678914",
+  "id": "05xxx054-2xxa-4xx7-803e-b75cxx7c4",
+  "vat": 0,
+  "tax_id": "0123456784"
+}
+  ],
+  "success": true
+}
+
+----
+
+=== Мерчанты
+
+==== Получения списка id мерчантов 
+
+[horizontal]
+protocol_method:: GET
+method_name:: fin/merchant
+method_params:: list
+get_params:: reg_id=<REGISTRATION ID>, [tax_id=<TAX ID>], [processor=<fin_processor_id>]
+request_body:: ----
+expected_result:: 200 {"success":true,"merchant_ids":["merchant_id1","merchant_id2","merchant_id3"]}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/merchant/list?reg_id=1816712496" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2="
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 15:34:11 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 57 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "success": true,
+  "merchant_ids": [
+    "kastaua_1816712496"
+  ]
+}
+
+----
+
+NOTE: `reg_id` или `tax_id` контрагента.
+
+
+==== Создание мерчанта с указанием контрагента
+
+[horizontal]
+protocol_method:: POST
+method_name:: fin/merchant
+method_params:: ----
+request_body:: { "contragent_id": "<contragent_id>", "merchant_id": "<new merchant id>", "enabled": <true|false>}
+expected_result:: 200 {"success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/fin/merchant" -H "Content-Type: application/json" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2=" -d '{ "contragent_id": "05bd4054-200a-4db7-803e-b75c123427c5", "merchant_id": "new_merchant_id_test1", "enabled": false}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 16:06:49 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 57 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+"success": true
+}
+----
+
+NOTE: `enabled=true|false` - активировать или деактивировать мерчанта.
+
+IMPORTANT: Если у контрагента уже есть мерчант - ответ будет содержать ошибку: **Merchant translation already exist**
+
+==== Активация (обновление) мерчанта
+
+[horizontal]
+protocol_method:: PUT
+method_name:: fin/merchant
+method_params:: ----
+request_body:: { "merchant_id": "<updated-merchant-id>", "enabled": <true|false>}
+expected_result:: 200 {"success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/fin/merchant" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2=" \
+-d '{"merchant_id": "new_merchant_id_test1", "enabled": true}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 16:25:40 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 32 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+"rowcount": 1,
+"success": true
+}
+----
+
+=== Реестры
+
+===== Получение списка транзакций за день
+
+[horizontal]
+protocol_method:: GET
+method_name:: fin/transaction
+method_params:: list
+get_params:: date=<YYYY-MM-DD>
+request_body:: ----
+expected_result:: 200 {"success":true,"transactions":[{"providerid":<id>,"sum":<sum>},{"providerid":<id>,"sum":<sum>}...]}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/transaction/list?date=2020-01-15" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2="
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 03 Feb 2020 16:36:44 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 37 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+ {
+    "success": true,
+    "transactions": [
+        {
+            "providerid": 170,
+            "sum": 111.0
+        },
+        {
+            "providerid": 169,
+            "sum": 218.0
+        }
+    ]
+}
+----
+
+NOTE: `providerid` - это внутренни id транзакции платформы (числовой).
