@@ -314,3 +314,48 @@ Connection: keep-alive +
 ----
 
 NOTE: `providerid` - это внутренни id транзакции платформы (числовой).
+
+==== Загрузка файла реестра для сверки операций
+
+[horizontal]
+protocol_method:: POST
+method_name:: fin/registry
+method_params:: ----
+request_body:: <file.csv>
+expected_result:: 200 {"success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST -F "data=@/path/to/file/example_YYYYMMDD.csv" "https://sandbox-api.tbt-post.net/api/v1/fin/registry" -H "Content-Type: multipart/form-data" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2="
+
+----
+
+Ответ::
+HTTP/1.1 100 Continue +
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 06 Feb 2020 12:26:06 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 72 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "uploaded": [
+    {
+      "size": 295342,
+      "filename": "example_YYYYMMDD.csv"
+    }
+  ],
+  "success": true
+}
+
+----
+
+
+
