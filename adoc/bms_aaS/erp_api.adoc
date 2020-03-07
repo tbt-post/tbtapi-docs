@@ -617,7 +617,7 @@ expected_result:: 200 {"modified_at" : "<TIMESTAMP UTC>", "code" : "<CODE ID>", 
 Запрос::
 [source, shell]
 ----
-curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/codes/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/track/4d52c496-9137-4e8a-bb1b-56f378669ac0" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk"
 ----
