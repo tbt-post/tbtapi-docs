@@ -38,8 +38,19 @@
         ]
       },
       "item": {
-        "type": "string",
-        "pattern": "^[^ ]{3,24}$"
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^[^ ]{3,24}$"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[^ ]{3,24}$"
+            }
+          }
+        ]
       },
       "version": {
         "type": "string"
