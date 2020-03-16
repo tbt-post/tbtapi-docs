@@ -1,0 +1,2771 @@
+openapi: 3.0.0
+
+info:
+  title: BMS ERP API
+  description: Описание публичного API для сервисов платформы TbT и схемы данных для ERP-систем.
+  version: v1
+  
+servers:
+  - url: https://sandbox-api.tbt-post.net/api/v1
+  
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
+  
+tags:
+- name: Посылки
+- name: Quasi-parcel
+- name: Отделения и адреса
+- name: Пользователи
+- name: Контрагенты
+- name: Финансовые транзакции
+  # description: 
+
+paths:
+  /agent/parcel/new/:
+    post:
+      tags: 
+      - Посылки
+      summary: Создание посылки
+      description: "Ключи:
+cod_amount, contragent_id, sender, dimensions, _comment, items, rolling_payments — опциональны.
+contragent_id - необходимо указывать если в type=COD, так же в теле item, если rolling_payments: true
+<br><br>Для посылок с классификатором оплаты COD в качестве значения cod_amount будет подставляться параметр price в случае отсутствия явного его указания в параметрах. cod_amount не может быть больше чем price <br><br> Параметр delivery_type имеет значение по-умолчанию W2W, в случае значений W2D и D2D необходимо передать ключ dest_apartment (номер квартиры). + Например 'dest_apartment':'102'"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: string
+                  description: The block hash.
+                  example: 0095
+                receiver:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 0
+                    phone:
+                      type: number
+                      example: "380666666666"
+                    email:
+                      type: string
+                      example: "example@gmail.com"
+                    first_name:
+                      type: string
+                      example: "test"  
+                    last_name:
+                      type: string
+                      example: "user"  
+                      
+                delivery_type:
+                  type: string
+                  example: W2W 
+                  
+                dest:
+                  type: string
+                  example: ["50.405237", "30.679338"]
+                        
+                weight:
+                  type: integer
+                  example: 1520   
+                  
+                price:
+                  type: integer
+                  example: 2500
+                  
+                cod_amount:
+                  type: integer
+                  example: 0
+                  
+                type:
+                  type: string
+                  example: "fragile:A.PRP.NR.NA.S000"
+                  
+                note:
+                  type: string
+                  example: ""
+                  
+                created_at:
+                  type: string
+                  example: "2020-03-06T11:45:00+00:00"
+                  
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      barcode:
+                        type: number
+                        example: "123456789"
+                      sku:
+                        type: number
+                        example: '123456'
+                      name:
+                        type: string
+                        example: Шорты
+                      brand:
+                        type: string
+                        example: NoBrand
+                      size:
+                        type: string
+                        example: XXL
+                      quantity: 
+                        type: integer
+                        example: 1
+                      weight:
+                        type: integer
+                        example: 50
+                      price:
+                        type: number
+                        example: 99.99
+                      photos:
+                        type: string
+                        example: ['https://google.com/images/test.jpg']
+                      color:
+                        type: string
+                        example: black
+        
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'u******' is a required property' →  <i>Данное поле является обязательным"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Заказ **** уже зарегистрирован'"
+                    
+  /agent/parcel/{parcel_id}:
+    get:
+      tags:
+      - Посылки
+      summary: Получения посылки по id/code
+      # description: ...
+      parameters:
+          - in: path
+            name: parcel_id 
+            required: true
+            description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address_id:
+                    type: string
+                    example: "502da9f4-3e28-11ea-a6aa-67bf874d3f32"
+                  code:
+                    type: string
+                    example: "0097"
+                  is_paid:
+                    type: boolean
+                    example: false
+                  weight:
+                    type: number
+                    example: 1520
+                  agent:
+                    type: string
+                    example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                  is_dirty:
+                    type: boolean
+                    example: false
+                  is_open:
+                    type: boolean
+                    example: true
+                  paid_at:
+                    type: string
+                    example: "null"
+                  closed_at:
+                    type: string
+                    example: "null"
+                  id:
+                    type: string
+                    example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                  paid_amount:
+                    type: number
+                    example: 0
+                  state:
+                    type: string
+                    example: "PU0003"
+                  mark:
+                    type: string
+                    example: null
+                  last_seen_at:
+                    type: string
+                    example: null
+                  type:
+                    type: string
+                    example: fragile
+                  delivery_type:
+                    type: string
+                    example: "W2W"
+                  class: 
+                    type: string
+                    example: "A.PRP.NR.NA.S000"
+                  transfer_via:
+                    type: string
+                    example: "6beaa91b-847e-48c6-b2c9-d8f89d700e4c"
+                  sender:
+                    type: string
+                    example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                  receiver:
+                    type: string
+                    example: "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+                  cod_amount:
+                    type: number
+                    example: 50
+                  additional_data:
+                    type: object
+                    properties:
+                      erp_token:
+                        type: string
+                        example: "d519e93a-10bb-4ed3-b1e7-ec45ce376bcb"
+                      _receiver:
+                        type: object
+                        properties:
+                          phone:
+                            type: number
+                            example: 380663325577
+                          first_name:
+                            type: string
+                            example: "test"
+                          last_name:
+                            type: string
+                            example: "user"
+                          id:
+                            type: number
+                            example: 0
+                          email:
+                            type: string
+                            example: "example@gmail.com"
+                          
+              
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        404:
+          description: "'message': 'Not Found'  →  <i> Такого parcel_id не существует."
+        
+  
+  /agent/parcel/list:
+    post:
+      tags:
+      - Посылки
+      summary: Получение cписка посылок по списку id
+      # description: ...
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  # items:
+                  type: string
+                  example: ["252395d6-5764-4232-baeb-2020db2d8c2c", "4d52c496-9137-4e8a-bb1b-56f378669ac0"]
+              
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  parcels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address_id:
+                          type: string
+                          example: "502da9f4-3e28-11ea-a6aa-67bf874d3f32"
+                        code:
+                          type: string
+                          example: "0097"
+                        is_paid:
+                          type: boolean
+                          example: false
+                        weight:
+                          type: number
+                          example: 1520
+                        agent:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        is_dirty:
+                          type: boolean
+                          example: false
+                        is_open:
+                          type: boolean
+                          example: true
+                        paid_at:
+                          type: string
+                          example: "null"
+                        closed_at:
+                          type: string
+                          example: "null"
+                        id:
+                          type: string
+                          example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                        paid_amount:
+                          type: number
+                          example: 0
+                        state:
+                          type: string
+                          example: "PU0003"
+                        mark:
+                          type: string
+                          example: null
+                        last_seen_at:
+                          type: string
+                          example: null
+                        type:
+                          type: string
+                          example: fragile
+                        delivery_type:
+                          type: string
+                          example: "W2W"
+                        class: 
+                          type: string
+                          example: "A.PRP.NR.NA.S000"
+                        transfer_via:
+                          type: string
+                          example: "6beaa91b-847e-48c6-b2c9-d8f89d700e4c"
+                        sender:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        receiver:
+                          type: string
+                          example: "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+                        cod_amount:
+                          type: number
+                          example: 50
+                        additional_data:
+                          type: object
+                          properties:
+                            erp_token:
+                              type: string
+                              example: "d519e93a-10bb-4ed3-b1e7-ec45ce376bcb"
+                            _receiver:
+                              type: object
+                              properties:
+                                phone:
+                                  type: number
+                                  example: 380663325577
+                                first_name:
+                                  type: string
+                                  example: "test"
+                                last_name:
+                                  type: string
+                                  example: "user"
+                                id:
+                                  type: number
+                                  example: 0
+                                email:
+                                  type: string
+                                  example: "example@gmail.com"
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."                                   
+                    
+  /agent/parcel/list/:
+    get:
+      tags:
+      - Посылки
+      summary: Получение cписка посылок по участию
+      description: "По-умолчанию выполняется поиск всех посылок participant=all, порядок сортировки по-убыванию и по состояниям. В качестве sort_by можно передать такие поля: [code, weight, price, paid_amount, created_at, modified_at, paid_at, type, class, state, goes_back]"
+      parameters:
+          - in: query
+            name: participant
+            required: true
+            description: Участник. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+          - in: query
+            name: sort_by
+            description: Сортировка по состояниям. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение.
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+          - in: query
+            name: sort_order
+            description: Сортировка по возрастанию или убыванию sort_order = desc|asc. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение.
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+          - in: query
+            name: limit
+            description: Лимит в количестве посылок(Будет выведено к-во посылок не более чем указано в параметре limit). Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - целочисельное значение.
+            schema:
+              type : integer
+              format: int64
+              minimum: 1
+          - in: query
+            name: offset
+            description: Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - целочисельное значение.
+            schema:
+              type : integer
+              format: int64
+              # minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1
+                  parcels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address_id:
+                          type: string
+                          example: "502da9f4-3e28-11ea-a6aa-67bf874d3f32"
+                        code:
+                          type: string
+                          example: "0097"
+                        is_paid:
+                          type: boolean
+                          example: false
+                        weight:
+                          type: number
+                          example: 1520
+                        agent:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        is_dirty:
+                          type: boolean
+                          example: false
+                        is_open:
+                          type: boolean
+                          example: true
+                        paid_at:
+                          type: string
+                          example: "null"
+                        closed_at:
+                          type: string
+                          example: "null"
+                        id:
+                          type: string
+                          example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                        paid_amount:
+                          type: number
+                          example: 0
+                        state:
+                          type: string
+                          example: "PU0003"
+                        mark:
+                          type: string
+                          example: null
+                        last_seen_at:
+                          type: string
+                          example: null
+                        type:
+                          type: string
+                          example: fragile
+                        delivery_type:
+                          type: string
+                          example: "W2W"
+                        class: 
+                          type: string
+                          example: "A.PRP.NR.NA.S000"
+                        transfer_via:
+                          type: string
+                          example: "6beaa91b-847e-48c6-b2c9-d8f89d700e4c"
+                        sender:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        receiver:
+                          type: string
+                          example: "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+                        cod_amount:
+                          type: number
+                          example: 50
+                        additional_data:
+                          type: object
+                          properties:
+                            erp_token:
+                              type: string
+                              example: "d519e93a-10bb-4ed3-b1e7-ec45ce376bcb"
+                            _receiver:
+                              type: object
+                              properties:
+                                phone:
+                                  type: number
+                                  example: 380663325577
+                                first_name:
+                                  type: string
+                                  example: "test"
+                                last_name:
+                                  type: string
+                                  example: "user"
+                                id:
+                                  type: number
+                                  example: 0
+                                email:
+                                  type: string
+                                  example: "example@gmail.com"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."              
+                    
+  /agent/parcel/item/list/{parcel_id}:
+    get:
+      tags:
+      - Посылки
+      summary: Получение списка items
+      description: "Получение содержимого посылки."
+      parameters:
+          - in: path
+            name: parcel_id 
+            required: true
+            description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sku:
+                          type: string
+                          example: "123456"
+                        name:
+                          type: string
+                          example: "Шорты"
+                        weight:
+                          type: number
+                          example: "50"
+                        modified_at:
+                          type: string
+                          example: "2020-03-07T10:57:10.565069+00:00"
+                        brand:
+                          type: string
+                          example: "Adidas"
+                        barcode:
+                          type: string
+                          example: "1323456789"
+                        additional_data:
+                          type: object
+                          properties:
+                            color:
+                              type: string
+                              example: "black"
+                            photos:
+                              type: string
+                              example: ['https://google.com/images/test.jpg']
+                        quantity:
+                          type: integer
+                          example: 1
+                        price:
+                          type: number
+                          example: "99.99"
+                        size:
+                          type: string
+                          example: "XXL"
+                  success:
+                    type: boolean
+                    example: true
+                      
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+        404:
+          description: "'message': 'Not Found'  →  <i> Такого parcel_id не существует."
+          
+  /agent/parcel/items-delivery-status/{parcel_id}:
+    get:
+      tags:
+      - Посылки
+      summary: Получение статусов items
+      description: "Посылка должна быть в состояниях PU0007, PU0099, PU0096, (выдана или отменена) для успешного ответа. <br><br> 
+        Каждый item имеет поля:is_paid = true | false - статус оплачености status = delivered | returned | rejected | cancelled transactions - список транакций оплаты айтема, связанный с rolling_payments <br><br> <b>return_data</b> - данные о возврате.
+          'money_back', 'money_dest', 'code', 'label', 'reason', 'problem', 'comment', 'is_processing' = true - в случае не завершенной обработки ячейки."
+      
+      parameters:
+          - in: path
+            name: parcel_id 
+            required: true
+            description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sku:
+                          type: string
+                          example: "123456"
+                        delivered:
+                          type: string
+                          example: "delivered"
+                        name:
+                          type: string
+                          example: "Шорты"
+                        weight:
+                          type: number
+                          example: "50"
+                        modified_at:
+                          type: string
+                          example: "2020-03-07T10:57:10.565069+00:00"
+                        brand:
+                          type: string
+                          example: "Adidas"
+                        barcode:
+                          type: string
+                          example: "1323456789"
+                        additional_data:
+                          type: object
+                          properties:
+                            color:
+                              type: string
+                              example: "black"
+                            photos:
+                              type: string
+                              example: ['https://google.com/images/test.jpg']
+                        is_paid:
+                          type: boolean
+                          example: true
+                        quantity:
+                          type: integer
+                          example: 1
+                        price:
+                          type: number
+                          example: "99.99"
+                        size:
+                          type: string
+                          example: "XXL"
+                  success:
+                    type: boolean
+                    example: true
+                  transactions:
+                    type: string
+                    example: []
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+        404:
+          description: "'message': 'Not Found'  →  <i> Такого parcel_id не существует."       
+        409:
+          description: "'message': 'Parcel is not delivered and in state: PU0003     →     <i> Посылка должна быть в состояниях PU0007, PU0099, PU0096'"
+          
+  /agent/parcel/codes/{parcel_id}:
+    get:
+      tags:
+      - Посылки
+      summary: Получение кодов
+      description: "Если вставить полученный код в строке браузера, например: 'Crhome', то в результате получим изображение необходимого кода. Копировать необходимо без скобок, например: data:image/png;base64,iV…​<body>…​U5ErkJggg=="
+      
+      parameters:
+          - in: path
+            name: parcel_id 
+            required: true
+            description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qr:
+                    type: string
+                    example: null
+                  bcode:
+                    type: string
+                    example: "data:image/png;base64,iVBORw0KG......TkSuQmCC"
+                  success:
+                    type: boolean
+                    example: true
+                  
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+          
+  # /agent/print-renderer/compile/kp/:
+  #   get:
+  #     tags:
+  #     - Посылки
+  #     summary: Получения PDF этикетки заказа
+  #     description: ""
+      
+  #     parameters:
+  #         - in: query
+  #           name: pid 
+  #           required: true
+  #           description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+  #           schema:
+  #             type : string
+  #             format: int64
+  #             minimum: 1
+  #             # description:  merchant_id=<id1>
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+                  
+        # 401:
+        #   description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        # 403:
+        #   description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/parcel/track/{parcel_id}:
+    get:
+      tags:
+      - Посылки
+      summary: Состояние посылки
+      description: ""
+      
+      parameters:
+          - in: path
+            name: parcel_id 
+            required: true
+            description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  modified_at:
+                    type: string
+                    format: date-time
+                    example: "2019-08-30T13:48:08.899002+03:00"
+                  code:
+                    type: string
+                    example: "PU0007"
+                  geo:
+                    type: string
+                    example: [0,0]
+                  success:
+                    type: boolean
+                    example: true
+                  state_desc:
+                    type: string
+                    example: "Доставлено"
+                  
+                 
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."            
+        404:
+          description: "'message': 'Not Found'  →  <i> Такого parcel_id не существует."
+                    
+  # /agent/parcel/log/{parcel_id}:
+  #   get:
+  #     tags:
+  #     - Посылки
+  #     summary: История изменения состояний
+  #     description: ""
+      
+  #     parameters:
+  #         - in: path
+  #           name: parcel_id 
+  #           required: true
+  #           description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+  #           schema:
+  #             type : string
+  #             format: int64
+  #             minimum: 1
+  #             # description:  merchant_id=<id1>
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+                  # 1542777583615:
+                  #   type: object
+                  #   properties:
+                  #     code:
+                  #       type: string
+                  #       example: "PU0001"
+                  #     geo:
+                  #       type: string
+                  #       example: [0, 0]
+                  #     state_desc:
+                  #       type: string
+                  #       example: "Отправление принято к доставке"
+                  # 1542880237734:
+                  #   type: object
+                  #   properties:
+                  #     code:
+                  #       type: string
+                  #       example: "PU0003"
+                  #     geo:
+                  #       type: string
+                  #       example: [0, 0]
+                  #     state_desc:
+                  #       type: string
+                  #       example: "В отделении"
+                  # 1543160738969:
+                  #   type: object
+                  #   properties:
+                  #     code:
+                  #       type: string
+                  #       example: "PU0003"
+                  #     geo:
+                  #       type: string
+                  #       example: [0, 0]
+                  #     state_desc:
+                  #       type: string
+                  #       example: "Доставлено"
+                  # success:
+                  #   type: boolean
+                  #   example: true
+  #       400:
+  #         description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+  #       401:
+  #         description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+  #       403:
+  #         description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."            
+  #       404:
+  #         description: "'message': 'Not Found'  →  <i> Такого parcel_id не существует."    
+          
+  # /agent/parcel/log/logs/:
+  #   get:
+  #     tags:
+  #     - Посылки
+  #     summary: История изменения состояний
+  #     description: "Временные параметры ts_from, ts_to задаются в формате timestamp UTS in miliseconds."
+      
+  #     parameters:
+  #         - in: query
+  #           name: ts_from 
+  #           required: true
+  #           description: Временной параметр "От"
+  #           schema:
+  #             type : string
+  #             format: int64
+  #             minimum: 1
+  #             # description:  merchant_id=<id1>
+  #         - in: query
+  #           name: ts_to 
+  #           required: true
+  #           description: Временной параметр "До"
+  #           schema:
+  #             type : string
+  #             format: int64
+  #             minimum: 1
+  #             # description:  merchant_id=<id1>
+  #         - in: query
+  #           name: state 
+  #           required: true
+  #           description: Состояние посылок
+  #           schema:
+  #             type : string
+  #             format: int64
+  #             minimum: 1
+  #             # description:  merchant_id=<id1>
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 1542777583615:
+  #                   type: object
+  #                   properties:
+  #                     code:
+  #                       type: string
+  #                       example: "PU0001"
+  #                     geo:
+  #                       type: string
+  #                       example: [0, 0]
+  #                     state_desc:
+  #                       type: string
+  #                       example: "Отправление принято к доставке"
+  #                 1542880237734:
+  #                   type: object
+  #                   properties:
+  #                     code:
+  #                       type: string
+  #                       example: "PU0003"
+  #                     geo:
+  #                       type: string
+  #                       example: [0, 0]
+  #                     state_desc:
+  #                       type: string
+  #                       example: "В отделении"
+  #                 1543160738969:
+  #                   type: object
+  #                   properties:
+  #                     code:
+  #                       type: string
+  #                       example: "PU0003"
+  #                     geo:
+  #                       type: string
+  #                       example: [0, 0]
+  #                     state_desc:
+  #                       type: string
+  #                       example: "Доставлено"
+  #                 success:
+  #                   type: boolean
+  #                   example: true
+  #       401:
+  #         description: Authorization Required
+  #       404:
+  #         description: Контрагент не найден   
+  #       409:
+  #         description: Invalid processor        
+          
+  /agent/parcel/alter/{parcel_id}:
+    put:
+      tags: 
+      - Посылки
+      summary: Модификация зарегистрированой посылки
+      description: "Все ключи — опциональны, некоторые ключи имеют в зависимостях другие ключи: например dest связан с delivery_type, dest_apartment
+        <br><br>Изменения применимы только для состояния Заявка зарегистрирована в системе (state == PU0000)"
+      parameters:
+        - in: path
+          name: parcel_id 
+          required: true
+          description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+            # description:  merchant_id=<id1>  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: string
+                  description: The block hash.
+                  example: TEST0001
+                receiver:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 0
+                    phone:
+                      type: number
+                      example: "380666666666"
+                    email:
+                      type: string
+                      example: "example@gmail.com"
+                    first_name:
+                      type: string
+                      example: "test"  
+                    last_name:
+                      type: string
+                      example: "user"  
+                      
+                delivery_type:
+                  type: string
+                  example: W2W 
+                  
+                dest:
+                  type: string
+                  example: ["50.405237", "30.679338"]
+                  
+                dest_apartment:
+                  type: string
+                  example: "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253"
+                        
+                weight:
+                  type: integer
+                  example: 1520   
+                  
+                price:
+                  type: integer
+                  example: 2500
+                  
+                cod_amount:
+                  type: integer
+                  example: 0
+                  
+                type:
+                  type: string
+                  example: "fragile:A.PRP.NR.NA.S000"
+                  
+                note:
+                  type: string
+                  example: "example informdation"
+                  
+                dimensions:
+                  type: integer
+                  example: [250,400,80]
+                  
+                _comment:
+                  type: string
+                  example: "test parcel"
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Неверное состояние посылки    →     <i> Посылка должна быть в состоянии PU0000'"
+          
+  /agent/parcel/item/add/{parcel_id}:
+    put:
+      tags: 
+      - Посылки
+      summary: Модификация содержимого отправления
+      description: "Добавление/обновление item. <br><br> Параметры quantity, price, weight (gramm), photos, comment, color - опциональны <br><br> При добавлении item с тем же barcode, данные будут обновлены."
+      parameters:
+        - in: path
+          name: parcel_id 
+          required: true
+          description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+            # description:  merchant_id=<id1>  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: number
+                  example: "123456789"
+                sku:
+                  type: number
+                  example: '123456'
+                name:
+                  type: string
+                  example: Шорты
+                brand:
+                  type: string
+                  example: NoBrand
+                size:
+                  type: string
+                  example: XXL
+                quantity: 
+                  type: integer
+                  example: 1
+                weight:
+                  type: integer
+                  example: 50
+                price:
+                  type: number
+                  example: 99.99
+                photos:
+                  type: string
+                  example: ['https://google.com/images/test.jpg', 'https://m4.test.net/imgw/325a9fa.jpg']
+                color:
+                  type: string
+                  example: black
+                
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/parcel/item/del/{parcel_id}:
+    put:
+      tags: 
+      - Посылки
+      summary: Удаление содержимого отправления
+      description: ""
+      parameters:
+        - in: path
+          name: parcel_id 
+          required: true
+          description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+            # description:  merchant_id=<id1>  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: number
+                  example: "123456789"
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."    
+        404:
+          description: "'message': 'Единица посылки не найдена'  →  <i> Такого parcel_id не существует."
+          
+  /agent/parcel/update/{parcel_id}:
+    put:
+      tags: 
+      - Посылки
+      summary: Запрос на изменение посылки после принятия к доставке
+      description: "Параметр receiver опциональный, cod_amount и paid_amount необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD(Наложенная оплата). <br><br> Запрос на модификацию возможен в состояних Принято к доставке (state == PU0001) и В отделении (state == PU0003)"
+      parameters:
+        - in: path
+          name: parcel_id 
+          required: true
+          description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+            # description:  merchant_id=<id1>  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  example: "50"
+                cod_amount:
+                  type: number
+                  example: "50"  
+               
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Неверное состояние посылки    →     <i> Посылка должна быть в состоянии PU0001 или в PU0003'"
+          
+  /agent/parcel/paid/{parcel_id}:
+    post:
+      tags: 
+      - Посылки
+      summary: Подтверждение платежа
+      description: "Изменения не применимы для состояния Доставлено (state == PU0007)<br><br>
+      payment_id при каждом вызове должен быть уникальный."
+      parameters:
+        - in: path
+          name: parcel_id 
+          required: true
+          description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+            # description:  merchant_id=<id1>  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  example: "300"
+                payment_id:
+                  type: number
+                  example: "test0001"  
+               
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  # /agent/parcel/ttl/{parcel_id}:
+  #   put:
+  #     tags: 
+  #     - Посылки
+  #     summary: Установка времени хранения посылки на отделении
+  #     description: "ttl_days возможно передать в диапазоне parcel: additional_data→>ttl_days, additional_data→>ttl_days_max OR additional_data→>ttl_days * 2 <br><br> Максимальное время хранения и время хранения по умолчанию задается в настройках erp-токена при создании."
+  #     parameters:
+  #       - in: path
+  #         name: parcel_id 
+  #         required: true
+  #         description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+  #         schema:
+  #           type : string
+  #           format: int64
+  #           minimum: 1
+  #           # description:  merchant_id=<id1>  
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               ttl_days:
+  #                 type: number
+  #                 example: 11
+               
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 success:
+  #                   type: boolean
+  #                   example: true
+  #       400:
+  #         description: "contragent_id: badly formed hexadecimal UUID string"
+  #       401:
+  #         description: "Authorization Required"
+  #       409:
+  #         description: "Merchant translation already exist: duplicate key value violates unique constraint"      
+          
+  # /agent/parcel/mark-cancel/{parcel_id}:
+  #   put:
+  #     tags: 
+  #     - Посылки
+  #     summary: Пометка посылки к отмене на отделении
+  #     description: ""
+  #     parameters:
+  #       - in: path
+  #         name: parcel_id 
+  #         required: true
+  #         description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+  #         schema:
+  #           type : string
+  #           format: int64
+  #           minimum: 1
+  #           # description:  merchant_id=<id1>  
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+
+               
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 id:
+  #                   type: string
+  #                   example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+  #                 success:
+  #                   type: boolean
+  #                   example: true
+  #       400:
+  #         description: "contragent_id: badly formed hexadecimal UUID string"
+  #       401:
+  #         description: "Authorization Required"
+  #       409:
+  #         description: "Merchant translation already exist: duplicate key value violates unique constraint"      
+          
+  /agent/parcel/delivery-check/:
+    post:
+      tags: 
+      - Посылки
+      summary: Проверка условий доставки для посылки перед регистрацией
+      description: "В случае каких-либо ошибок валидации параметров будет возвращен статус 400 с описанием ошибки. <br><br>
+       'route_mark' будет отображен при типе доставки 'курьерская доставка'"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delivery_type:
+                  type: string
+                  example: "W2W"
+                dest:
+                  type: string
+                  example: ["50.405237", "30.679338"]
+
+                weight:
+                  type: number
+                  example: 50
+                price:
+                  type: number
+                  example: 99.99
+                type:
+                  type: string
+                  example: "undef:A.COD.NR.NA.S000"
+                
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/quasi-parcel/:
+    post:
+      tags: 
+      - Quasi-parcel
+      summary: Создание заявки на новый quasi-parcel
+      description: "Возможные значения для параметра delivery_service:
+      _any, tabata, novaposhta, meest, ukrposhta, intime <br><br> Параметры данного запроса похожие с параметрами запроса на создание посылки: agent/parcel/new"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delivery_service:
+                  type: string
+                  example: tabata
+                order_id:
+                  type: string
+                  description: The block hash.
+                  example: 0095
+                receiver:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 0
+                    phone:
+                      type: number
+                      example: "380666666666"
+                    email:
+                      type: string
+                      example: "example@gmail.com"
+                    first_name:
+                      type: string
+                      example: "test"  
+                    last_name:
+                      type: string
+                      example: "user"  
+                      
+                delivery_type:
+                  type: string
+                  example: W2W 
+                  
+                dest:
+                  type: string
+                  example: ["50.405237", "30.679338"]
+                  
+                dest_apartment:
+                  type: string
+                  example: "6beaa91b-847e-48c6-b2c9-d8f89d700e4c"
+                        
+                weight:
+                  type: integer
+                  example: 1520   
+                  
+                price:
+                  type: integer
+                  example: 2500
+                  
+                cod_amount:
+                  type: integer
+                  example: 0
+                  
+                type:
+                  type: string
+                  example: "fragile:A.COD.NR.NA.S000"
+                  
+                note:
+                  type: string
+                  example: ""
+                  
+                created_at:
+                  type: string
+                  example: "2020-03-06T11:45:00+00:00"
+                  
+                contragent_id:
+                  type: string
+                  example: "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+          
+  /agent/quasi-parcel/register/:
+    post:
+      tags: 
+      - Quasi-parcel
+      summary: Создание quasi-parcel вместе с предоставляемыми данными внешнего перевозчика
+      description: "'tn_id' - ттн номер внешней службы, 'tn_body' - дополнительные данный о ттн, 'tn_content_type' - тип tn-body"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delivery_service:
+                  type: string
+                  example: tabata
+                tn_id:
+                  type: string
+                  example: "0098"
+                tn_body:
+                  type: string
+                  example: "test_ttn_name"
+                tn_content_type:
+                  type: string
+                  example: "application/json"
+                order_id:
+                  type: string
+                  description: The block hash.
+                  example: 0098
+                receiver:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 0
+                    phone:
+                      type: number
+                      example: "380666666666"
+                    email:
+                      type: string
+                      example: "example@gmail.com"
+                    first_name:
+                      type: string
+                      example: "test"  
+                    last_name:
+                      type: string
+                      example: "user"  
+                      
+                delivery_type:
+                  type: string
+                  example: W2W 
+                  
+                dest:
+                  type: string
+                  example: ["50.405237", "30.679338"]
+                  
+                dest_apartment:
+                  type: string
+                  example: "6beaa91b-847e-48c6-b2c9-d8f89d700e4c"
+                        
+                weight:
+                  type: integer
+                  example: 1520   
+                  
+                price:
+                  type: integer
+                  example: 2500
+                  
+                cod_amount:
+                  type: integer
+                  example: 0
+                  
+                type:
+                  type: string
+                  example: "fragile:A.COD.NR.NA.S000"
+                  
+                note:
+                  type: string
+                  example: ""
+                  
+                created_at:
+                  type: string
+                  example: "2020-03-06T11:45:00+00:00"
+                  
+                contragent_id:
+                  type: string
+                  example: "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "contragent_id: badly formed hexadecimal UUID string"
+        401:
+          description: "Authorization Required"
+        409:
+          description: "Merchant translation already exist: duplicate key value violates unique constraint"   
+          
+  /agent/quasi-parcel/{parcel_id}/attachment/:
+    put:
+      tags: 
+      - Quasi-parcel
+      summary: "Добавление ссылок на документы сопровождения - стикеры, ттн, и т.д."
+      parameters:
+      - in: path
+        name: parcel_id 
+        required: true
+        description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                attachments:
+                  type: string
+                  example: ["https://example.com/pdf/test1.pdf",
+                  "https://example.com/pdf/test2.pdf"]
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/quasi-parcel/{parcel_id}/content-registry/:
+    put:
+      tags: 
+      - Quasi-parcel
+      summary: "Добавление описи содержимого посылки"
+      description: "items - единицы заказа со стоимостю, services - стоимость дополнительных услуг"
+      parameters:
+      - in: path
+        name: parcel_id 
+        required: true
+        description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: object
+                  properties:
+                    50000220048158:
+                      type: number
+                      example: "83"
+                services:
+                  type: object
+                  properties:
+                    cod:
+                      type: boolean
+                      example: false
+                    cod_amount:
+                      type: number
+                      example: "234.56"
+                    delivery:
+                      type: number
+                      example: "122"
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/quasi-parcel/{parcel_id}/cancel/:
+    put:
+      tags: 
+      - Quasi-parcel
+      summary: "Отмена quasi-parcel"
+      description: ""
+      parameters:
+      - in: path
+        name: parcel_id 
+        required: true
+        description: Идентификатор парселя. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: "'message': 'Invalid JSON body'   →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+          
+  /agent/offices/:
+    get:
+      tags: 
+      - Отделения и адреса
+      summary: "Получения данных отделений"
+      description: "[lang = uk|ru], [city=<name>], [region=<name>]<br><br> Параметры в [ ] опциональны. По умолначию lang=ru."
+      parameters:
+      - in: query
+        name: lang 
+        required: false
+        description: Язык вывода данных об отделениях. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: city 
+        required: false
+        description: Отделения по городу. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: region 
+        required: false
+        description: Отделения по региону. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offices:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        address_data:
+                          type: object
+                          properties:
+                            index:
+                              type: number
+                              example: 02121
+                        name:
+                          type: string
+                          example: "Киев, Отделение №1"
+                        descr:
+                          type: string
+                          example: "Киев, Отделение №1"
+                        schedule:
+                          type: string
+                          example: {}
+                        address:
+                          type: object
+                          properties:
+                            lang:
+                              type: string
+                              example: "ru"
+                            building:
+                              type: string
+                              example: "21/3"
+                            success:
+                              type: boolean
+                              example: true
+                            city:
+                              type: string
+                              example: "Киев"
+                            country:
+                              type: string
+                              example: "UA"
+                            region: 
+                              type: string
+                              example: "Киев"
+                            area:
+                              type: string
+                              example: "Киев"
+                            lon:
+                              type: number
+                              example: 30.6419701
+                            street:
+                              type: string
+                              example: "Харківське шосе"
+                            geo_source:
+                              type: string
+                              example: "google"
+                            lat:
+                              type: string
+                              example: "50.425545"
+                            id:
+                              type: string
+                              example: "b8134310-61d4-11ea-b7ee-13784906fe5a"
+                            accuracy:
+                              type: string
+                              example: "exact"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+          
+  /address:
+    get:
+      tags: 
+      - Отделения и адреса
+      summary: "Получение данных адреса из справочника"
+      description: "В качестве get-параметров указывается либо пара гео-координат, либо cоставные части адреса region, city, street, building<br><br>Используемое кодирование для кирилицы в запросе - UTF-8 (URL encoded format), принудительная кодировка необходима в некторых User-Agent
+        В ответе - текст закодированный функцией escape"
+      parameters:
+      - in: query
+        name: region 
+        required: true
+        description: Отделения по региону. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: city 
+        required: true
+        description: Отделения по городу. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: street 
+        required: true
+        description: Адрес улицы. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: building 
+        required: true
+        description: Номер отделения. Параметр является <b> НЕ обязательный</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  building:
+                    type: string
+                    example: "21/3"
+                  lang:
+                    type: string
+                    example: "uk"
+                  success:
+                    type: boolean
+                    example: true
+                  city:
+                    type: string
+                    example: "Київ"
+                  country:
+                    type: string
+                    example: "UA"
+                  region: 
+                    type: string
+                    example: "Київ"
+                  area:
+                    type: string
+                    example: "місто Київ"
+                  lon:
+                    type: number
+                    example: 30.6419701
+                  street:
+                    type: string
+                    example: "Харківське шосе"
+                  geo_source:
+                    type: string
+                    example: "google"
+                  lat:
+                    type: string
+                    example: "50.425545"
+                  id:
+                    type: string
+                    example: "b8134310-61d4-11ea-b7ee-13784906fe5a"
+                  accuracy:
+                    type: string
+                    example: "exact"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."  
+          
+  /agent/user/new/:
+    post:
+      tags: 
+      - Пользователи
+      summary: Регистрация пользователя
+      description: "Поле company является опциональным"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "example@gmail.com"
+                phone:
+                  type: number
+                  example: "380666666666"
+                first_name:
+                  type: string
+                  example: "test"
+                last_name:
+                  type: string
+                  example: "user"
+                gender:
+                  type: string
+                  example: "male"
+                birthday:
+                  type: string
+                  example: "1980-01-01"
+                  
+                company:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: "TestCompany"
+                    reg_id:
+                      type: number
+                      example: "12345"
+                    tax_id:
+                      type: integer
+                      example: "321654"
+                    type:
+                      type: string
+                      example: "company"  
+                      
+               
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."  
+          
+  /agent/user/find/:
+    get:
+      tags: 
+      - Пользователи
+      summary: "Поиск пользователя"
+      description: ""
+      parameters:
+      - in: query
+        name: phone 
+        required: true
+        description: Номер телефона пользователя. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: reg_id 
+        required: true
+        description: ЕГРПОУ ( для физ.лица). Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: tax_id 
+        required: true
+        description:  ИНН ( для физ.лица). Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: company 
+        required: true
+        description: Название компании. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1    
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        first_name:
+                          type: string
+                          example: "test"
+                        last_name:
+                          type: string
+                          example: "user"
+                        company:
+                          type: object
+                          properties:
+                            reg_id:
+                              type: string
+                              example: "12345"
+                            modified_at:
+                              type: string
+                              example: "2020-03-08T23:17:25.142784+00:00"
+                            type:
+                              type: string
+                              example: "company"
+                            name:
+                              type: string
+                              example: "TestCompany"
+                            tax_id:
+                              type: string
+                              example: "321654"
+                        email:
+                          type: string
+                          example: "example@gmail.com"
+                        phone:
+                          type: number
+                          example: "380666666666"
+                        rate:
+                          type: number
+                          example: 0
+                        id:
+                          type: string
+                          example: "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз." 
+          
+  /agent/contragent/:
+    post:
+      tags: 
+      - Контрагенты
+      summary: Регистрация контрагента
+      description: "Параметры: reg_id — код ЕДРПОУ контрагента, tax_id — ИНН контрагента, vat - ставка НДС в процентах. vat == 0 — эквивалент без НДС. После регистрации контрагента, необходим запрос почтой на его активацию."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "TestAgent LLC"
+                reg_id:
+                  type: number
+                  example: "65465465"
+                tax_id:
+                  type: integer
+                  example: "545468"
+                vat:
+                  type: integer
+                  example: 20
+                bank_name:
+                  type: string
+                  example: "ExampleInternational"
+                bank_mfo:
+                  type: integer
+                  example: 358697
+                bank_account:
+                  type: integer
+                  example: 2168777
+               
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+                  success:
+                    type: boolean
+                    example: true
+        
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз." 
+          
+  # /agent/contragent/{contragent_id}:
+  #   put:
+  #     tags: 
+  #     - Контрагенты
+  #     summary: Модификация контрагента
+  #     description: "После модификации контрагента сбрасывается статус активации, и необходимо отправлять запрос активации заново. Все ключи являются опциональными."
+  #     parameters:
+  #     - in: path
+  #       name: contragent_id 
+  #       required: true
+  #       description: Идентификатор контрагента. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+  #       schema:
+  #         type : string
+  #         format: int64
+  #         minimum: 1
+  #     requestBody:
+  #       required: true
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               name:
+  #                 type: string
+  #                 example: "TestAgent LLC"
+  #               # reg_id:
+  #               #   type: number
+  #               #   example: "65465465"
+  #               # tax_id:
+  #               #   type: integer
+  #               #   example: "545468"
+  #               # vat:
+  #               #   type: integer
+  #               #   example: 20
+  #               # bank_name:
+  #               #   type: string
+  #               #   example: "ExampleInternational"
+  #               # bank_mfo:
+  #               #   type: integer
+  #               #   example: 358697
+  #               # bank_account:
+  #               #   type: integer
+  #               #   example: 2168777
+                
+  #     responses:
+  #       '200':    # status code
+  #         description: Ok
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 id:
+  #                   type: string
+  #                   example: "014d7229-3cf6-4841-a0d5-264a33e9a82b"
+  #                 success:
+  #                   type: boolean
+  #                   example: true
+  #       401:
+  #         description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+  #       403:
+  #         description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз." 
+          
+  /agent/contragent/{contragent_id}/:
+    get:
+      tags: 
+      - Контрагенты
+      summary: "Информация о контрагенте"
+      description: ""
+      parameters:
+      - in: path
+        name: contragent_id 
+        required: true
+        description: Идентификатор контрагента. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bank_name:
+                    type: string
+                    example: Bank Name
+                  name:
+                    type: string
+                    example: TEST TEST TEST ФОП
+                  success:
+                    type: boolean
+                    example: true
+                  modified_at:
+                    type: string
+                    format: date-time
+                    example: "2019-08-30T13:48:08.899002+03:00"
+                  enabled:
+                    type: boolean
+                    example: true
+                  reg_id:
+                    type: integer
+                    example: 0123456789
+                  bank_mfo:
+                    type: integer
+                    example: 123456
+                  bank_account:
+                    type: integer
+                    example: 012345678912
+                  translations:
+                    type: string
+                    example: null
+                  transit_enabled:
+                    type: boolean
+                    example: false
+                  id:
+                    type: integer
+                    example: "05xxx054-2xxa-4xx7-803e-b75cxx7c5"
+                  vat:
+                    type: integer
+                    example: 0
+                  tax_id:
+                    type: integer
+                    example: 0123456789
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."   
+          
+  /agent/contragent/list/:
+    get:
+      tags: 
+      - Контрагенты
+      summary: "Справочник контрагентов"
+      description: ""
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contragents:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        bank_name:
+                          type: string
+                          example: Bank Name
+                        name:
+                          type: string
+                          example: TEST TEST TEST ФОП
+                        success:
+                          type: boolean
+                          example: true
+                        modified_at:
+                          type: string
+                          format: date-time
+                          example: "2019-08-30T13:48:08.899002+03:00"
+                        enabled:
+                          type: boolean
+                          example: true
+                        reg_id:
+                          type: integer
+                          example: 0123456789
+                        bank_mfo:
+                          type: integer
+                          example: 123456
+                        bank_account:
+                          type: integer
+                          example: 012345678912
+                        translations:
+                          type: string
+                          example: null
+                        transit_enabled:
+                          type: boolean
+                          example: false
+                        id:
+                          type: integer
+                          example: "05xxx054-2xxa-4xx7-803e-b75cxx7c5"
+                        vat:
+                          type: integer
+                          example: 0
+                        tax_id:
+                          type: integer
+                          example: 0123456789
+                      
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."   
+          
+  /agent/fin-transaction/{transaction_id}:
+    get:
+      tags: 
+      - Финансовые транзакции
+      summary: "Получение финансовой транзакции по id"
+      description: ""
+      parameters:
+      - in: path
+        name: transaction_id 
+        required: true
+        description: Идентификатор контрагента. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is-completed:
+                    type: boolean
+                    example: true
+                  processor:
+                    type: string
+                    example: "_erp_api"
+                  sender:
+                    type: string
+                    example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                  success:
+                    type: boolean
+                    example: true
+                  payment_info:
+                    type: object
+                    properties:
+                      reg_id:
+                        type: string
+                        example: null
+                      bank_mfo:
+                        type: string
+                        example: null
+                      bank_account:
+                        type: string
+                        example: null
+                  created_at:
+                    type: string
+                    example: "2020-03-08T18:20:54.051435+00:00"
+                  contragent:
+                    type: string
+                    example: "00000000-0000-0000-0000-000000000000"
+                  modified_at:
+                    type: string
+                    example: "2020-03-08T18:20:54.239419+00:00"
+                  extid:
+                    type: number
+                    example: 226
+                  completed_at:
+                    type: string
+                    example: "2020-03-08T18:20:54.051435+00:00"
+                  amount:
+                    type: number
+                    example: 300
+                  trans_type:
+                    type: string
+                    example: "parcel"
+                  trans_ref:
+                    type: string
+                    example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                  additional_data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "test909"
+                  id:
+                    type: string
+                    example: "8e36aaee-6767-4d09-9892-3b7410be920f"
+                        
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+ 
+ 
+  /agent/fin-transaction/:
+    post:
+      tags: 
+      - Финансовые транзакции
+      summary: "Получение списка финансовых транзакций за период"
+      description: "Временные параметры ts_from, ts_to задаются в формате timestamp UTS in miliseconds. Параметр is_dirty в ответе указывает на получение транзакций, которые не синхронизированы с агентской системой в связи с какими-либо ошибками."
+      parameters:
+      - in: query
+        name: ts_from 
+        required: true
+        description: Временной параметр - От. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+      - in: query
+        name: ts_to 
+        required: true
+        description: Временной параметр - До. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1  
+      - in: query
+        name: processor 
+        required: true
+        description:  Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1     
+      - in: query
+        name: limit 
+        required: true
+        description:  Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1     
+      - in: query
+        name: offset 
+        required: true
+        description:  Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          # minimum: 1     
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1
+                  success:
+                    type: boolean
+                    example: true
+                  transactions:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        is_applied:
+                          type: boolean
+                          example: true
+                        sender:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        created_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.051435+00:00"
+                        contragent:
+                          type: string
+                          example: "00000000-0000-0000-0000-000000000000"
+                        modified_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.239419+00:00"
+                        processor:
+                          type: string
+                          example: "_erp_api"
+                        completed_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.051435+00:00"
+                        amount:
+                          type: number
+                          example: 300
+                        trans_type:
+                          type: string
+                          example: "parcel"
+                        id:
+                          type: string
+                          example: "8e36aaee-6767-4d09-9892-3b7410be920f"
+                        trans_ref:
+                          type: string
+                          example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                        additional_data:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "test909"
+                        extid:
+                          type: number
+                          example: 163
+                        is_completed:
+                          type: boolean
+                          example: true
+               
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."           
+       
+  /agent/parcel/fin-transactions/{parcel_id}:
+    get:
+      tags: 
+      - Финансовые транзакции
+      summary: "Получение списка финансовых транзакций по посылке"
+      description: ""
+      parameters:
+      - in: path
+        name: parcel_id 
+        required: true
+        description: Идентификатор парселя. Параметр является <b> обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+        schema:
+          type : string
+          format: int64
+          minimum: 1
+ 
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  transactions:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        is-completed:
+                          type: boolean
+                          example: true
+                        processor:
+                          type: string
+                          example: "_erp_api"
+                        sender:
+                          type: string
+                          example: "166edca2-25c9-4641-9399-8ba0557ba642"
+                        success:
+                          type: boolean
+                          example: true
+                        payment_info:
+                          type: object
+                          properties:
+                            reg_id:
+                              type: string
+                              example: null
+                            bank_mfo:
+                              type: string
+                              example: null
+                            bank_account:
+                              type: string
+                              example: null
+                        created_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.051435+00:00"
+                        contragent:
+                          type: string
+                          example: "00000000-0000-0000-0000-000000000000"
+                        modified_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.239419+00:00"
+                        extid:
+                          type: number
+                          example: 226
+                        completed_at:
+                          type: string
+                          example: "2020-03-08T18:20:54.051435+00:00"
+                        amount:
+                          type: number
+                          example: 300
+                        trans_type:
+                          type: string
+                          example: "parcel"
+                        trans_ref:
+                          type: string
+                          example: "cf831d90-60ce-4aee-9da1-1480ec860261"
+                        additional_data:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: "test909"
+                        id:
+                          type: string
+                          example: "8e36aaee-6767-4d09-9892-3b7410be920f"
+               
+        400:
+          description: "'message': 'parcel_id: badly formed hexadecimal UUID string'   →  <i> Некорректный id. Допущена ошибка в parcel_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."           
+          
+          
+          
+          
+          
+          
