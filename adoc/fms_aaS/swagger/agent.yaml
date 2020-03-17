@@ -1,0 +1,437 @@
+openapi: 3.0.0
+
+info:
+  title: FMS API
+  description: Финансовый API предназначен для интеграции финансовых систем бизнес-агентов в сервисы.
+  version: v1
+  
+servers:
+  - url: https://sandbox-api.tbt-post.net/api/v1
+  
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
+  
+tags:
+- name: Контрагенты
+- name: Мерчанты
+- name: Реестры
+paths:
+  /fin/contragent/:
+    get:
+      tags:
+      - Контрагенты
+      summary: Получения данных контрагента по id
+      # description: ...
+      parameters:
+          - in: query
+            name: merchant_id
+            required: true
+            description: Идентификатор мерчанта. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение. 
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+              # description:  merchant_id=<id1>
+          - in: query
+            name: processor
+            description: Название финансовой системы, которую представляет фин-компания. Указывается, если мерчант принадлежит другой финансовой системе. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение.
+            schema:
+              type : string
+              format: int64
+              minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bank_name:
+                    type: string
+                    example: Bank Name
+                  name:
+                    type: string
+                    example: TEST TEST TEST ФОП
+                  success:
+                    type: boolean
+                    example: true
+                  modified_at:
+                    type: string
+                    format: date-time
+                    example: "2019-08-30T13:48:08.899002+03:00"
+                  enabled:
+                    type: boolean
+                    example: true
+                  reg_id:
+                    type: integer
+                    example: 0123456789
+                  bank_mfo:
+                    type: integer
+                    example: 123456
+                  bank_account:
+                    type: integer
+                    example: 012345678912
+                  id:
+                    type: integer
+                    example: "05xxx054-2xxa-4xx7-803e-b75cxx7c5"
+                  vat:
+                    type: integer
+                    example: 0
+                  tax_id:
+                    type: integer
+                    example: 0123456789
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        404:
+          description: "'message': 'Контрагент не найден'  →  <i> Не существует контрагента с таким merchant_id."   
+        409:
+          description: "'message': 'Invalid processor'  →  <i> Не валидный processor. Проверьте правильность ввода параметра processor" 
+                    
+  /fin/contragent/translation/list/:
+    get:
+      tags:
+      - Контрагенты
+      summary: Получения данных контрагентов по id
+      # description: ...
+      parameters:
+        - in: query
+          name: merchant_ids
+          required: true
+          description: Идентификаторы мерчантов необходимо вводить через разделить " | ". Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение.
+          schema:
+            type : string
+            minimum: 1
+            # description:  merchant_ids=<id1|id2|id3…>
+        - in: query
+          name: processor
+          description: Название финансовой системы, которую представляет фин-компания. Указывается, если мерчант принадлежит другой финансовой системе. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение.
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  translations:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        bank_name:
+                          type: string
+                        name:
+                          type: string
+                        success: 
+                          type: boolean
+                        modified_at:
+                          type: string
+                          format: date-time
+                        enabled:
+                          type: boolean
+                        reg_id:
+                          type: integer
+                        bank_mfo:
+                          type: integer
+                        bank_account:
+                          type: integer
+                        id:
+                          type: integer
+                        vat:
+                          type: integer
+                        tax_id:
+                          type: integer
+                    example:
+                      - 
+                        bank_name: "Bank Name"
+                        name: "TEST TEST TEST ФОП1"
+                        success: true
+                        modified_at: "2019-08-30T13:48:08.899002+03:00"
+                        enabled: true
+                        reg_id: "0123456789"
+                        bank_mfo: "123456"
+                        bank_account: "012345678912"
+                        id: "05xxx054-2xxa-4xx7-803e-b75cxx7c5"
+                        vat: 0
+                        tax_id: "0123456789"
+                      - 
+                        bank_name: "Bank Name2"
+                        name: "TEST TEST TEST ФОП2"
+                        success: true
+                        modified_at: "2019-08-30T13:48:08.899002+03:00"
+                        enabled: true
+                        reg_id: "0123456784"
+                        bank_mfo: "123454"
+                        bank_account: "012345678914"
+                        id: "05xxx054-2xxa-4xx7-803e-b75cxx7c4"
+                        vat: 0
+                        tax_id: "0123456789"
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Invalid processor'  →  <i> Не валидный processor. Проверьте правильность ввода параметра processor"        
+  /fin/merchant/list/:
+    get:
+      tags:
+      - Мерчанты
+      summary: Получения списка id мерчантов
+      # description: ...
+      parameters:
+        - in: query
+          name: tax_id
+          required: true
+          description: Получение списка id мерчантов указав tax_id(ИНН для физ.лица) или reg_id(ЕГРПОУ для юр.лица) контрагента. <br/> &bull;  Тип данных - целочисельное значение.
+          schema:
+            type : integer
+            format: int64
+            minimum: 1
+        - in: query
+          name: processor
+          description: Название финансовой системы, которую представляет фин-компания. Указывается, если мерчант принадлежит другой финансовой системе. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение.
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sucess:
+                    type: boolean
+                    example: true
+                  merchant_ids:
+                    type: array
+                    items: 
+                      type: string
+                      example: "kastaua_1816712496"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Invalid processor'  →  <i> Не валидный processor. Проверьте правильность ввода параметра processor"
+                    
+  /fin/merchant:
+    post:
+      tags:
+      - Мерчанты
+      summary: Создание мерчанта с указанием контрагента
+      # description: ...
+      parameters:
+        - in: query
+          name: contragent_id
+          required: true
+          description: Идентификатор контрагента. Параметр является <b>обязательным</b> для ввода.<br/> <i>У контрагента прежде не должно быть мерчанта.</i> <br/> &bull;  Тип данных - строчное значение.
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+        - in: query
+          name: merchant_id
+          required: true
+          description: Идентификатор мерчанта. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение.
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+        - in: query
+          name: enabled
+          required: true
+          description: true|false - активировать или деактивировать мерчанта. Параметр является <b>обязательным</b> для ввода. <br/> &bull; Тип данных - булевое значение.
+          schema:
+            type : boolean
+            format: int64
+            minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sucess:
+                    type: boolean
+                    example: true
+        
+        400:
+          description: "contragent_id: badly formed hexadecimal UUID string  →  <i> Некорректный id. Допущена ошибка в contragent_id."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "Merchant translation already exist: duplicate key value violates unique constraint →  <i> У данного контрагента уже есть мерчант." 
+  /fin/merchant/:
+    put:
+      tags:
+      - Мерчанты
+      summary: Активация (обновление) мерчанта
+      # description: ...
+      parameters:
+        - in: query
+          name: merchant_id
+          required: true
+          description: Идентификатор мерчанта. Параметр является <b>обязательным</b> для ввода.<br/> &bull; Тип данных - строчное значение.
+          schema:
+            type : string
+            format: int64
+            minimum: 1
+        - in: query
+          name: enabled
+          required: true
+          description: true|false - активировать или деактивировать мерчанта. Параметр является <b>обязательным</b> для ввода. <br/> &bull; Тип данных - булевое значение.
+          schema:
+            type : boolean
+            format: int64
+            minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rowcount:
+                    type: integer
+                    example: 1
+                  sucess:
+                    type: boolean
+                    example: true
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        
+  
+  /fin/transaction/list/:
+    get:
+      tags:
+      - Реестры
+      summary: Реестры
+      description: Получение списка транзакций за день
+      parameters:
+        - in: query
+          name: date
+          required: true
+          description: Получение списка транзакций за введенную дату в формате date=<YYYY-MM-DD>. Параметр является <b>обязательным</b> для ввода. <br/> &bull; Тип данных - строчное значение.
+          schema:
+            type : string
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+            format: date
+            minimum: 1
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  transaction:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        providerid:
+                          type: integer
+                        sum:
+                          type: number
+                        success: 
+                          type: boolean
+                    example:
+                      - 
+                        providerid: "170"
+                        sum: "111.0"
+                      - 
+                        providerid: "169"
+                        sum: "218.0"
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+  
+  /fin/registry/:
+    post:
+      tags:
+      - Реестры
+      summary: Загрузка файла реестра для сверки операций.
+      description: Необходимо выбрать файл формата <b>Example_YYYYMMDD.csv</b>
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+            # 'file' will be the field name in this multipart request
+                file:
+                  type: string
+                  format: binary
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uploaded:
+                    type: array
+                    items: 
+                      type: object
+                      properties:
+                        size:
+                          type: integer
+                        filename:
+                          type: string
+                        success: 
+                          type: boolean
+                    example:
+                      - 
+                        size: 31335
+                        filename: "Example_20200118.csv"
+                  success:
+                    type: boolean
+                    example: true
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова."
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+                  
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
