@@ -1,0 +1,4 @@
+= Test data
+
+This is to cover the needs of self-healing and sanity-checks for platform's automated end-points
+
