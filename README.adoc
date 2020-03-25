@@ -6,6 +6,22 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 
 Описание публичного API для сервисов https://tbt-post.net[платформы TbT] и схемы данных для ERP-систем.
 
+== SaaS services
+
+=== BMS
+
+**B**ranches network **M**anagement **S**ystem
+
+=== WMS
+
+**W**arehouses **M**anagement **S**ystem
+
+== AaaS services
+
+=== FMS
+
+**F**inancial **M**anagement **S**ystem
+
 == Additional resources
 
 === Media Channels
