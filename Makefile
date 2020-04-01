@@ -1,6 +1,6 @@
 BUILD_DIR = build
 DOC_DIR = adoc
-SAASS = bms wms fms
+SAASS = ams bms wms fms
 
 all: acompile
         @:
