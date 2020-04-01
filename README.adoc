@@ -32,6 +32,10 @@ https://t.me/tbtpost[Telegram Channel]
 
 https://twitter.com/tbtpost[Twitter Feed]
 
+=== Software
+
+https://github.com/tbt-post/edi-receiver[EDI Receiver]
+
 == Copyrights
 
 &copy; 2016-2018 TabaTa LLC
