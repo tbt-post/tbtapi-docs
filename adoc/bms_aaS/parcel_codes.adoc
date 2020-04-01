@@ -136,3 +136,27 @@ CAUTION: Статусы `U` и `O`  формируют серию неперес
 | Ошибка обработки состояния
 |====================
 
+=== Графическое описание
+
+[#img-states] 
+.State transitions 
+[link=https://github.com/tbt-post/tbtapi-docs/blob/master/adoc/bms_aaS/states.png] 
+image::states.png[states,800,700]
+
+==== Описание
+[cols="^30,^70",options="header"]
+|===
+|Цвет
+|Значение
+
+|[green]#Зеленый#
+|Основной маршрут
+|[blue]#Синий#
+|Вспомогательный маршрут
+|[gray]#Серый#
+|Реверсный маршрут
+|[purple]#Сиреневый#
+|Маршрут отмены
+|[black]#Пунктир#
+|Контроль на уровне back-end
+|===
