@@ -12,15 +12,21 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 
 **B**ranches network **M**anagement **S**ystem
 
+Система управления сетью отделений
+
 === WMS
 
 **W**arehouses **M**anagement **S**ystem
+
+Система управления складом(-ами)
 
 == AaaS services
 
 === FMS
 
 **F**inancial **M**anagement **S**ystem
+
+Система управления финансовыми сервисами
 
 == Additional resources
 
