@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "FMS contragent events",
+  "required": [
+     "sender", "timestamp", "contragent_id",
+     "contragent_reg_id", "action", "reason"
+  ],
+  "properties": {
+    "sender": {
+      "type": "string",
+      "description": "Sender name",
+      "enum": ["tbt"]
+    },
+    "timestamp": {
+      "description": "Send time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "contragent_id": {
+      "type": "string",
+      "description": "Contragent identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "contragent_reg_id": {
+      "type": "string",
+      "description": "Contragent external/state identifier"
+    },
+    "action": {
+      "type": "string",
+      "description": "action",
+      "enum": ["created","deleted","updated","blocked","disabled"]
+    },
+    "reason": {
+      "type": "string",
+      "description": "reason",
+      "enum": ["self","requisites","fraud","disaster","other"]
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Payment system contragent identifier"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Additional info"
+    }
+  }
+}

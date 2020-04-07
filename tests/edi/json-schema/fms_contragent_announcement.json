@@ -1,0 +1,10 @@
+{
+  "sender": "tbt",
+  "timestamp": "2020-03-23T17:07:33.438Z",
+  "contragent_id": "5af4985c-ac0d-23c9-710c-8c4e8b31f69a",
+  "contragent_reg_id": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "action": "deleted",
+  "reason": "self",
+  "merchant_id": "ABCDEFGHIJKLMNOPQR",
+  "comment": "ABCDEFGHIJK"
+}
