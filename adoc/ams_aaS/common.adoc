@@ -806,7 +806,7 @@ method_name:: saas/edelivery-settings
 method_params:: <edelivery-service>
 expected_result:: 200 {<setting spec: props_static, props_dynamic, is_active...>}
 
-NOTE: Доступные edelivery-service: `novaposhta`, `ukrposhta`,`meest`,`intime`,`justin`
+NOTE: Доступные edelivery-service: `novaposhta`, `ukrposhta`,`meest`,`kastapost`,`justin`
 
 [horizontal]
 Пример запроса/ответа::
