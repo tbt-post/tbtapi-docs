@@ -1,0 +1,897 @@
+= Common API
+Kasta Group LLC <info@tbt-post.net>
+1.4.1, 2020-04-06: Public API v2019.2
+:toc: right
+:toclevels: 4
+{empty}
+
+
+== Общая информация
+
+Внешний доступ к текущему апи -- https://api.tbt-post.net
+
+Версия для разработки -- http://sandbox-api.tbt-post.net
+
+Формат URI для доступа к API:
+
+    https://api.tbt-post.net/api/v{v_number}/{method_name}/{method_params}?{get_params}
+
+где:
+
+[horizontal]
+    {v_number}:: номер версии API в виде числа
+    {method_name}:: название метода
+    {method_params}:: параметры метода в URI
+    {get_params}:: опциональные параметры для метода/обработчика
+
+Также, в описании API используются:
+
+[horizontal]
+    {protocol_method}:: HTTP метод
+    {request_body}:: описание формата тела запроса
+    {expected_result}:: описание формата возвращаемого в случае успеха результата в формате `<Code> <Response body>`
+    
+WARNING: Все методы api с префиксом `saas` предназначены для  интерфейса владельца saas, и требуют от пользователя соответствующих прав доступа.
+
+NOTE: Для запросов требующих авторизации учетной записи, в т.ч с правами владельца `saas [/saas]`, будут использованы link:https://ec.haxx.se/http-cookies.html[HTTP cookies]
+
+NOTE: Для выполнения логина с помощью утилиты `curl` используюйте следующий запрос: 
+[source, shell]
+----
+curl -v -X POST -c cookie-jar.txt https://api.tbt-post.net/api/v1/auth/login -H "Content-Type: application/json; charset=utf-8" -d '{"username":"<your email>","password":"<your password>","remember_me":"true"}'
+----
+
+NOTE: В дальнейшем при выполнении запросов используйте параметр `-b cookie-jar.txt`
+
+== API
+
+=== Профили агентов
+
+==== Регистрация пользователя-агента системы
+
+[horizontal]
+protocol_method:: POST
+method_name:: saas/agent
+method_params:: ----
+reques_body:: {"fist_name":"<name>", "last_name":"<name>", "email":"<email>", "phone":"<phone>", "gender":"<male|female|undef>", "birthday":"<date>", "prefered_lang": "<ru|en|uk>","company": {"type":"<company|pe>", name, reg_id, tax_id, bank_account, vat,..}}
+schema:: 
+[source, json]
+----
+{
+        "required": ["email", "phone", "first_name", "last_name", "company"],
+        "properties": {
+            "email":      {"type": "string", "pattern": "^[^\\s@]+@[^\\s@.,]+(:?\\.[^\\s@.,]{2,})*$", "maxLength": 128},
+            "phone":      {"type": "string", "pattern": "^\\d{,13}$"},
+            "first_name": {"type": "string", "maxLength": 128},
+            "last_name":  {"type": "string", "maxLength": 128},
+            "gender":     {"type": "string", "enum": ["undef", "male", "female"]},
+            "birthday":   {"type": "string", "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d$"},
+            "company": {
+                "type": "object",
+                "required": ["type", "name", "reg_id", "tax_id", "vat", "bank_account"],
+                "additionalProperties": False,
+                "properties": {
+                    "type":         {"type": "string", "enum": ["company", "pe"]},
+                    "name":         {"type": "string", "maxLength": 128},
+                    "vat":          {"type": "integer", "minimum": 0, "maximum": 100},
+                    "tax_id":       {"type": "string", "pattern": "\\d{5,20}"},
+                    "reg_id":       {"type": "string", "pattern": "^\\d{5,20}$"},
+                    "bank_account": {"type": "string", "pattern": "^[A-Z0-9]{10,34}$"},
+                    "bank_name":    {"type": "string", "maxLength": 128},
+                    "bank_mfo":     {"type": "string", "pattern": "^\\d{5,20}$"},
+                }
+            },
+            "prefered_lang":     {"type": "string", "minLength": 2, "maxLength": 2},
+        }
+----
+expected_result:: 200 {"user_id": "<user-id>", "contragent_id":  "<contragent-id>"}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/saas/agent" -b cookie-jar.txt -H "Content-Type: application/json"  -d '{"first_name":"Fake","last_name":"Agent Name","email":"fakeagent@fakemail.com","phone":"380666666666","gender":"undef","company":{"type":"company","name":"FakeCompany","vat":20,"bank_account":"UA1234567891022","bank_name":"Fake Bank","bank_mfo":"321456", "reg_id":"123456", "tax_id": "123456"}}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 12:40:17 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 125 +
+Connection: keep-alive +
+Replaced cookie:  +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "user_id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+  "success": true,
+  "contragent_id": "b5d9a772-1dd1-4dd5-b465-0e32f20f0fa8"
+}
+----
+
+NOTE: В результате, будет создан пользователь-агент, создана запись контрагента - получателя средств.
+Для добавления erp-токена, необходимо воспользоваться отдельным вызовом
+
+==== Получение списка агентов
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/agent
+method_params:: list
+get_params:: [<limit, offset, sort_by, sort_order>]
+expected_result:: 200 {[<user profie with company>, ...., <user profie with company>], "total": <count>}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/saas/agent/list?limit=2&sort_order=desc" -b cookie-jar.txt -H "Content-Type: application/json"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 14:42:48 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1471 +
+Connection: keep-alive +
+Replaced cookie <cookie body> +
+Set-Cookie: <cookie body> +
+Etag: "6c54799cb29b035ddc1b8b75a8cd274bc72d1331" +
+
+
+
+[source, json]
+----
+{
+  "total": 31,
+  "users": [
+    {
+      "last_name": "1",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "fd6dca67-3ab2-490d-8332-3ef75eb7ecd7",
+      "first_name": "SND",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "h_link": null,
+      "email": "XXXXXX@example.com",
+      "parent": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "nsid": 1,
+      "activated_at": "2019-10-09T19:22:28.041308+00:00",
+      "is_active": true,
+      "password_changed": null,
+      "sourced_by": "local",
+      "birthday": null,
+      "confirmed_by": null,
+      "block_status": null,
+      "is_external": false,
+      "roles": [
+        "agent"
+      ],
+      "phone": "XXXXXX",
+      "gender": "undef",
+      "created_at": "2019-10-09T19:22:28.121752+00:00",
+      "modified_at": "2020-02-10T17:00:24.780657+00:00",
+      "is_badge": false,
+      "is_poor": false,
+      "additional_data": {}
+    },
+    {
+      "last_name": "2",
+      "confirmed_at": null,
+      "rate": 0,
+      "id": "5a661cee-3445-48d5-be32-71e7c35e946e",
+      "first_name": "SND",
+      "is_confirmed": false,
+      "is_phone_valid": false,
+      "h_link": null,
+      "email": "XXXXXX@example.com",
+      "parent": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+      "nsid": 1,
+      "activated_at": "2019-10-31T10:23:34.330303+00:00",
+      "is_active": true,
+      "password_changed": null,
+      "sourced_by": "local",
+      "birthday": null,
+      "confirmed_by": null,
+      "block_status": null,
+      "is_external": false,
+      "roles": [
+        "agent"
+      ],
+      "phone": "XXXXXX",
+      "gender": "undef",
+      "created_at": "2019-10-31T10:23:34.731255+00:00",
+      "modified_at": "2019-10-31T10:24:33.387389+00:00",
+      "is_badge": false,
+      "is_poor": false,
+      "additional_data": {}
+    }
+  ],
+  "success": true
+}
+
+----
+
+==== Получение профиля агента
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/agent
+method_params:: <agent user-id>
+expected_result:: 200 {<user profie with company>}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/saas/agent/1678166e-a050-430b-878a-5244ca5d8659" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 14:00:39 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 819 +
+Connection: keep-alive +
+Replaced cookie <cookie body> +
+Set-Cookie: <cookie body> +
+Etag: "6c54799cb29b035ddc1b8b75a8cd274bc72d1331" +
+
+
+
+[source, json]
+----
+{
+  "last_name": "UA",
+  "confirmed_at": null,
+  "rate": 0,
+  "id": "1678166e-a050-430b-878a-5244ca5d8659",
+  "first_name": "Kasta",
+  "is_confirmed": false,
+  "is_phone_valid": false,
+  "h_link": null,
+  "email": "support@modnakasta.ua",
+  "parent": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+  "is_disabled": false,
+  "company": {
+    "name": "МАРКАСОН",
+    "modified_at": "2018-07-06T16:30:20.241640+00:00",
+    "reg_id": "12345678",
+    "contact": {
+      "phone": "XXXXX",
+      "first_name": "XXXXX",
+      "last_name": "XXXXX"
+    },
+    "type": "company",
+    "tax_id": "XXXXX"
+  },
+  "activated_at": "2016-09-05T15:26:12.321260+00:00",
+  "is_active": true,
+  "password_changed": null,
+  "sourced_by": "local",
+  "birthday": null,
+  "confirmed_by": null,
+  "block_status": null,
+  "is_external": false,
+  "nsid": 1,
+  "phone": "380443555555",
+  "gender": "undef",
+  "created_at": "2016-09-05T15:21:15.336184+00:00",
+  "modified_at": "2017-08-11T14:19:39.584156+00:00",
+  "success": true,
+  "is_badge": false,
+  "is_poor": false,
+  "additional_data": {
+    "last_login": "2017-08-11T14:19:39.584019+00:00"
+  },
+  "contragent_id": null
+}
+----
+
+==== Обновление профиля агента
+
+[horizontal]
+protocol_method:: PUT
+method_name:: saas/agent
+method_params:: <agent user-id>
+reques_body:: 
+[source, json]
+----
+{
+    "first_name": {"type": "string", "maxLength": 128},
+            "last_name":  {"type": "string", "maxLength": 128},
+            "gender":     {"type": "string", "enum": ["undef", "male", "female"]},
+            "birthday":   {"type": "string", "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d$"},
+            "is_active":  {"type": "boolean"},
+            "company": {
+                "type": "object",
+                "additionalProperties": False,
+                    "vat":          {"type": "integer", "minimum": 0, "maximum": 100},
+                    "bank_account": {"type": "string", "pattern": "^[A-Z0-9]{10,34}$"},
+                    "bank_name":    {"type": "string", "maxLength": 128},
+                    "bank_mfo":     {"type": "string", "pattern": "^\\d{5,20}$"}
+            }
+    }
+----
+expected_result:: 202 {<user profie with company>}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/saas/agent/44ee4ac5-8e42-4e40-821a-3f3e5f13f680" -b cookie-jar.txt -H "Content-Type: application/json"  -d '{"first_name":"Test first Name","last_name":"Test last Name","gender":"undef","is_active":true,"company":{"vat":20,"bank_account":"UA12345678910","bank_name":"Test Bank","bank_mfo":"123456"}}'
+----
+
+Ответ::
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 19:03:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Replaced cookie <cookie body> +
+Set-Cookie: <cookie body> +
+
+
+
+[source, json]
+----
+{"success": true}
+----
+
+=== Управления ERP-токенами агента
+
+==== Добавление ERP-токена
+
+[horizontal]
+protocol_method:: POST
+method_name:: saas/agent/erp-token
+method_params:: <agent-user-id>
+request_body:: {"comment": "<token comment>", "is_active": <true|false>, "return_via": "<return office uuid>", "ttl_days_spec": {"PRP": {"min": <DAY COUNT>, "max": <DAY COUNT>}, "COD": {"min": <DAY COUNT>, "max": <DAY COUNT>}}, "restrictions": {"create": <true|false>, "update": <true|false>}}
+expected_result:: 200 {"token": "<token uuid>", "token_password": "<generated password>"}
+[horizontal]
+
+NOTE: Поля `restrictions, ttl_days_spec` - опциональны.
+
+NOTE: Предварительная схема валидации тела запроса:
+
+[source, json]
+----
+{
+  "required": [
+    "return_via"
+  ],
+  "properties": {
+    "comment": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "is_active": {
+      "type": "boolean"
+    },
+    "return_via": {
+      "$ref": "#/definitions/uuid"
+    },
+    "ttl_days_spec": {
+      "type": "object",
+      "required": [
+        "COD",
+        "PRP"
+      ],
+      "properties": {
+        "COD": {
+          "type": "object",
+          "required": [
+            "min",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          }
+        },
+        "PRP": {
+          "type": "object",
+          "required": [
+            "min",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30
+            }
+          }
+        }
+      }
+    },
+    "restrictions": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": "boolean"
+        },
+        "update": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
+----
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/saas/agent/erp-token/44ee4ac5-8e42-4e40-821a-3f3e5f13f680" -b cookie-jar.txt -H "Content-Type: application/json"  -d '{"comment":"TEST","is_active":true,"return_via":"0e0ae586-296d-4697-bb15-c2cbf4a9d8a6","ttl_days_spec":{"PRP":{"min":7,"max":10},"COD":{"min":5,"max":5}},"restrictions":{"create":true,"update":true}}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 16:24:36 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 98 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "token": "996661bf-f689-46ff-b20a-0aed81ab6db4",
+  "success": true,
+  "token_password": "x17hOdKRuB"
+}
+----
+
+==== Обновление ERP-токена
+
+[horizontal]
+protocol_method:: PUT
+method_name:: saas/agent/erp-token
+method_params:: <agent-user-id>
+request_body:: {"token": "<erp_token>", "comment": <update comment>, "is_active": true|false}
+expected_result:: 200 {"success": true}
+
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/saas/agent/erp-token/44ee4ac5-8e42-4e40-821a-3f3e5f13f680" -b cookie-jar.txt -H "Content-Type: application/json"  -d '{"token": "996661bf-f689-46ff-b20a-0aed81ab6db4", "comment": "test", "is_active": false}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 16:29:48 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+==== Получение данных списка ERP-токенов агента
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/erp-token/list
+method_params:: <agent-user-id>
+get_params:: ----
+expected_result:: 200 {"tokens": [<erp token 1 data>, <erp token 2data>]}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/saas/agent/erp-token/list/44ee4ac5-8e42-4e40-821a-3f3e5f13f680" -b cookie-jar.txt -H "Content-Type: application/json" 
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 19:12:01 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 924 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "tokens": [
+    {
+      "comment": "test",
+      "restrictions": {
+        "create": true,
+        "update": true
+      },
+      "user_id": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "modified_at": "2020-04-06T16:29:48.948328+00:00",
+      "created_at": "2020-04-06T16:24:36.528749+00:00",
+      "is_active": false,
+      "token": "XXXXXXX-f689-XXXX-b20a-XXXXXXXX",
+      "properties": {
+        "return_via": "0e0ae586-296d-4697-bb15-c2cbf4a9d8a6",
+        "ttl_days_default": 5,
+        "_ttl_days_spec": {
+          "PRP": {
+            "max": 10,
+            "min": 7
+          },
+          "COD": {
+            "max": 5,
+            "min": 5
+          }
+        }
+      }
+    },
+    {
+      "comment": "Test test",
+      "restrictions": {},
+      "user_id": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "modified_at": "2018-12-10T10:03:59.107544+00:00",
+      "created_at": "2018-12-10T10:03:59.107527+00:00",
+      "is_active": true,
+      "token": "XXXXXXX-f689-XXXX-b20a-XXXXXXXX",
+      "properties": {
+        "return_via": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78",
+        "ttl_days_default": 4,
+        "_ttl_days_spec": {
+          "COD": 5,
+          "PRP": {
+            "max": 15,
+            "min": 7
+          }
+        }
+      }
+    }
+  ],
+  "success": true
+}
+
+----
+
+==== Получение данных одного ERP-токена
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/erp-token
+method_params:: <agent-user-id>
+get_params:: ----
+expected_result:: 200 {<erp token data>}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/saas/agent/erp-token/44ee4ac5-8e42-4e40-821a-3f3e5f13f680?token=996661bf-f689-46ff-b20a-0aed81ab6db4" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 19:15:45 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 479 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "comment": "test",
+  "restrictions": {
+    "create": true,
+    "update": true
+  },
+  "user_id": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "success": true,
+  "modified_at": "2020-04-06T16:29:48.948328+00:00",
+  "created_at": "2020-04-06T16:24:36.528749+00:00",
+  "is_active": false,
+  "token": "XXXXXXX-f689-XXXX-b20a-XXXXXXXX",
+  "properties": {
+    "return_via": "0e0ae586-296d-4697-bb15-c2cbf4a9d8a6",
+    "ttl_days_default": 5,
+    "_ttl_days_spec": {
+      "PRP": {
+        "max": 10,
+        "min": 7
+      },
+      "COD": {
+        "max": 5,
+        "min": 5
+      }
+    }
+  }
+}
+----
+
+==== Удаление ERP-токена
+
+[horizontal]
+protocol_method:: DELETE
+method_name:: agent/erp-token
+method_params:: <agent-user-id>
+expected_result:: 200 {"success": true}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X DELETE "https://sandbox-api.tbt-post.net/api/v1/saas/agent/erp-token/44ee4ac5-8e42-4e40-821a-3f3e5f13f680?token=996661bf-f689-46ff-b20a-0aed81ab6db4" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 06 Apr 2020 19:18:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+=== Учетные записи КС
+
+NOTE: API для получения и обновления настроек интеграции внешних служб доставки.
+
+==== Получение списка всех подключенных и настроенных сервисов
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/edelivery-settings
+method_params:: ----
+expected_result:: 200 { "<service1>": {<setting spec: props_static, props_dynamic, is_active...>}},"<service2>": {<settings spec>} }
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v  "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:03:17 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2075 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "justin": {
+    "is_unconfigured": true,
+    "props_static": {
+      "api_key": "",
+      "open_api_url": "http://openapi.justin.ua",
+      "api_password": "",
+      "api_url": "https://api.justin.ua/justin_pms",
+      "api_username": ""
+    }
+  },
+  "success": true,
+  "novaposhta": {
+    "user_id": "9d7c2ec5-13e6-4f99-9b45-e0ec8f4374e4",
+    "props_static": {
+      "sender_address_ref": "7b422fc3-e1b8-11e3-8c4a-0050568002cf",
+      "sender_counterparty_ref": "e9e53451-6fdc-11e9-9937-005056881c6b",
+      "service_url": "https://my.novaposhta.ua",
+      "api_url": "https://api.novaposhta.ua/v2.0/json/",
+      "sender_city_ref": "8d5a980d-391c-11dd-90d9-001a92567626",
+      "api_key": ""
+    },
+    "modified_at": "2019-09-10T11:27:34.195914+00:00",
+    "created_at": "2019-09-10T11:27:34.195889+00:00",
+    "edelivery": "novaposhta",
+    "props_dynamic": {
+      "PayerType": "Sender",
+      "CargoType": "Cargo",
+      "AdditionalInformation": "KastaPost",
+      "PackingNumber": "@@sender_office_label",
+      "InfoRegClientBarcodes": "@@receiver_office_label",
+      "PaymentMethod": "NonCash"
+    },
+    "is_active": true,
+    "version": 0
+  },
+  "meest": {
+    "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+    "props_static": {
+      "service_url": "http://www.meest-express.com.ua/services",
+      "api_url": "https://api.meest.com/v3.0/openAPI",
+      "api_username": "",
+      "api_password": ""
+    },
+    "modified_at": "2020-04-03T12:21:01.657587+00:00",
+    "created_at": "2020-04-03T11:00:30.105474+00:00",
+    "edelivery": "meest",
+    "props_dynamic": {},
+    "is_active": false,
+    "version": 0
+  },
+  "ukrposhta": {
+    "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+    "props_static": {
+      "bearer_token": "",
+      "counterparty_token": "",
+      "api_url": "https://www.ukrposhta.ua/ecom/0.0.1",
+      "tracking_bearer_token": "",
+      "tracking_api_url": "https://www.ukrposhta.ua/status-tracking/0.0.1",
+      "counterparty_uuid": "846a4188-85ec-4908-b094-9132e97bbe8b"
+    },
+    "modified_at": "2020-04-01T01:42:48.105607+00:00",
+    "created_at": "2020-02-04T16:04:06.492852+00:00",
+    "edelivery": "ukrposhta",
+    "props_dynamic": {},
+    "is_active": true,
+    "version": 0
+  },
+  "kastapost": {
+    "is_unconfigured": true,
+    "is_builtin": true,
+    "props_static": {
+      "erp_token_uid": ""
+    }
+  }
+}
+----
+
+==== Получение настроек конкретной службы доставки
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/edelivery-settings
+method_params:: <edelivery-service>
+expected_result:: 200 {<setting spec: props_static, props_dynamic, is_active...>}
+
+NOTE: Доступные edelivery-service: `novaposhta`, `ukrposhta`,`meest`,`kastapost`,`justin`
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v  "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings/meest" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:12:01 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 440 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "is_active": false,
+  "version": 0,
+  "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+  "success": true,
+  "props_static": {
+    "service_url": "http://www.meest-express.com.ua/services",
+    "api_url": "https://api.meest.com/v3.0/openAPI",
+    "api_username": "",
+    "api_password": ""
+  },
+  "edelivery": "meest",
+  "created_at": "2020-04-03T11:00:30.105474+00:00",
+  "modified_at": "2020-04-03T12:21:01.657587+00:00",
+  "props_dynamic": {}
+}
+
+----
+
+NOTE: В ответе могут быть флаги: +
+`is_unconfigured` - сервис `не настроен`, для него нет конфигурации, в общем списке сервисов ( 1й вызов) отображаться не будет. +
+`Is_active` - если false, то сервис настроен, но отключен, по умолчанию все сервисы: is_active: true
+
+
+==== Задание настроек службы доставки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: saas/edelivery-settings
+method_params:: <edelivery-service>
+request_body:: {"props_static": {<keys for props_static>},"is_active": <true|false>}
+expected_result:: 200 {"success":true}
+
+NOTE: `is_active` - опциональный ключ для активации/деактивации
+
+IMPORTANT: `keys for props_static` - это объект, в котором ключи должны быть заданы из списка, который отдается в `GET-запросе для props-static` (`GET saas/edelivery-settings`).
+Задавать можно только часть ключей, которые с пустыми значениями в базовой конфигурации (`"is_unconfigured": true`)
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings/meest" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"props_static": {"api_username": "test", "api_password": "124"}, "is_active": false}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:57:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "success": true
+}
+
+----
