@@ -47,6 +47,76 @@ NOTE: В дальнейшем при выполнении запросов ис�
 
 === Профили агентов
 
+==== Регистрация пользователя-агента системы
+
+[horizontal]
+protocol_method:: POST
+method_name:: saas/agent
+method_params:: ----
+reques_body:: {"fist_name":"<name>", "last_name":"<name>", "email":"<email>", "phone":"<phone>", "gender":"<male|female|undef>", "birthday":"<date>", "prefered_lang": "<ru|en|uk>","company": {"type":"<company|pe>", name, reg_id, tax_id, bank_account, vat,..}}
+schema:: 
+[source, json]
+----
+{
+        "required": ["email", "phone", "first_name", "last_name", "company"],
+        "properties": {
+            "email":      {"type": "string", "pattern": "^[^\\s@]+@[^\\s@.,]+(:?\\.[^\\s@.,]{2,})*$", "maxLength": 128},
+            "phone":      {"type": "string", "pattern": "^\\d{,13}$"},
+            "first_name": {"type": "string", "maxLength": 128},
+            "last_name":  {"type": "string", "maxLength": 128},
+            "gender":     {"type": "string", "enum": ["undef", "male", "female"]},
+            "birthday":   {"type": "string", "pattern": "^\\d\\d\\d\\d-\\d\\d-\\d\\d$"},
+            "company": {
+                "type": "object",
+                "required": ["type", "name", "reg_id", "tax_id", "vat", "bank_account"],
+                "additionalProperties": False,
+                "properties": {
+                    "type":         {"type": "string", "enum": ["company", "pe"]},
+                    "name":         {"type": "string", "maxLength": 128},
+                    "vat":          {"type": "integer", "minimum": 0, "maximum": 100},
+                    "tax_id":       {"type": "string", "pattern": "\\d{5,20}"},
+                    "reg_id":       {"type": "string", "pattern": "^\\d{5,20}$"},
+                    "bank_account": {"type": "string", "pattern": "^[A-Z0-9]{10,34}$"},
+                    "bank_name":    {"type": "string", "maxLength": 128},
+                    "bank_mfo":     {"type": "string", "pattern": "^\\d{5,20}$"},
+                }
+            },
+            "prefered_lang":     {"type": "string", "minLength": 2, "maxLength": 2},
+        }
+----
+expected_result:: 200 {"user_id": "<user-id>", "contragent_id":  "<contragent-id>"}
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/saas/agent" -b cookie-jar.txt -H "Content-Type: application/json"  -d '{"first_name":"Fake","last_name":"Agent Name","email":"fakeagent@fakemail.com","phone":"380666666666","gender":"undef","company":{"type":"company","name":"FakeCompany","vat":20,"bank_account":"UA1234567891022","bank_name":"Fake Bank","bank_mfo":"321456", "reg_id":"123456", "tax_id": "123456"}}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 12:40:17 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 125 +
+Connection: keep-alive +
+Replaced cookie:  +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "user_id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+  "success": true,
+  "contragent_id": "b5d9a772-1dd1-4dd5-b465-0e32f20f0fa8"
+}
+----
+
+NOTE: В результате, будет создан пользователь-агент, создана запись контрагента - получателя средств.
+Для добавления erp-токена, необходимо воспользоваться отдельным вызовом
+
 ==== Получение списка агентов
 
 [horizontal]
@@ -231,7 +301,7 @@ Etag: "6c54799cb29b035ddc1b8b75a8cd274bc72d1331" +
 ==== Обновление профиля агента
 
 [horizontal]
-protocol_method:: POST
+protocol_method:: PUT
 method_name:: saas/agent
 method_params:: <agent user-id>
 reques_body:: 
@@ -589,7 +659,6 @@ Set-Cookie: <cookie> +
 protocol_method:: DELETE
 method_name:: agent/erp-token
 method_params:: <agent-user-id>
-get_params:: ----
 expected_result:: 200 {"success": true}
 
 [horizontal]
@@ -615,4 +684,214 @@ Set-Cookie: <cookie> +
 [source, json]
 ----
 {"success": true}
+----
+
+=== Учетные записи КС
+
+NOTE: API для получения и обновления настроек интеграции внешних служб доставки.
+
+==== Получение списка всех подключенных и настроенных сервисов
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/edelivery-settings
+method_params:: ----
+expected_result:: 200 { "<service1>": {<setting spec: props_static, props_dynamic, is_active...>}},"<service2>": {<settings spec>} }
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v  "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:03:17 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 2075 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "justin": {
+    "is_unconfigured": true,
+    "props_static": {
+      "api_key": "",
+      "open_api_url": "http://openapi.justin.ua",
+      "api_password": "",
+      "api_url": "https://api.justin.ua/justin_pms",
+      "api_username": ""
+    }
+  },
+  "success": true,
+  "novaposhta": {
+    "user_id": "9d7c2ec5-13e6-4f99-9b45-e0ec8f4374e4",
+    "props_static": {
+      "sender_address_ref": "7b422fc3-e1b8-11e3-8c4a-0050568002cf",
+      "sender_counterparty_ref": "e9e53451-6fdc-11e9-9937-005056881c6b",
+      "service_url": "https://my.novaposhta.ua",
+      "api_url": "https://api.novaposhta.ua/v2.0/json/",
+      "sender_city_ref": "8d5a980d-391c-11dd-90d9-001a92567626",
+      "api_key": ""
+    },
+    "modified_at": "2019-09-10T11:27:34.195914+00:00",
+    "created_at": "2019-09-10T11:27:34.195889+00:00",
+    "edelivery": "novaposhta",
+    "props_dynamic": {
+      "PayerType": "Sender",
+      "CargoType": "Cargo",
+      "AdditionalInformation": "KastaPost",
+      "PackingNumber": "@@sender_office_label",
+      "InfoRegClientBarcodes": "@@receiver_office_label",
+      "PaymentMethod": "NonCash"
+    },
+    "is_active": true,
+    "version": 0
+  },
+  "meest": {
+    "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+    "props_static": {
+      "service_url": "http://www.meest-express.com.ua/services",
+      "api_url": "https://api.meest.com/v3.0/openAPI",
+      "api_username": "",
+      "api_password": ""
+    },
+    "modified_at": "2020-04-03T12:21:01.657587+00:00",
+    "created_at": "2020-04-03T11:00:30.105474+00:00",
+    "edelivery": "meest",
+    "props_dynamic": {},
+    "is_active": false,
+    "version": 0
+  },
+  "ukrposhta": {
+    "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+    "props_static": {
+      "bearer_token": "",
+      "counterparty_token": "",
+      "api_url": "https://www.ukrposhta.ua/ecom/0.0.1",
+      "tracking_bearer_token": "",
+      "tracking_api_url": "https://www.ukrposhta.ua/status-tracking/0.0.1",
+      "counterparty_uuid": "846a4188-85ec-4908-b094-9132e97bbe8b"
+    },
+    "modified_at": "2020-04-01T01:42:48.105607+00:00",
+    "created_at": "2020-02-04T16:04:06.492852+00:00",
+    "edelivery": "ukrposhta",
+    "props_dynamic": {},
+    "is_active": true,
+    "version": 0
+  },
+  "kastapost": {
+    "is_unconfigured": true,
+    "is_builtin": true,
+    "props_static": {
+      "erp_token_uid": ""
+    }
+  }
+}
+----
+
+==== Получение настроек конкретной службы доставки
+
+[horizontal]
+protocol_method:: GET
+method_name:: saas/edelivery-settings
+method_params:: <edelivery-service>
+expected_result:: 200 {<setting spec: props_static, props_dynamic, is_active...>}
+
+NOTE: Доступные edelivery-service: `novaposhta`, `ukrposhta`,`meest`,`intime`,`justin`
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v  "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings/meest" -b cookie-jar.txt -H "Content-Type: application/json"  
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:12:01 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 440 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "is_active": false,
+  "version": 0,
+  "user_id": "25b496bf-d357-4d60-9f55-a03e2f323fa2",
+  "success": true,
+  "props_static": {
+    "service_url": "http://www.meest-express.com.ua/services",
+    "api_url": "https://api.meest.com/v3.0/openAPI",
+    "api_username": "",
+    "api_password": ""
+  },
+  "edelivery": "meest",
+  "created_at": "2020-04-03T11:00:30.105474+00:00",
+  "modified_at": "2020-04-03T12:21:01.657587+00:00",
+  "props_dynamic": {}
+}
+
+----
+
+NOTE: В ответе могут быть флаги: +
+`is_unconfigured` - сервис `не настроен`, для него нет конфигурации, в общем списке сервисов ( 1й вызов) отображаться не будет. +
+`Is_active` - если false, то сервис настроен, но отключен, по умолчанию все сервисы: is_active: true
+
+
+==== Задание настроек службы доставки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: saas/edelivery-settings
+method_params:: <edelivery-service>
+request_body:: {"props_static": {<keys for props_static>},"is_active": <true|false>}
+expected_result:: 200 {"success":true}
+
+NOTE: `is_active` - опциональный ключ для активации/деактивации
+
+IMPORTANT: `keys for props_static` - это объект, в котором ключи должны быть заданы из списка, который отдается в `GET-запросе для props-static` (`GET saas/edelivery-settings`).
+Задавать можно только часть ключей, которые с пустыми значениями в базовой конфигурации (`"is_unconfigured": true`)
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/saas/edelivery-settings/meest" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"props_static": {"api_username": "test", "api_password": "124"}, "is_active": false}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Tue, 07 Apr 2020 15:57:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+Replaced cookie <cookie> +
+Set-Cookie: <cookie> +
+
+
+[source, json]
+----
+{
+  "success": true
+}
+
 ----
