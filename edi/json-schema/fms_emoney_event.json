@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "FMS eMoney event message",
+  "required": [
+    "sender",
+    "timestamp",
+    "serial",
+    "money_type",
+    "account",
+    "emoney_transaction",
+    "transaction_id",
+    "emoney_amount",
+    "direction",
+    "action",
+    "reason"
+  ],
+  "properties": {
+    "sender": {
+      "type": "string",
+      "description": "Sender name",
+      "enum": [
+        "tbt"
+      ]
+    },
+    "timestamp": {
+      "description": "Send time",
+      "type": "string",
+      "format": "date-time"
+    },
+    "serial": {
+      "type": "string",
+      "description": "Event unique serial identifier (uuid v1)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "money_type": {
+      "type": "string",
+      "description": "eMoney type",
+      "enum": [
+        "alfa_money"
+      ]
+    },
+    "account": {
+      "type": "string",
+      "description": "Payer phone number",
+      "pattern": "^380[0-9]{9}$"
+    },
+    "emoney_transaction": {
+      "type": "string",
+      "description": "Payment system transaction identifier"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Transaction unique identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "emoney_amount": {
+      "type": [
+        "string",
+        "number"
+      ],
+      "description": "Transaction eMoney total",
+      "pattern": "^[0-9]{1,5}(\\.[0-9]{1,2})?$",
+      "maximum": 100000,
+      "minimum": 0
+    },
+    "direction": {
+      "type": "string",
+      "description": "transaction direction if applicable",
+      "enum": [
+        "nop",
+        "income",
+        "outcome"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "description": "action",
+      "enum": [
+        "payment",
+        "correction",
+        "balance",
+        "info",
+        "renew",
+        "request"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "description": "Payment reason/description, formal"
+    },
+    "contragent_id": {
+      "type": "string",
+      "description": "Contragent identifier",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "contragent_reg_id": {
+      "type": "string",
+      "description": "Contragent external/state identifier"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "Payment system contragent identifier"
+    },
+    "note": {
+      "type": "string",
+      "description": "Additional info, informal"
+    },
+    "source_wallet": {
+      "type": "string",
+      "description": "Source wallet reference, informal"
+    },
+    "target_wallet": {
+      "type": "string",
+      "description": "Target wallet reference, informal"
+    }
+  }
+}
