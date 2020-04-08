@@ -1,0 +1,19 @@
+{
+  "sender": "tbt",
+  "timestamp": "2020-03-23T17:07:33.438Z",
+  "serial": "90dbcca4-3ed9-1fae-cad6-29fe5de2ede8",
+  "money_type": "alfa_money",
+  "account": "380720350697",
+  "emoney_transaction": "ABCDEFGHIJK",
+  "transaction_id": "89d0c3a0-baec-46b9-27ae-e0ac636566c7",
+  "emoney_amount": -42.25,
+  "direction": "income",
+  "action": "payment",
+  "reason": "ABCDE",
+  "contragent_id": "97cf4fe0-45d0-566d-adb7-68de7eae2f51",
+  "contragent_reg_id": "ABCDEFGHIJKLMNOPQRSTUV",
+  "merchant_id": "ABCDEFGHIJKLMNOPQ",
+  "note": "ABCDEFGHIJKLMNOPQ",
+  "source_wallet": "ABCDEFGHIJKLMNOPQRSTU",
+  "target_wallet": "ABCD"
+}
