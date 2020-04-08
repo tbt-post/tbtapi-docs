@@ -6,7 +6,7 @@
   "account": "380720350697",
   "emoney_transaction": "ABCDEFGHIJK",
   "transaction_id": "89d0c3a0-baec-46b9-27ae-e0ac636566c7",
-  "emoney_amount": -42.25,
+  "emoney_amount": 42.25,
   "direction": "income",
   "action": "payment",
   "reason": "ABCDE",
