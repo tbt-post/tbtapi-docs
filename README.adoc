@@ -38,6 +38,10 @@ https://t.me/tbtpost[Telegram Channel]
 
 https://twitter.com/tbtpost[Twitter Feed]
 
+=== Mirrors
+
+https://www.facebook.com/Kasta-Group-LLC-104832931194327[Facebook mirror]
+
 === Software
 
 https://github.com/tbt-post/edi-receiver[EDI Receiver]
