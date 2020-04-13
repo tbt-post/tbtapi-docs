@@ -1391,6 +1391,304 @@ Etag: "86d42b69d4f0b4e4d168de827baa0265357c7fa4" +
 
 NOTE: Ответ по схеме `wms_items_out`
 
+==== Схема валидации импорта из внешней системы
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/schema
+method_params:: wms_import
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {<json schema>}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/agent/schema/wms_import" -H "Content-Type: application/json" -H "Authorization: Basic YZjEtMzJiZDdaelE"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 + 
+Date: Sat, 11 Apr 2020 09:44:53 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 3080 +
+Connection: keep-alive +
+Etag: "03f14ebf68fcb499cb16f4f8553546cc0e0b8858" +
+
+
+[source, json]
+----
+{
+  "required": [
+    "external_box_code",
+    "external_document",
+    "external_datetime",
+    "items"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "uuid": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "items": {
+      "patternProperties": {
+        "^[^ ]{6,32}$": {
+          "additionalProperties": false,
+          "required": [
+            "price",
+            "note",
+            "owner",
+            "class"
+          ],
+          "type": "object",
+          "properties": {
+            "note": {
+              "type": "string"
+            },
+            "owner": {
+              "additionalProperties": false,
+              "required": [
+                "$ref"
+              ],
+              "type": "object",
+              "properties": {
+                "$ref": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "price": {
+              "type": "number"
+            },
+            "class": {
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "weight",
+                "dimensions",
+                "description"
+              ],
+              "type": "object",
+              "properties": {
+                "type": {
+                  "enum": [
+                    "item_class"
+                  ],
+                  "type": "string"
+                },
+                "dimensions": {
+                  "minItems": 3,
+                  "items": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "type": "array",
+                  "description": "width, height, depth, in mm",
+                  "maxItems": 3
+                },
+                "weight": {
+                  "type": "integer",
+                  "description": "weight, in grams"
+                },
+                "description": {
+                  "required": [
+                    "article",
+                    "code",
+                    "name",
+                    "brand",
+                    "type",
+                    "size",
+                    "size_class",
+                    "color",
+                    "origin",
+                    "composition",
+                    "info",
+                    "product_id",
+                    "photos"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "lang": {
+                      "enum": [
+                        "ru",
+                        "uk",
+                        "en"
+                      ],
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string",
+                      "description": "verbose description"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "EAN-13 manufacturer barcode, e.g. 978020137962"
+                    },
+                    "size_class": {
+                      "type": "string",
+                      "description": "size chart used, e.g. EU"
+                    },
+                    "product_id": {
+                      "type": "string",
+                      "description": "e.g. 431231234"
+                    },
+                    "tags": {
+                      "items": {
+                        "pattern": "^[^ ]{3,24}$",
+                        "type": "string"
+                      },
+                      "type": "array",
+                      "description": "e.g. additional marks to help identify the item",
+                      "maxItems": 30
+                    },
+                    "color": {
+                      "additionalProperties": false,
+                      "required": [
+                        "$ref"
+                      ],
+                      "type": "object",
+                      "properties": {
+                        "$ref": {
+                          "$ref": "#/definitions/uuid"
+                        }
+                      }
+                    },
+                    "season": {
+                      "enum": [
+                        "winter",
+                        "summer",
+                        "spring",
+                        "fall",
+                        "demi-season",
+                        "demi-season-summer",
+                        "demi-season-winter",
+                        "all-season"
+                      ],
+                      "type": "string"
+                    },
+                    "brand": {
+                      "type": "string",
+                      "description": "e.g. Adidas"
+                    },
+                    "fragile": {
+                      "type": "boolean"
+                    },
+                    "price": {
+                      "minimum": 0.01,
+                      "type": "number",
+                      "maximum": 9999999999.99,
+                      "multipleOf": 0.01
+                    },
+                    "photos": {
+                      "items": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "type": "array"
+                    },
+                    "gender": {
+                      "enum": [
+                        "female",
+                        "male",
+                        "unisex"
+                      ],
+                      "type": "string"
+                    },
+                    "article": {
+                      "type": "string"
+                    },
+                    "size": {
+                      "type": "string",
+                      "description": "e.g. 42"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "e.g. shoes"
+                    },
+                    "composition": {
+                      "type": "string",
+                      "description": "string with delimiter ';', material substance in '%'"
+                    },
+                    "origin": {
+                      "type": "string",
+                      "description": "manufacturer country e.g. Singapore"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "e.g. Cargo"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "type": "object"
+    },
+    "processed": {
+      "type": "boolean"
+    },
+    "external_document": {
+      "type": "string"
+    },
+    "external_box_code": {
+      "pattern": "^[^ ]{3,24}$",
+      "type": "string"
+    },
+    "serial": {
+      "$ref": "#/definitions/uuid"
+    },
+    "external_datetime": {
+      "type": "string"
+    }
+  }
+}
+----
+
+==== Импорт из внешней системы на склад
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/wms-exchange/import
+method_params:: items
+get_params:: ----
+request_body:: {<registry by wms_import schema>}
+expected_result:: 200 {"serial": "uuid","box-code": "code"}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/wms-exchange/import/items" -H "Content-Type: application/json" -H "Authorization: Basic YZjEtMzJiZDdaelE" -d '{"items":{"note":"TEST","owner":{"$ref":"216ed0f5-f332-11e9-80de-005056a8435c"},"price":500,"class":{"type":"object","properties":{"type":"undef","dimensions":[10,15,20],"weight":2000,"description":{"type":"object","properties":{"lang":"ru","info":"TEST TEST TEST TEST","code":"978020137962","size_class":"UA","product_id":"431231234","tags":["test","goods"],"color":{"type":"object","properties":{"$ref":"216ed0f5-f332-11e9-80de-005056a8435c"}},"season":"all-season","brand":"TestBrand","fragile":false,"price":99.99,"photos":["https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/ea4db185943486992048fe41e98c898c.jpg"],"gender":"unisex","article":"empty","size":"42","type":"goods","composition":"Test info 100%;","origin":"manufacturer country Habon","name":"Cargo"}}}},"type":"object"},"external_document":"000566457","external_box_code":"9996257618","serial":"296545f0-6693-11ea-89ee-db02b56522a1","external_datetime":"15-03-2020 09-56-28"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 + 
+Date: Sat, 11 Apr 2020 15:40:59 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 76 +
+Connection: keep-alive +
+Etag: "03f14ebf68fcb499cb16f4f8553546cc0e0b8858" +
+
+
+[source, json]
+----
+{
+  "serial": "d71ef970-7c0a-11ea-b766-8cb7f2c616ff",
+  "box-code": "9996257618"
+}
+----
+
+
 === Справочник цветов
 
 ==== Список всех цветов
