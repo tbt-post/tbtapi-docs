@@ -10,11 +10,15 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 
 === BMS
 
+image:B.png[BMS,50,50,role="right"]
+
 **B**ranches network **M**anagement **S**ystem
 
 Система управления сетью отделений
 
 === WMS
+
+image:W.png[BMS,50,50,role="right"]
 
 **W**arehouses **M**anagement **S**ystem
 
@@ -23,6 +27,8 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 == AaaS services
 
 === FMS
+
+image:F.png[BMS,50,50,role="right"]
 
 **F**inancial **M**anagement **S**ystem
 
