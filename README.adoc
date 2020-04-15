@@ -1,6 +1,6 @@
 = TbT Platform Developer Suite
 
-image::https://staging.tbt-post.net/img/tbt-logo.87b6b9e.png[]
+image::tbt-logo-full.png[]
 
 Public API description for https://tbt-post.net[TbT Platform] services and data schemas for ERP-systems
 
