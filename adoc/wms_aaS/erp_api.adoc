@@ -1764,7 +1764,7 @@ Etag: "c0ffb00b0482c0c11696d6fb01d19dee806f83e6" +
 [horizontal]
 protocol_method:: GET
 method_name:: agent/wms/color-resolve/
-method_params:: <coor_id>
+method_params:: <color_id>
 get_params:: ----
 request_body:: ----
 expected_result:: 200 {<json schema>}

@@ -1,6 +1,6 @@
 = TbT Platform Developer Suite
 
-image::https://staging.tbt-post.net/img/tbt-logo.87b6b9e.png[]
+image::images/tbt-logo-full.png[]
 
 Public API description for https://tbt-post.net[TbT Platform] services and data schemas for ERP-systems
 
@@ -10,7 +10,7 @@ Public API description for https://tbt-post.net[TbT Platform] services and data 
 
 === BMS
 
-image:B.png[BMS,50,50,role="right"]
+image:images/B.png[BMS,50,50,role="right"]
 
 **B**ranches network **M**anagement **S**ystem
 
@@ -18,7 +18,7 @@ image:B.png[BMS,50,50,role="right"]
 
 === WMS
 
-image:W.png[BMS,50,50,role="right"]
+image:images/W.png[BMS,50,50,role="right"]
 
 **W**arehouses **M**anagement **S**ystem
 
@@ -28,7 +28,7 @@ image:W.png[BMS,50,50,role="right"]
 
 === FMS
 
-image:F.png[BMS,50,50,role="right"]
+image:images/F.png[BMS,50,50,role="right"]
 
 **F**inancial **M**anagement **S**ystem
 
