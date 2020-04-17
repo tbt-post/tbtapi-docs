@@ -1,0 +1,2740 @@
+﻿openapi: 3.0.0
+
+info:
+  title: WMS ERP API
+  description: Описание публичного API для сервисов платформы TbT и схемы данных для ERP-систем. TbT.
+  version: v1
+  
+servers:
+  - url: https://sandbox-api.tbt-post.net/api/v1
+  
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
+  
+tags:
+- name: Реестры
+- name: Справочник цветов
+- name: Получение данных товара
+
+paths:
+  /agent/schema/{schema_name}:
+    get:
+      tags: 
+      - Реестры
+      summary: Получение схемы валидации
+      description: "В параметр <i><schema_name></i> можно подставить такие значения: <br> <b>wms_items_in</b> - валидация реестра для загрузки. <br> <b>wms_items_out </b> - валидация данных результата реестра (в данном случае - в ответе, а не запросе). <br> <b>wms_event </b> - валидация сообщений wms event (такие сообщения будут отправлятья во внешнюю систему)."
+      parameters:
+      - in: path
+        name: schema_name 
+        required: true
+        description: "Возможные значения [<i>wms_items_in | wms_items_out | wms_event</i> ]. Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение."
+        schema:
+          type : string
+                  
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  anyOf:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        required:
+                          type: string
+                          example: [origin, generated, serial]
+                        required1:
+                          type: string
+                          example: [origin, generated, uid]
+                        required2:
+                          type: string
+                          example: [origin, generated, useserial]
+                  dependencies:
+                    type: object
+                    properties:
+                      items:
+                        type: object
+                        properties:
+                          required:
+                            type: string
+                            example: [definitions, total]
+                  additionalProperties:
+                    type: boolean
+                    example: false
+                  definitions:
+                    type: object
+                    properties:
+                      color_model_hsl:
+                        type: object
+                        properties:
+                          required:
+                            type: string
+                            example: [color_model, color_value]
+                          type:
+                            type: string
+                            example: object
+                          properties:
+                            type: object
+                            properties:
+                              color_value:
+                                type: object
+                                properties:
+                                  minItems:
+                                    type: integer
+                                    example: 3
+                                  items:
+                                    type: array
+                                    items:
+                                      type: object
+                                    example:
+                                      - 
+                                        minimum: 0
+                                        type: number
+                                        maximum: 360
+                                      - 
+                                        minimum: 0
+                                        type: number
+                                        maximum: 100
+                                      - 
+                                        minimum: 0
+                                        type: number
+                                        maximum: 100
+                                  additionalItems:
+                                    type: boolean
+                                    example: false
+                                  type:
+                                    type: string
+                                    example: array
+                              color_model:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [hsl]
+                                  type:
+                                    type: string
+                                    example: string
+                      task_unload:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: 'object'
+                          properties:
+                            type: object
+                            properties:
+                              action:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [unload]
+                                  type:
+                                    type: string
+                                    example: string
+                              spec:
+                                type: object
+                                properties: 
+                                  additionalProperties:
+                                    type: boolean
+                                    example: false
+                                  required:
+                                    type: string
+                                    example: [items, type, class, delivery_type, sender, receiver, address_id]
+                                  type: 
+                                    type: string
+                                    example: object
+                                  properties:
+                                    type: object
+                                    properties:
+                                      dest_apartment:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: string
+                                      address_id:
+                                        type: object
+                                        properties:
+                                          $ref:
+                                            type: string
+                                            example: "#/definitions/uuid"
+                                      cod_amount:
+                                        type: object
+                                        properties:
+                                          minimum:
+                                            type: number
+                                            example: 0.01
+                                          type:
+                                            type: string
+                                            example: number
+                                          maximum:
+                                            type: number
+                                            example: 9999999999.99
+                                          multipleOf:
+                                            type: number
+                                            example: 0.01
+                                      sender:
+                                        type: object
+                                        properties:
+                                          $ref: 
+                                            type: string
+                                            example: "#/definitions/uuid"
+                                      delivery_service:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [self_delivery, kastapost, novaposhta, ukrposhta, meest, intime, justin]
+                                          type: 
+                                            type: string
+                                            example: string
+                                      receiver:
+                                        type: object
+                                        properties:
+                                          $ref: 
+                                            type: string
+                                            example: "#/definitions/uuid"
+                                      delivery_type:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [W2W, W2D, D2W, D2D]
+                                          type: 
+                                            type: string
+                                            example: string      
+                                      parcel_code:
+                                        type: object
+                                        properties:
+                                          anyOf:
+                                            type: array
+                                            items:
+                                              type: object
+                                            example:
+                                              -
+                                                type: null
+                                              -
+                                                pattern: "^[^ ]{6,32}$"
+                                                type: string
+                                                description: "some parcel group code, e.g. order id or delivery reg @ external ERP"
+                                      note:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                      items:
+                                        type: object
+                                        properties:
+                                          items:
+                                            type: object
+                                            properties:
+                                              pattern:
+                                                type: string
+                                                example: "^[^ ]{6,32}$"
+                                              type:
+                                                type: string
+                                                example: string
+                                              description: 
+                                                type: string
+                                                example: "unique sku code, e.g. MK0A123456789012"
+                                          type:
+                                            type: string
+                                            example: array
+                                      dest_branch_id:
+                                        type: object
+                                        properties:
+                                          pattern: 
+                                            type: string
+                                            example: "^[^ ]{2,128}$"
+                                          type:
+                                            type: string
+                                            example: string  
+                                      type:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [undef, papers, fragile, goods, foods, chemicals, special, hazard]
+                                          type: 
+                                            type: string
+                                            example: string
+                                      class:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "parcel class, e.g. I.PRP.NR.NA.S000"
+                      task:
+                        type: object
+                        properties:
+                          allOf:
+                            type: array
+                            items:
+                              type: object
+                            example:
+                              -
+                                ref: "#/definitions/task_common"
+                          oneOf:
+                            type: array
+                            items:
+                              type: object
+                            example:
+                              -
+                                ref: "#/definitions/task_store"  
+                              -
+                                ref: "#/definitions/task_unload"
+                              -
+                                ref: "#/definitions/task_fulfill"
+                      uuid:
+                        type: object
+                        properties:
+                          pattern:
+                            type: string
+                            example: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                          type:
+                            type: string
+                            example: string
+                      color_model_cmyk:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: object
+                          properties:
+                            type: object
+                            properties:
+                              color_value:
+                                type: object
+                                properties:
+                                  minItems:
+                                    type: integer
+                                    example: 4
+                                  items:
+                                    type: object
+                                    properties:
+                                      minimum:
+                                        type: integer
+                                        example: 0
+                                      type:
+                                        type: string
+                                        example: number
+                                      maximum:
+                                        type: number
+                                        example: 100
+                                  type:
+                                    type: string
+                                    example: array
+                                  maxItems:
+                                    type: integer
+                                    example: 4
+                              color_model:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [cmyk]
+                                  type: 
+                                    type: string
+                                    example: string
+                      color_model_lab:
+                        type: object
+                        properties:
+                          required: 
+                            type: string
+                            example: [color_model, color_value]
+                          type:
+                            type: string
+                            example: object
+                          properties:
+                            type: object
+                            properties:
+                              color_value:
+                                type: object
+                                properties:
+                                  minItems:
+                                    type: integer
+                                    example: 3
+                                  items:
+                                    type: array
+                                    items:
+                                      type: object
+                                    example:
+                                      - 
+                                        minimum: 0
+                                        type: number
+                                        maximum: 360
+                                      - 
+                                        minimum: -100
+                                        type: number
+                                        maximum: 100
+                                      - 
+                                        minimum: -100
+                                        type: number
+                                        maximum: 100
+                                  additionalItems:
+                                    type: boolean
+                                    example: false
+                                  type:
+                                    type: string
+                                    example: array
+                              color_model:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [lab]
+                                  type:
+                                    type: string
+                                    example: string
+                      item_class:
+                        type: object
+                        properties:
+                          additionalProperties:
+                            type: boolean
+                            example: false
+                          required:
+                            type: string
+                            example: [type, weight, dimensions, description]
+                          type:
+                            type: string
+                            example: object
+                          properties:
+                            type: object
+                            properties:
+                              type:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [item_class]
+                                  type:
+                                    type: string
+                                    example: string
+                              dimensions:
+                                type: object
+                                properties:
+                                  minItems:
+                                    type: integer
+                                    example: 3
+                                  items:
+                                    type: object
+                                    properties:
+                                      minimum: 
+                                        type: integer
+                                        example: 0
+                                      type: 
+                                        type: string
+                                        example: integer
+                                  type:
+                                    type: string
+                                    example: array
+                                  description:
+                                    type: string
+                                    example: "width, height, depth, in mm"
+                                  maxItems:
+                                    type: integer
+                                    example: 3
+                              weight:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                    example: integer
+                                  description:
+                                    type: string
+                                    example: "weight, in grams"
+                              description:
+                                type: object
+                                properties:
+                                  required:
+                                    type: string
+                                    example: article, code, name, brand, type, size, size_class, color, origin, composition, info, product_id, photos]
+                                  type:
+                                    type: string
+                                    example: object
+                                  properties:
+                                    type: object
+                                    properties:
+                                      lang:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [ru, uk, en]
+                                          type:
+                                            type: string
+                                            example: string
+                                      info:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: string
+                                          description: 
+                                            type: string
+                                            example: "verbose description"
+                                      code:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: string
+                                          description: 
+                                            type: string
+                                            example: "EAN-13 manufacturer barcode, e.g. 978020137962"
+                                      size_class:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: string
+                                          description: 
+                                            type: string
+                                            example: "size chart used, e.g. EU"
+                                      product_id:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: string
+                                          description: 
+                                            type: string
+                                            example: "e.g. 431231234"
+                                      tags:
+                                        type: object
+                                        properties:
+                                          items:
+                                            type: object
+                                            properties:
+                                              pattern:
+                                                type: string
+                                                example: "^[^ ]{3,24}$"
+                                              type:
+                                                type: string
+                                                example: string
+                                          type:
+                                            type: string
+                                            example: array
+                                          description:
+                                            type: string
+                                            example: "e.g. additional marks to help identify the item"
+                                          maxItems:
+                                            type: integer
+                                            example: 30      
+                                      color:
+                                        type: object
+                                        properties:
+                                          additionalProperties:
+                                            type: boolean
+                                            example: false
+                                          required:
+                                            type: string
+                                            example: [$ref]
+                                          type:
+                                            type: string
+                                            example: object
+                                          properties:
+                                            type: object
+                                            properties:
+                                              ref1: 
+                                                type: object
+                                                properties:
+                                                  ref2:
+                                                    type: string
+                                                    example: "#/definitions/uuid"
+                                      season:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [winter, summer, spring, fall, demi-season, demi-season-summer, demi-season-winter, all-season]
+                                          type:
+                                            type: string
+                                            example: string
+                                      brand:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "e.g. Adidas"
+                                      fragile:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: boolean
+                                      price:
+                                        type: object
+                                        properties:
+                                          minimum:
+                                            type: integer
+                                            example: 0.01
+                                          type:
+                                            type: string
+                                            example: number
+                                          maximum:
+                                            type: number
+                                            example: 9999999999.99
+                                          multipleOf:
+                                            type: number
+                                            example: 0.01
+                                      photos:
+                                        type: object
+                                        properties:
+                                          items:
+                                            type: object
+                                            properties:
+                                              type:
+                                                type: string
+                                                example: string
+                                              format:
+                                                type: string
+                                                example: uri
+                                          type:
+                                            type: string
+                                            example: array
+                                      gender:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [female, male, unisex]
+                                          type:
+                                            type: string
+                                            example: array
+                                      article:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                      size:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "e.g. 42"
+                                      type:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "e.g. shoes"
+                                      composition:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "string with delimiter"
+                                      origin:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "manufacturer country e.g. Singapore"
+                                      name:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "e.g. Cargo"
+                      color_model_rgb:
+                        type: object
+                        properties:
+                          required:
+                            type: string
+                            example: [color_model, color_value]
+                          type:
+                            type: string
+                            example: object
+                          properties:
+                            type: object
+                            properties:
+                              color_value:
+                                type: object
+                                properties:
+                                  minItems:
+                                    type: integer
+                                    example: 3
+                                  items:
+                                    type: array
+                                    items:
+                                      type: object
+                                    example:
+                                      - 
+                                        minimum: 0
+                                        type: integer
+                                        maximum: 255
+                                  type:
+                                    type: string
+                                    example: array
+                              color_model:
+                                type: object
+                                properties:
+                                  enum:
+                                    type: string
+                                    example: [rgb]
+                                  type:
+                                    type: string
+                                    example: string
+                              uuid_v4:
+                                type: object
+                                properties:
+                                  pattern:
+                                    type: string
+                                    example: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                  type:
+                                    type: string
+                                    example: string
+                              color_class_common:
+                                type: object
+                                properties:
+                                  additionalProperties:
+                                    type: boolean
+                                    example: false
+                                  required:
+                                    type: string
+                                    example: [type, color_name, color_model, color_id]
+                                  type:
+                                    type: string
+                                    example: object
+                                  properties:
+                                    type: object
+                                    properties:
+                                      color_value: 
+                                        type: string
+                                        example: {}
+                                      color_model:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [undef, rgb, hsl, lab, cmyk]
+                                          type: 
+                                            type: string
+                                            example: string   
+                                      color_name:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                      type:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [color_class]
+                                          type:
+                                            type: string
+                                            example: string
+                                      color_id:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: string
+                                          description:
+                                            type: string
+                                            example: "reference to color in external system, e.g. 87463234"
+                              task_fulfill:
+                                type: object
+                                properties:
+                                  type:
+                                    type: string
+                                    example: object
+                                  properties:
+                                    type: object
+                                    properties:
+                                      action:
+                                        type: object
+                                        properties:
+                                          enum:
+                                            type: string
+                                            example: [fulfill]
+                                          type:
+                                            type: string
+                                            example: string
+                                      spec:
+                                        type: object
+                                        properties:
+                                          additionalProperties:
+                                            type: boolean
+                                            example: false
+                                          patternProperties:
+                                            type: object
+                                            properties:
+                                              '[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$': 
+                                                type: object
+                                                properties:
+                                                  additionalProperties:
+                                                    type: boolean
+                                                    example: false
+                                                  required:
+                                                    type: string
+                                                    example: [items]
+                                                  type:
+                                                    type: string
+                                                    example: object
+                                                  properties:
+                                                    type: object
+                                                    properties:
+                                                      items:
+                                                        type: object
+                                                        properties:
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              type:
+                                                                type: string
+                                                                example: string
+                                                          type:
+                                                            type: string
+                                                            example: array
+                                          type:
+                                            type: string
+                                            example: object
+                              class_class:
+                                type: object
+                                properties:
+                                  allOf:
+                                    type: array
+                                    items:
+                                      type: object
+                                    example:
+                                      -
+                                        ref: "#/definitions/color_class_common"
+                                  oneOf:
+                                    type: array
+                                    items:
+                                      type: object
+                                    example:
+                                      -
+                                        ref: "#/definitions/color_model_undef"  
+                                      -
+                                        ref: "#/definitions/color_model_rgb"
+                                      -
+                                        ref: "#/definitions/color_model_hsl"
+                                      -
+                                        ref: "#/definitions/color_model_lab"  
+                                      -
+                                        ref: "#/definitions/color_model_cmyk"
+                                
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+                    
+  /agent/wms/items/:
+    post:
+      tags:
+      - Реестры
+      summary: Загрузка реестра
+      # description: ...
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                origin:
+                  type: string
+                  example: "293d98fc-80e3-476b-86a3-62eefcd91665"
+                tasks:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      action:
+                        type: string
+                        example: "fulfill"
+                      spec:
+                        type: object
+                        properties:
+                          '312153ec-3d06-46ec-a2e3-87e8b1bb0122': 
+                            type: object
+                            properties:
+                              items:
+                                type: number
+                                example: ['50000323849711', '50000338701827']
+                uid:
+                  type: string
+                  example: "a5acf9c9-999f-41fb-b3de-585689b02eb3"
+                userial:
+                  type: string
+                  example: "3a30bd80-7406-11ea-8ddd-790d4a755f6d"
+                items:
+                  type: array
+                  items:
+                    type: object
+                  example:
+                    -
+                      code: '50000323849711'
+                      dimensions: [0, 0, 0]
+                      weight: 350
+                      note: ''
+                      type: item
+                      class: {$ref: 216ed0f5-f332-11e9-80de-005056a8435c}
+                      quantity: 1
+                    -
+                      code: '50000338701827'
+                      dimensions: [0, 0, 0]
+                      weight: 300
+                      note: ''
+                      type: item
+                      class: {$ref: 43058f46-4f01-11ea-80e8-005056a8435c}
+                      quantity: 1  
+                generated:
+                  type: number
+                  example: 1585735854000
+                definitions:
+                  type: object
+                  properties:
+                    216ed0f5-f332-11e9-80de-005056a8435c:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: item_class
+                        dimensions:
+                          type: string
+                          example: [0, 0, 0]
+                        weight:
+                          type: integer
+                          example: 350
+                        description:
+                          type: object
+                          properties: 
+                            lang:
+                              type: string
+                              example: ru
+                            info:
+                              type: string
+                              example: "На размер L длина изделия по спинке 68 см, длина рукава 68 см."
+                            code:
+                              type: number
+                              example: '50000323849711'
+                            size_class:
+                              type: string
+                              example: ''
+                            product_id:
+                              type: number
+                              example: '9747234.695'
+                            tags:
+                              type: string
+                              example: []
+                            color:
+                              type: object
+                              properties:
+                                $ref: 
+                                  type: string
+                                  example: '31d789f9-a83a-4a09-b953-a4261cb09910'
+                            brand:
+                              type: string
+                              example: ZARA
+                            fragile:
+                              type: boolean
+                              example: false
+                            photos:
+                              type: string
+                              example: 
+                                -
+                                  https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/ea4db185943486992048fe41e98c898c.jpg
+                                -
+                                  https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/caa267862b51d9c4f24e5d4d0a12f0c9.jpg
+                                -
+                                  https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/8d192515d5e5f514fceadbe540dc64df.jpg
+                                -
+                                  https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/70a16070519236633db441f7f6c7b8f5.jpg
+                                -
+                                  https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/6ebbfca1f557e3d462648191d637a617.jpg
+                            article:
+                              type: string
+                              example: '0414/301_синий'
+                            size:
+                              type: string
+                              example: 'M'
+                            type:
+                              type: string
+                              example: 'Поло'
+                            composition:
+                              type: string
+                              example: ''
+                            origin:
+                              type: string
+                              example: 'Португалия'
+                            name:
+                              type: string
+                              example: 'Поло'
+                    31d789f9-a83a-4a09-b953-a4261cb09910:
+                      type: object
+                      properties:
+                        color_model:
+                          type: string
+                          example: 'undef'
+                        color_name:
+                          type: string
+                          example: 'Темно-синий'
+                        type:
+                          type: string
+                          example: color_class
+                        color_id:
+                          type: string
+                          example: "695"
+                    7d331617-f496-4167-93ce-a6cf071695d7:
+                      type: object
+                      properties:
+                        color_model:
+                          type: string
+                          example: 'undef'
+                        color_name:
+                          type: string
+                          example: 'Терракотовый'
+                        type:
+                          type: string
+                          example: color_class
+                        color_id:
+                          type: string
+                          example: "697"
+                    43058f46-4f01-11ea-80e8-005056a8435c:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: item_class
+                        dimensions:
+                          type: string
+                          example: [0, 0, 0]
+                        weight:
+                          type: number
+                          example: 300
+                        description: 
+                          type: object
+                          properties:
+                            lang:
+                              type: string
+                              example: ru
+                            info:
+                              type: string
+                              example: "Длина изделия: 42 см. Описание для размера: EUR M."
+                            code:
+                              type: string
+                              example: "50000338701827"
+                            size_class:
+                              type: string
+                              example: ""
+                            product_id:
+                              type: number
+                              example: "10117296.697"
+                            tags:
+                              type: string
+                              example: []
+                            color:
+                              type: object
+                              properties:
+                                $ref:
+                                  type: string
+                                  example: "7d331617-f496-4167-93ce-a6cf071695d7"
+                            brand:
+                              type: string
+                              example: "ZARA"
+                            fragile:
+                              type: boolean
+                              example: false
+                            photos:
+                              type: string
+                              example: ["https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/edc114ad89753ce3b5176b527dc5bf9a.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/d5ef0c5f7edae93e6c573ab063243de0.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/3c6f04fd406a95b6e43da523172648d7.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/5eef7318dd81fd578d9eb087d5698408.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/dd266888a7650d5e197f18c6567b8abe.jpg"]
+                            article:
+                              type: string
+                              example: "4886/256/642"
+                            size: 
+                              type: string
+                              example: "EUR XS"
+                            type:
+                              type: string
+                              example: "Юбка"
+                            composition:
+                              type: string
+                              example: ""
+                            origin:
+                              type: string
+                              example: "Турция"
+                            name:
+                              type: string
+                              example: "Юбка"
+                serial:
+                  type: number
+                  example: 4463721332654658
+                total:
+                  type: integer
+                  example: 2
+              
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+
+        400:
+          description: "'message': data is not valid against json schema 'wms_items_in' or 'message': Invalid JSON body: No JSON object could be decoded  →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."                                   
+        
+  
+  /agent/wms-exchange/registry/list/:
+    get:
+      tags:
+      - Реестры
+      summary: Получение списка реестров
+      description: ""
+      parameters:
+      - in: query
+        name: limit
+        required: false
+        description: "Ограничение количества реестров. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - целочисельное значение."
+        schema:
+          type : integer
+          
+      - in: query
+        name: sort_order
+        required: false
+        description: "Порядок сортировки <desc|asc>. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение."
+        schema:
+          type : string
+      - in: query
+        name: filter_params
+        required: false
+        description: "Фильтр по полям [is_valid, is_processed]. Параметр является <b>НЕ обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение."
+        schema:
+          type : string
+      - in: query
+        name: is_closed
+        required: false
+        description: ""
+        schema:
+          type : boolean
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: object
+                    properties:
+                      origin:
+                        type: string
+                        example: "293d98fc-80e3-476b-86a3-62eefcd91665"
+                      tasks:
+                        type: string
+                        example: ["fulfill"]
+                      uid: 
+                        type: string
+                        example: "a5acf9c9-999f-41fb-b3de-585689b02eb3"
+                      userial: 
+                        type: string
+                        example: "3a30bd80-7406-11ea-8ddd-790d4a755f6d"
+                      is_processed:
+                        type: boolean
+                        example: "true"
+                      generated:
+                        type: number
+                        example: 1585735854000
+                      is_valid:
+                        type: boolean
+                        example: false
+                      stored_at:
+                        type: string
+                        example: "2020-04-01T13:50:41Z"
+                      records_total:
+                        type: integer
+                        example: 2
+                      serial:
+                        type: number
+                        example: 4463721332654658
+                      is_closed:
+                        type: boolean
+                        example: true
+                      description:
+                        type: string
+                        example: null
+                  
+                    example:
+                      -
+                        origin: "293d98fc-80e3-476b-86a3-62eefcd91665"
+                        tasks: ["fulfill"]
+                        uid: "a5acf9c9-999f-41fb-b3de-585689b02eb3"
+                        userial: "3a30bd80-7406-11ea-8ddd-790d4a755f6d"
+                        is_processed: true
+                        generated: 1585735854000
+                        is_valid: false
+                        stored_at: "2020-04-01T13:50:41Z"
+                        records_total: 2
+                        serial: 4463721332654658
+                        is_closed: true
+                        description: null
+                      -
+                        origin: "2293d98fc-80e3-476b-86a3-62eefcd91665"
+                        tasks: ["store"]
+                        uid: "6f27026e-506c-46f9-a0f5-8e265c8cf43b"
+                        userial: "f39f6b20-62e7-11ea-aecb-790d4a755f6d"
+                        is_processed: true
+                        generated: 1583855890000
+                        is_valid: true
+                        stored_at: "2020-03-10T15:58:15Z"
+                        records_total: 2
+                        serial: 4463719452690193
+                        is_closed: false
+                        description: "00000000000000000606;2353100019;380975555554;"
+                  page_size:
+                    type: integer
+                    example: 2                
+                
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."                                          
+          
+          
+  /agent/wms-exchange/registry:
+    get:
+      tags:
+      - Реестры
+      summary: Получения данных одного реестра
+      description: "Параметры <b>generated</b> и <b>serial</b> - идентификаторы созданного реестра.<br>Поле <b>payload</b> - содержимое реестра по схеме <b>wms_items_in</b>"
+      parameters:
+      - in: query
+        name: generated
+        required: true
+        description: "Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+      - in: query
+        name: serial
+        required: true
+        description: "Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_processed:
+                    type: boolean
+                    example: true
+                  analysis:
+                    type: object
+                    properties:
+                      unload-not-intersected:
+                        type: boolean
+                        example: true
+                      total-vs-tasks:
+                        type: boolean
+                        example: true
+                      fulfill-not-intersected:
+                        type: boolean
+                        example: true
+                      tasks-items-all-unique:
+                        type: boolean
+                        example: true
+                      store-not-intersected:
+                        type: boolean
+                        example: true
+                      all-items-are-in-stock:
+                        type: boolean
+                        example: false
+                      only-known-tasks:
+                        type: boolean
+                        example: true
+                      total-vs-items:
+                        type: boolean
+                        example: true
+                  summary:
+                    type: object
+                    properties:
+                      not-in-stock:
+                        type: string
+                        example: ["50000323849711","50000338701827"]
+                  generated:
+                    type: number
+                    example: 1585735854000
+                  is_valid:
+                    type: boolean
+                    example: false
+                  stored_at:
+                    type: string
+                    example: "2020-04-01T13:50:41.697Z"
+                  serial:
+                    type: number
+                    example: 4463721332654658
+                  payload:
+                    type: object
+                    properties:
+                      origin:
+                        type: string
+                        example: "293d98fc-80e3-476b-86a3-62eefcd91665"
+                      tasks:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            action:
+                              type: string
+                              example: "fulfill"
+                            spec:
+                              type: object
+                              properties:
+                                '312153ec-3d06-46ec-a2e3-87e8b1bb0122': 
+                                  type: object
+                                  properties:
+                                    items:
+                                      type: number
+                                      example: ['50000323849711', '50000338701827']
+                      uid:
+                        type: string
+                        example: "a5acf9c9-999f-41fb-b3de-585689b02eb3"
+                      userial:
+                        type: string
+                        example: "3a30bd80-7406-11ea-8ddd-790d4a755f6d"
+                      items:
+                        type: array
+                        items:
+                          type: object
+                        example:
+                          -
+                            code: '50000323849711'
+                            dimensions: [0, 0, 0]
+                            weight: 350
+                            note: ''
+                            type: item
+                            class: {$ref: 216ed0f5-f332-11e9-80de-005056a8435c}
+                            quantity: 1
+                          -
+                            code: '50000338701827'
+                            dimensions: [0, 0, 0]
+                            weight: 300
+                            note: ''
+                            type: item
+                            class: {$ref: 43058f46-4f01-11ea-80e8-005056a8435c}
+                            quantity: 1  
+                      generated:
+                        type: number
+                        example: 1585735854000
+                      definitions:
+                        type: object
+                        properties:
+                          216ed0f5-f332-11e9-80de-005056a8435c:
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                                example: item_class
+                              dimensions:
+                                type: string
+                                example: [0, 0, 0]
+                              weight:
+                                type: integer
+                                example: 350
+                              description:
+                                type: object
+                                properties: 
+                                  lang:
+                                    type: string
+                                    example: ru
+                                  info:
+                                    type: string
+                                    example: "На размер L длина изделия по спинке 68 см, длина рукава 68 см."
+                                  code:
+                                    type: number
+                                    example: '50000323849711'
+                                  size_class:
+                                    type: string
+                                    example: ''
+                                  product_id:
+                                    type: number
+                                    example: '9747234.695'
+                                  tags:
+                                    type: string
+                                    example: []
+                                  color:
+                                    type: object
+                                    properties:
+                                      $ref: 
+                                        type: string
+                                        example: '31d789f9-a83a-4a09-b953-a4261cb09910'
+                                  brand:
+                                    type: string
+                                    example: ZARA
+                                  fragile:
+                                    type: boolean
+                                    example: false
+                                  photos:
+                                    type: string
+                                    example: 
+                                      -
+                                        https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/ea4db185943486992048fe41e98c898c.jpg
+                                      -
+                                        https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/caa267862b51d9c4f24e5d4d0a12f0c9.jpg
+                                      -
+                                        https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/8d192515d5e5f514fceadbe540dc64df.jpg
+                                      -
+                                        https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/70a16070519236633db441f7f6c7b8f5.jpg
+                                      -
+                                        https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/6ebbfca1f557e3d462648191d637a617.jpg
+                                  article:
+                                    type: string
+                                    example: '0414/301_синий'
+                                  size:
+                                    type: string
+                                    example: 'M'
+                                  type:
+                                    type: string
+                                    example: 'Поло'
+                                  composition:
+                                    type: string
+                                    example: ''
+                                  origin:
+                                    type: string
+                                    example: 'Португалия'
+                                  name:
+                                    type: string
+                                    example: 'Поло'
+                          31d789f9-a83a-4a09-b953-a4261cb09910:
+                            type: object
+                            properties:
+                              color_model:
+                                type: string
+                                example: 'undef'
+                              color_name:
+                                type: string
+                                example: 'Темно-синий'
+                              type:
+                                type: string
+                                example: color_class
+                              color_id:
+                                type: string
+                                example: "695"
+                          7d331617-f496-4167-93ce-a6cf071695d7:
+                            type: object
+                            properties:
+                              color_model:
+                                type: string
+                                example: 'undef'
+                              color_name:
+                                type: string
+                                example: 'Терракотовый'
+                              type:
+                                type: string
+                                example: color_class
+                              color_id:
+                                type: string
+                                example: "697"
+                          43058f46-4f01-11ea-80e8-005056a8435c:
+                            type: object
+                            properties:
+                              type:
+                                type: string
+                                example: item_class
+                              dimensions:
+                                type: string
+                                example: [0, 0, 0]
+                              weight:
+                                type: number
+                                example: 300
+                              description: 
+                                type: object
+                                properties:
+                                  lang:
+                                    type: string
+                                    example: ru
+                                  info:
+                                    type: string
+                                    example: "Длина изделия: 42 см. Описание для размера: EUR M."
+                                  code:
+                                    type: string
+                                    example: "50000338701827"
+                                  size_class:
+                                    type: string
+                                    example: ""
+                                  product_id:
+                                    type: number
+                                    example: "10117296.697"
+                                  tags:
+                                    type: string
+                                    example: []
+                                  color:
+                                    type: object
+                                    properties:
+                                      $ref:
+                                        type: string
+                                        example: "7d331617-f496-4167-93ce-a6cf071695d7"
+                                  brand:
+                                    type: string
+                                    example: "ZARA"
+                                  fragile:
+                                    type: boolean
+                                    example: false
+                                  photos:
+                                    type: string
+                                    example: ["https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/edc114ad89753ce3b5176b527dc5bf9a.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/d5ef0c5f7edae93e6c573ab063243de0.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/3c6f04fd406a95b6e43da523172648d7.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/5eef7318dd81fd578d9eb087d5698408.jpg", "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2020/02/58/dd266888a7650d5e197f18c6567b8abe.jpg"]
+                                  article:
+                                    type: string
+                                    example: "4886/256/642"
+                                  size: 
+                                    type: string
+                                    example: "EUR XS"
+                                  type:
+                                    type: string
+                                    example: "Юбка"
+                                  composition:
+                                    type: string
+                                    example: ""
+                                  origin:
+                                    type: string
+                                    example: "Турция"
+                                  name:
+                                    type: string
+                                    example: "Юбка"
+                      serial:
+                        type: number
+                        example: 4463721332654658
+                      total:
+                        type: integer
+                        example: 2
+                  is_closed:
+                    type: boolean
+                    example: true
+                      
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+        404:
+          description: "'message': 'Not Found'  →  <i> Проверьте корректность введенных данных"
+     
+          
+  /agent/wms-exchange/registry/results:
+    get:
+      tags:
+      - Реестры
+      summary: Получение результатов обработки реестра
+      description: "Параметры <b>generated</b> и <b>serial</b> - идентификаторы созданного реестра.<br>Ответ по схеме <b>wms_items_out</b>"
+      parameters:
+      - in: query
+        name: generated
+        required: true
+        description: "Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+      - in: query
+        name: serial
+        required: true
+        description: "Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  not-in-stock:
+                    type: string
+                    example: ["50000323849711", "50000338701827"]
+                  uid:
+                    type: string
+                    example: "a5acf9c9-999f-41fb-b3de-585689b02eb3"
+                  userial:
+                    example: "3a30bd80-7406-11ea-8ddd-790d4a755f6d"
+                  problems:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        reason:
+                          type: string
+                          example: "{\"total-vs-items\":true,\"total-vs-tasks\":true,\"only-known-tasks\":true,\"store-not-intersected\":true,\"all-items-are-in-stock\":false,\"tasks-items-all-unique\":true,\"unload-not-intersected\":true,\"fulfill-not-intersected\":true}"
+                        code:
+                          type: string
+                          example: "validation"
+                        error:
+                          type: number
+                          example: 101
+                  fulfilled:
+                    type: string
+                    example: []
+                  generated:
+                    type: number
+                    example: 1585735854000
+                  serial:
+                    type: number
+                    example: 4463721332654658
+                      
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+        404:
+          description: "'message': 'Not Found'  →  <i> Проверьте корректность введенных данных"
+          
+  
+  /agent/schema/wms_import:
+    get:
+      tags:
+      - Реестры
+      summary: Схема валидации импорта из внешней системы
+      description: ""
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  required:
+                    type: string
+                    example: ["external_box_code", "external_document", "external_datetime", "items"]
+                  additionalProperties:
+                    type: boolean
+                    example: false
+                  definitions:
+                    type: object
+                    properties:
+                      uuid:
+                        type: object
+                        properties:
+                          pattern:
+                            type: string
+                            example: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                          type: 
+                            type: string
+                            example: "string"
+                  $schema:
+                    type: string
+                    example: "http://json-schema.org/draft-07/schema#"
+                  type:
+                    type: object
+                    example: "object"
+                  properties:
+                    type: object
+                    properties:
+                      items:
+                        type: object
+                        properties:
+                          patternProperties:
+                            type: object
+                            properties:
+                              ^[^ ]{6,32}$:
+                                type: object
+                                properties:
+                                  additionalProperties:
+                                    type: boolean
+                                    example: false
+                                  required:
+                                    type: string
+                                    example: ["price", "note", "owner", "class"]
+                                  type:
+                                    type: string
+                                    example: "object"
+                                  properties:
+                                    type: object
+                                    properties:
+                                      note:
+                                        type: object
+                                        properties:
+                                          type:
+                                            type: string
+                                            example: "string"
+                                      owner:
+                                        type: object
+                                        properties:
+                                          additionalProperties:
+                                            type: boolean
+                                            example: false
+                                          required:
+                                            type: string
+                                            example: ["$ref"]
+                                          type:
+                                            type: string
+                                            example: "object"
+                                          properties:
+                                            type: object
+                                            properties:
+                                              ref:
+                                                type: object
+                                                properties:
+                                                  ref:
+                                                    type: string
+                                                    example: "#/definitions/uuid"
+                                      price:
+                                        type: object
+                                        properties:
+                                          type: 
+                                            type: string
+                                            example: "number"
+                                      class:
+                                        type: object
+                                        properties:
+                                          additionalProperties:
+                                            type: boolean
+                                            example: false
+                                          required:
+                                            type: string
+                                            example: ["type", "weight", "dimensions", "description"]
+                                          type:
+                                            type: string
+                                            example: "object"
+                                          properties:
+                                            type: object
+                                            properties:
+                                              type:
+                                                type: object
+                                                properties:
+                                                  enum:
+                                                    type: string
+                                                    example: ["item_class"]
+                                                  type:
+                                                    type: string
+                                                    example: "string"
+                                              dimensions:
+                                                type: object
+                                                properties:
+                                                  minItems:
+                                                    type: integer
+                                                    example: 3
+                                                  items:
+                                                    type: object
+                                                    properties:
+                                                      minimum:
+                                                        type: integer
+                                                        example: 0
+                                                      type:
+                                                        type: string
+                                                        example: "integer"
+                                                  type:
+                                                    type: string
+                                                    example: "array"
+                                                  description:
+                                                    type: string
+                                                    example: "width, height, depth, in mm"
+                                                  maxItems:
+                                                    type: integer
+                                                    example: 3
+                                              weight:
+                                                type: object
+                                                properties:
+                                                  type: 
+                                                    type: string
+                                                    example: "integer"
+                                                  description:
+                                                    type: string
+                                                    example: "weight, in grams"
+                                              description:
+                                                type: object
+                                                properties:
+                                                  required:
+                                                    type: string
+                                                    example: ["article", "code","name","brand","type","size","size_class","color","origin","composition","info","product_id","photos"]
+                                                  type:
+                                                    type: string
+                                                    example: "object"
+                                                  properties:
+                                                    type: object
+                                                    properties:
+                                                      lang:
+                                                        type: object
+                                                        properties:
+                                                          enum:
+                                                            type: string
+                                                            example: ["ru","uk","en"]
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                      info:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "verbose description"
+                                                      code:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "EAN-13 manufacturer barcode, e.g. 978020137962"
+                                                      size_class:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "size chart used, e.g. EU"
+                                                      product_id:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. 431231234"
+                                                      tags:
+                                                        type: object
+                                                        properties:
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              pattern:
+                                                                type: string
+                                                                example: "^[^ ]{3,24}$"
+                                                              type:
+                                                                type: string
+                                                                example: "string"
+                                                          type:
+                                                            type: string
+                                                            example: "array"
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. additional marks to help identify the item"
+                                                          maxItems:
+                                                            type: integer
+                                                            example: 30
+                                                      color:
+                                                        type: object
+                                                        properties:
+                                                          additionalProperties:
+                                                            type: boolean
+                                                            example: false
+                                                          required:
+                                                            type: string
+                                                            example: ["$ref"]
+                                                          type:
+                                                            type: string
+                                                            example: "object"
+                                                          properties:
+                                                            type: object
+                                                            properties:
+                                                              ref:
+                                                                type: object
+                                                                properties:
+                                                                  ref:
+                                                                    type: string
+                                                                    example: "#/definitions/uuid"
+                                                      season:
+                                                        type: object
+                                                        properties:
+                                                          enum: 
+                                                            type: string
+                                                            example: ["winter","summer","spring","fall","demi-season","demi-season-summer","demi-season-winter","all-season"]
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                      brand:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. Adidas"
+                                                      fragile:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "boolean"                          
+                                                      photos:
+                                                        type: object
+                                                        properties:
+                                                          items:
+                                                            type: object
+                                                            properties:
+                                                              type:
+                                                                type: string
+                                                                example: string
+                                                              format:
+                                                                type: string
+                                                                example: "uri"
+                                                          type:
+                                                            type: string
+                                                            example: "array"
+                                                      gender:
+                                                        type: object
+                                                        properties:
+                                                          enum:
+                                                            type: string
+                                                            example: ["female","male","unisex"]
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                      article:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                      price:
+                                                        type: object
+                                                        properties:
+                                                          minimum:
+                                                            type: number
+                                                            example: 0.01
+                                                          type:
+                                                            type: string
+                                                            example: "number"
+                                                          maximum:
+                                                            type: number
+                                                            example: 9999999999.99
+                                                          multipleOf:
+                                                            type: number
+                                                            example: 0.01  
+                                                      size:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: "string"
+                                                            example: string
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. 42"
+                                                      type:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: "string"
+                                                            example: string
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. shoes"      
+                                                      composition:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "string with delimiter ';', material substance in '%'"
+                                                      origin:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "manufacturer country e.g. Singapore"  
+                                                      name:
+                                                        type: object
+                                                        properties:
+                                                          type:
+                                                            type: string
+                                                            example: "string"
+                                                          description:
+                                                            type: string
+                                                            example: "e.g. Cargo"     
+                          type:
+                            type: string
+                            example: "object"
+                      processed:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: "boolean"
+                      external_document:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: "string"
+                      external_box_code:
+                        type: object
+                        properties:
+                          pattern:
+                            type: string
+                            example: "^[^ ]{3,24}$"
+                          type:
+                            type: string
+                            example: "string"
+                      serial:
+                        type: object
+                        properties:
+                          ref:
+                            type: string
+                            example: "#/definitions/uuid"
+                      external_datetime:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                            example: "string"   
+                     
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+  
+  
+  /agent/wms-exchange/import/items:
+    post:
+      tags: 
+      - Реестры
+      summary: Импорт из внешней системы на склад
+      description: "Значение поля <b>external_box_code</b> должно быть уникально."
+ 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: object
+                  properties:
+                    note:
+                      type: string
+                      example: "TEST"
+                    owner:
+                      type: object
+                      properties:
+                        $ref:
+                          type: string
+                          example: "216ed0f5-f332-11e9-80de-005056a8435c"
+                    price:
+                      type: number
+                      example: 500
+                    class:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: "object"
+                        properties:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              example: "undef"
+                            dimensions:
+                              type: string
+                              example: [10, 15, 20]
+                            weight:
+                              type: number
+                              example: 2000
+                            description:
+                              type: object
+                              properties:
+                                type: 
+                                  type: string
+                                  example: "object"
+                                properties:
+                                  type: object
+                                  properties:
+                                    lang:
+                                      type: string
+                                      example: "ru"
+                                    info:
+                                      type: string
+                                      example: "TEST TEST TEST TEST"
+                                    code:
+                                      type: number
+                                      example: 978020137962
+                                    size_class:
+                                      type: string
+                                      example: "UA"
+                                    product_id:
+                                      type: number
+                                      example: 431231234
+                                    tags:
+                                      type: string
+                                      example: ["test","goods"]
+                                    color:
+                                      type: object
+                                      properties:
+                                        type:
+                                          type: string
+                                          example: object
+                                        properties:
+                                          type: object
+                                          properties:
+                                            ref:
+                                              type: string
+                                              example: "216ed0f5-f332-11e9-80de-005056a8435c"
+                                    season:
+                                      type: string
+                                      example: "all-season"
+                                    brand:
+                                      type: string
+                                      example: "TestBrand"
+                                    fragile:
+                                      type: boolean
+                                      example: false
+                                    price:
+                                      type: number
+                                      example: 99.99
+                                    photos:
+                                      type: string
+                                      example: ["https://kasta.ua/imgw/loc/0x0/uploads/product_image/2019/10/76/ea4db185943486992048fe41e98c898c.jpg"]
+                                    gender:
+                                      type: string
+                                      example: "unisex"
+                                    article:
+                                      type: string
+                                      example: "empty"
+                                    size:
+                                      type: string
+                                      example: "42"
+                                    type:
+                                      type: string
+                                      example: "goods"
+                                    composition:
+                                      type: string
+                                      example: "Test info 100%;"
+                                    origin:
+                                      type: string
+                                      example: "manufacturer country Habon"
+                                    name:
+                                      type: string
+                                      example: "Cargo"
+                    type:
+                      type: string
+                      example: "object"
+                external_document:
+                  type: number
+                  example: "000566457"
+                external_box_code:
+                  type: number
+                  example: "9996257618"
+                serial:
+                  type: string
+                  example: "296545f0-6693-11ea-89ee-db02b56522a1"
+                external_datetime:
+                  type: string
+                  example: "15-03-2020 09-56-28"
+                                            
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serial:
+                    type: string
+                    example: "d71ef970-7c0a-11ea-b766-8cb7f2c616ff"
+                  box-code:
+                    type: number
+                    example: "9996257618"
+            
+        400:
+          description: "'message': data is not valid against json schema 'wms_items_in' or 'message': Invalid JSON body: No JSON object could be decoded  →  <i> Не валидное тело запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."            
+  
+          
+  /agent/wms/color-resolve/list/:
+    get:
+      tags:
+      - Справочник цветов
+      summary: Список всех цветов
+      description: ""
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        color_model:
+                          type: string
+                          example: "undef"
+                        color_name: 
+                          type: string
+                          example: "Лиловый"
+                        type: 
+                          type: string
+                          example: "color_class"
+                        id:
+                          type: string
+                          example: "471538ff-85d3-41f4-bc44-d8c69f5a4a4d"
+                        color_id:
+                          type: number
+                          example: 59138487
+                    
+                    example:
+                      -
+                        color_model: "undef"
+                        color_name: "Аквамарин"
+                        type: "color_class"
+                        id: "cf98d4f9-76c4-418b-8249-f8dea8710241"
+                        color_id: 580
+                      -
+                        color_model: "undef"
+                        color_name: "Алый"
+                        type: "color_class"
+                        id: "7b4aeb9f-56b5-40ae-848d-03a6acdbd2b0"
+                        color_id: 581
+                      -
+                        color_model: "undef"
+                        color_name: "Бежевый"
+                        type: "color_class"
+                        id: "036310b5-fc12-4d5c-ba87-c03cff5f79c6"
+                        color_id: 582
+                      -
+                        color_model: "undef"
+                        color_name: "Белоснежный"
+                        type: "color_class"
+                        id: "4d1b65d4-6f05-4ac9-bc90-0f470e374eb5"
+                        color_id: 583
+                      -
+                        color_model: "undef"
+                        color_name: "Белый"
+                        type: "color_class"
+                        id: "7574e8b9-c334-4d9a-84a7-3c863d7839c8"
+                        color_id: 584
+                  total:
+                    type: integer
+                    example: 5
+                
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+      
+          
+  /agent/wms/color-resolve/{color_id}:
+    get:
+      tags:
+      - Справочник цветов
+      summary: Получение цвета по id
+      description: "<b>color_id</b> - это id цвета внешней системы, <b>id</b> - это id цвета на стороне KastaGroup"
+      
+      parameters:
+      - in: path
+        name: color_id 
+        required: true
+        description: "Идентификатор цвета. Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+          minimum: 1
+          # description:  merchant_id=<id1>
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "471538ff-85d3-41f4-bc44-d8c69f5a4a4d"
+                  details:
+                    type: object
+                    properties:
+                      ext_id:
+                        type: number
+                        example: 59138487
+                      descr:
+                        type: string
+                        example: "Лиловый"
+                      created_at:
+                        type: string
+                        example: "ad89e39c-d92a-11e8-b3a3-00163e8cc017"
+                      modified_at:
+                        type: string
+                        example: "ad89e414-d92a-11e8-b3a3-00163e8cc017"
+                      label:
+                        type: string
+                        example: null
+                      details:
+                        type: object
+                        properties:
+                          color_model:
+                            type: string
+                            example: "undef"
+                          color_name: 
+                            type: string
+                            example: "Лиловый"
+                          type: 
+                            type: string
+                            example: "color_class"
+                      id:
+                        type: string
+                        example: "471538ff-85d3-41f4-bc44-d8c69f5a4a4d"
+                      schema:
+                        type: string
+                        example: "00000000-0000-0000-0000-000000000000"
+                  color_id:
+                    type: number
+                    example: 59138487
+               
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."            
+        404:
+          description: "'message': 'Not Found'  →  <i> Проверьте правильность введенных данных."
+                    
+                    
+  /agent/wms/color-resolve/:
+    post:
+      tags: 
+      - Справочник цветов
+      summary: Регистрация новoго цвета
+      description: ""
+ 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                color_id:
+                  type: number
+                  example: 123456789
+                color_name:
+                  type: string
+                  example: 'test color'
+               
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  color_model:
+                    type: string
+                    example: undef
+                  color_name: 
+                    type: string
+                    example: "tester color"
+                  type: 
+                    type: string
+                    example: "color_class"
+                  id:
+                    type: string
+                    example: "5328f943-ea19-40fc-a8c2-cdce34da8586"
+                  color_id:
+                    type: number
+                    example: 1234577789
+            
+                
+        400:
+          description: "'message': 'Invalid JSON body: No JSON object could be decoded'   →  <i> Нарушена структура JSON обьекта тела запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        409:
+          description: "'message': 'Unexpected color name: test, expect: test color'  →  <i> По данному id цвета color_name: 'test color'"
+         
+          
+  /agent/wms/sku/{sku}:
+    get:
+      tags: 
+      - Получение данных товара
+      summary: "Получение данных товара по sku"
+      description: "<b>item_of</b> из ответа может быть использовано как <b>class-id</b> для запроса <i>wms/class-resolve</i><br>
+      <b>location</b>- это зона размещения sku на складе, если null, то sku отсутствует на складе (отгрузили)<br></br>
+      <b>error</b> - это описание обработки ошибки по sku<br>
+      <b>doc</b> - данные документа, в котором зафиксирована ошибка<br>
+      <b>comment</b> - текстовое описание ошибки<br>
+      <b>registry</b> - реестр, через который обрабатывалась sku<br>
+      <b>problem</b> - тип ошибки<br></br>
+      Типы проблем:<br>
+      <i>shortage</i> - недостача<br>
+      <i>excess</i> - излишек<br>
+      <i>defect</i> - брак<br>
+      <i>underfill</i> - некомплект<br>
+      <i>not_problem</i> - ошибка обнаруженная при инвентаризации<br>"
+      parameters:
+      - in: path
+        name: sku 
+        required: true
+        description: "Код товара. Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - числовое значение."
+        schema:
+          type : number
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: "50000251506910"
+                  item_of:
+                    type: string
+                    example: "49af6d24-afe9-417c-bd57-0545e1fd781d"
+                  created_at:
+                    type: string
+                    example: "2019-02-28T12:35:46.273050+00:00"
+                  modified_at:
+                    type: string
+                    example: "2019-11-06T04:38:43.377863+00:00"
+                  note:
+                    type: string
+                    example: ""
+                  location:
+                    type: string
+                    example: "error"
+                  error:
+                    type: object
+                    properties:
+                      comment:
+                        type: string
+                        example: "Брак жмяк"
+                      doc:
+                        type: object
+                        properties:
+                          owner:
+                            type: string
+                            example: "46f69d00-4389-444b-9174-26b1f6f0bafa"
+                          dtype:
+                            type: integer
+                            example: 211
+                          id:
+                            type: string
+                            example: "9b0af128-5e0f-47c7-aa7e-d3d2380ed9a1"
+                      problem:
+                        type: string
+                        example: "defect"
+                  owner:
+                    type: string
+                    example: "293d98fc-80e3-476b-86a3-62eefcd91665"
+              
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        404:
+          description: "'message': 'Not Found'  →  <i> Проверьте правильность введенных данных."
+      
+          
+  /agent/wms/sku/list:
+    post:
+      tags: 
+      - Получение данных товара
+      summary: Получение данных товара по множеству sku
+      description: "Максимум в списке можно передать до <b>200</b> кодов, если код не найден, в ответе его не будет."
+ 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                codes:
+                  type: string
+                  example: ["50000221711849", "50000251506910"]
+               
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: number
+                          example: "50000251506910"
+                        item_of:
+                          type: string
+                          example: "49af6d24-afe9-417c-bd57-0545e1fd781d"
+                        created_at:
+                          type: string
+                          example: "2019-02-28T12:35:46.273050+00:00"
+                        modified_at:
+                          type: string
+                          example: "2019-11-06T04:38:43.377863+00:00"
+                        note:
+                          type: string
+                          example: ""
+                        location:
+                          type: string
+                          example: "error"
+                        error:
+                          type: object
+                          properties:
+                            comment:
+                              type: string
+                              example: "Брак жмяк"
+                            doc:
+                              type: object
+                              properties:
+                                owner:
+                                  type: string
+                                  example: "46f69d00-4389-444b-9174-26b1f6f0bafa"
+                                dtype:
+                                  type: integer
+                                  example: 211
+                                id:
+                                  type: string
+                                  example: "9b0af128-5e0f-47c7-aa7e-d3d2380ed9a1"
+                            problem:
+                              type: string
+                              example: "defect"
+                        owner:
+                          type: string
+                          example: "293d98fc-80e3-476b-86a3-62eefcd91665"
+                    
+                    example:
+                      -
+                        code: "50000251506910"
+                        item_of: "49af6d24-afe9-417c-bd57-0545e1fd781d"
+                        created_at: "2019-02-28T12:35:46.273050+00:00"
+                        modified_at: "2019-11-06T04:38:43.377863+00:00"
+                        note: ""
+                        location: "error"
+                        error:
+                          comment: "Брак жмяк"
+                          doc:
+                            owner: "46f69d00-4389-444b-9174-26b1f6f0bafa"
+                            dtype: 211
+                            id: "9b0af128-5e0f-47c7-aa7e-d3d2380ed9a1"
+                          problem: "defect"        
+                        owner: "293d98fc-80e3-476b-86a3-62eefcd91665"   
+                      
+                      -
+                        code: "50000221711849"
+                        item_of: "5ddea3bc-27ad-421e-a625-83b92f5446f9"
+                        created_at: "2019-03-04T15:30:53.178864+00:00"
+                        modified_at: "2020-01-09T15:28:48.039501+00:00"
+                        note: ""
+                        location: "null"
+                        error:
+                          comment: "null"
+                          doc:
+                            magic: "wms_divergence"
+                            title: "Акт фиксации расхождения: 1551436666/4565609004928405:2"
+                            owner: "46f69d00-4389-444b-9174-26b1f6f0bafa"
+                            dtype: 211
+                            label: "1551436666/4565609004928405:2"
+                            id: "9b0af128-5e0f-47c7-aa7e-d3d2380ed9a1"
+                          problem: "defect"        
+                          registry:
+                            generated: 1551436666
+                            serial: 4565609004928405
+                            tidx: 0
+                        owner: "293d98fc-80e3-476b-86a3-62eefcd91665"                         
+                  success:
+                    type: boolean
+                    example: true
+               
+        400:
+          description: "'message': 'Invalid JSON body: No JSON object could be decoded'   →  <i> Нарушена структура JSON обьекта тела запроса."
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."
+        
+          
+  /agent/wms/class-resolve/{class_id}:
+    get:
+      tags: 
+      - Получение данных товара
+      summary: "Получение данных карточки товара"
+      description: ""
+      parameters:
+      - in: path
+        name: class_id 
+        required: true
+        description: "Идентификатор карточки товара. Параметр является <b>обязательным</b> для ввода.<br/> &bull;  Тип данных - строчное значение."
+        schema:
+          type : string
+      
+      responses:
+        '200':    # status code
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  compat_level:
+                    type: integer
+                    example: 0
+                  description:
+                    type: object
+                    properties:
+                      lang:
+                        type: string
+                        example: "ru"
+                      info:
+                        type: string
+                        example: "льняное масло AKURA изготавливается из семян льна методом холодного прессования. Именно при данном способе отжима масло сохраняет свои целебные свойства и может использоваться в лекарственных целях. П"
+                      code:
+                        type: number
+                        example: "50000221711849"
+                      size_class:
+                        type: string
+                        example: ""
+                      product_id:
+                        type: string
+                        example: "3421481.33126731"
+                      tags:
+                        type: string
+                        example: []
+                      color:
+                        type: object
+                        properties:
+                          color_model:
+                            type: string
+                            example: "undef"
+                          color_id:
+                            type: string
+                            example: "33 126 731"
+                          type:
+                            type: string
+                            example: "color_class"
+                          color_name:
+                            type: string
+                            example: "Не определен"
+                          ref_id:
+                            type: string
+                            example: "ea90fd24-5254-4f1b-966a-622af6a1d804"
+                      brand:
+                        type: string
+                        example: "Akura"
+                      fragile:
+                        type: boolean
+                        example: false
+                      ref_id:
+                        type: string
+                        example: "bb020d5d-1ae9-11e7-a174-30f70d47e441"
+                      photos:
+                        type: string
+                        example: "https://kasta.ua/imgw/loc/0x0/uploads/product_image/2016/10/534/b4baa6e4-d8c3-4495-97f4-44c33cb3a493_0cb620e626bcf33e520621c4b1bb3a31_1x1.jpeg"
+                      article:
+                        type: number
+                        example: "4820178460316"
+                      size:
+                        type: string
+                        example: "-"
+                      type:
+                        type: string
+                        example: "Масло"
+                      composition:
+                        type: string
+                        example: ""
+                      origin:
+                        type: string
+                        example: "Украина"
+                      name:
+                        type: string
+                        example: "Масло льняное, 200 мл"
+                  weight:
+                    type: integer
+                    example: 200
+                  created_at:
+                    type: string
+                    example: "2019-03-04T15:30:53.142922+00:00"
+                  modified_at:
+                    type: string
+                    example: "2019-03-04T15:30:53.14293822+00:00"
+                  success:
+                    type: boolean
+                    example: true
+                  id:
+                    type: string
+                    example: "5ddea3bc-27ad-421e-a625-83b92f5446f9"
+                      
+        401:
+          description: "'message': 'Authorization Required'  →  <i>Необходимо авторизоваться снова"
+        403:
+          description: "'message': 'Forbidden'  →  <i>Проверьте данные авторизации на корректность и авторизируйтесь еще раз."      
+        404:
+          description: "'message': 'Not Found'  →  <i> Проверьте правильность введенных данных."          
+  
+          
+          
+          
+          
