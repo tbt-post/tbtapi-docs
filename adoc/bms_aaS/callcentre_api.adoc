@@ -1,0 +1,1125 @@
+= BMS CALLCENTRE API
+Kasta Group LLC <info@tbt-post.net>
+1.0.0, 2020-05-01: Public API
+:toc: right
+:toclevels: 4
+{empty}
+
+== Общая информация
+
+API callcentre предназначен для интеграции ERP систем бизнес-агентов в сервисы TbT.
+
+Для подключения к системе необходимо:
+
+* иметь регистрационную запись в системе с установленным признаком **callcentre**
+
+== API
+
+=== Отправления
+
+==== Список посылок
+
+[horizontal]
+protocol_method:: GET
+method_name:: stats/callcenter/source
+method_params:: ----
+get_params:: <optional get parrams>
+request_body:: ----
+expected_result:: 202 {["parcels"], "total"}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-ui.tbt-post.net/api/v1/stats/callcenter/source?dl=3&dp=2&exclude_processed=false&withlastday=true&ftype=phone&limit=2" -b cookie-jar.txt -H "Content-Type: application/json" 
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+
+
+[source, json]
+----
+{
+"total": 8,
+"parcels": [
+{
+"parcel_comment": null,
+"city": "Винница",
+"first_name": "test",
+"code": "K3DP438",
+"on_stock": 4,
+"office": "Винница-2",
+"payment_method": "terminal",
+"price": 177,
+"sender_comment": null,
+"expired_after": "01.05.2020",
+"id": "cf5771ac-2b53-4ab3-817b-dceab1eecf2b",
+"cell": "",
+"phone": "number",
+"state": "PU0003",
+"last_name": "test",
+"processed": false,
+"ttl": 5,
+"email": "test@mail.ru",
+"office_number": 2
+},
+{
+"parcel_comment": null,
+"city": "Винница",
+"first_name": "test",
+"code": "K3DTZSL",
+"on_stock": 4,
+"office": "Винница-2",
+"payment_method": "terminal",
+"price": 314,
+"sender_comment": null,
+"expired_after": "01.05.2020",
+"id": "5de6c555-ab04-4d84-89a2-041febe45288",
+"cell": "",
+"phone": "number",
+"state": "PU0003",
+"last_name": "test",
+"processed": false,
+"ttl": 5,
+"email": "test@modnakasta.ua",
+"office_number": 2
+}
+],
+"success": true
+}
+----
+
+NOTE: `dl=<day num> - лимит дней +
+dp=<day num> - дней на зранении +
+exclude_processed=true|false - исключить обработанные +
+withlastday=true|false - включить последний день хранения  +
+ftype=code|phone|username|office|city|class=PRP|COD +
+fvalue=<val> - значение фильтра для ftype +
+limit,offset,sort_by=office,sort_order=asc` +
+
+WARNING: При первом запуске вызов возвращает:
+[soure, json]
+----
+202 accepted {
+    "job": "f24e2000-8ac8-11ea-b648-41d3186c8397"
+}
+----
+WARNING: Для получения ответа с данными необходимо отправить запрос еще раз.
+
+=== Управление операторами
+
+==== Список доступных пользователей
+
+[horizontal]
+protocol_method:: GET
+method_name:: common/subordinates/list
+method_params:: ----
+get_params:: <"avail"=true|false>, ["pattern_name": <optional filter by user name>}]
+request_body:: ----
+expected_result:: 200 {"users": [list]}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+ curl -v "https://sandbox-ui.tbt-post.net/api/v1/common/subordinates/list?avail=true&limit=10" -b cookie-jar.txt -H "Content-Type: application/json"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+"users": [
+{
+"last_name": "Office-1",
+"confirmed_at": null,
+"rate": 0,
+"id": "375907d4-d4a7-426e-a306-2b6d06366ce9",
+"first_name": "Office-1",
+"is_confirmed": true,
+"is_phone_valid": false,
+"h_link": null,
+"email": "office-1@modnakasta.ua",
+"parent": null,
+"nsid": 0,
+"activated_at": "2016-10-04T10:19:52.679523+00:00",
+"is_active": true,
+"password_changed": null,
+"sourced_by": "local",
+"birthday": null,
+"confirmed_by": null,
+"block_status": null,
+"is_external": false,
+"roles": null,
+"phone": "num",
+"gender": "undef",
+"created_at": "2016-10-04T10:19:52.679513+00:00",
+"modified_at": "2020-04-30T09:04:46.296132+00:00",
+"is_badge": false,
+"is_poor": false,
+"additional_data": {
+"last_login": "2016-11-01T08:32:27.570137+00:00"
+}
+}
+],
+"success": true
+}
+----
+
+====  Назначение роли
+
+[horizontal]
+protocol_method:: PUT
+method_name:: common/subordinates/add/<user_id>
+method_params:: ----
+get_params:: ----
+request_body:: {"role": "<roles>"}
+expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/common/subordinates/add/375907d4-d4a7-426e-a306-2b6d06366ce9" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"role": "callcenter"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+NOTE: `roles` - `[cc_officer, callcenter]`
+
+[source, json]
+----
+{"success": true}
+----
+
+====  Удаление роли
+
+[horizontal]
+protocol_method:: PUT
+method_name:: common/subordinates/del/<user_id>
+method_params:: ----
+get_params:: ----
+request_body:: {"role": "<roles>"}, [{"full": true}]
+expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/common/subordinates/del/375907d4-d4a7-426e-a306-2b6d06366ce9" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"role": "callcenter"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+
+===  Действия оператора
+==== Регистрация звонка клиента
+
+[horizontal]
+protocol_method:: POST
+method_name:: common/call-reg
+method_params:: ----
+get_params:: ----
+request_body:: {phone,direction=in|out, status, code=[list of codes], comment}
+expected_result:: 200 {"success": true}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-ui.tbt-post.net/api/v1/common/call-reg" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"code": ["1003"],"comment": "","call_reason": "courier","direction": "out","phone": "380995556635","status": "callback"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+
+==== Справочник статусов регистрации
+
+[horizontal]
+protocol_method:: GET
+method_name:: common/call-reg
+method_params:: ----
+get_params:: <lang=ru|ua|en>
+request_body:: ----
+expected_result:: 200 {data}
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v  "https://sandbox-ui.tbt-post.net/api/v1/common/call-reg?lang=ru" -b cookie-jar.txt -H "Content-Type: application/json"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+  "success": true,
+  "fully_localized": true,
+  "scenario": [
+    {
+      "text": "Направление",
+      "options": [
+        {
+          "text": "Исходящий",
+          "value": "out"
+        },
+        {
+          "text": "Входящий",
+          "value": "in"
+        }
+      ],
+      "key": "direction"
+    },
+    {
+      "text": "Причина",
+      "condition": {
+        "direction": "out"
+      },
+      "key": "call_reason",
+      "options": [
+        {
+          "text": "Истекающий срок хранения",
+          "value": "expiring_parcel"
+        },
+        {
+          "text": "Курьерская доставка",
+          "value": "courier"
+        }
+      ]
+    },
+    {
+      "text": "Причина",
+      "condition": {
+        "direction": "in"
+      },
+      "key": "call_reason",
+      "options": [
+        {
+          "text": "Курьерская доставка",
+          "value": "courier"
+        },
+        {
+          "text": "Другое",
+          "value": "other"
+        }
+      ]
+    },
+    {
+      "text": "Статус",
+      "condition": {
+        "call_reason": "expiring_parcel",
+        "direction": "out"
+      },
+      "key": "status",
+      "options": [
+        {
+          "text": "Успешный",
+          "value": "success"
+        },
+        {
+          "text": "Неуспешный",
+          "value": "error"
+        },
+        {
+          "text": "Недозвон",
+          "value": "unreachable"
+        },
+        {
+          "text": "Необходимо перезвонить",
+          "value": "callback"
+        },
+        {
+          "text": "Неправильный номер",
+          "value": "wrong_number"
+        }
+      ]
+    },
+    {
+      "text": "Статус",
+      "condition": {
+        "call_reason": "courier",
+        "direction": "out"
+      },
+      "key": "status",
+      "options": [
+        {
+          "text": "Согласована курьерская доставка",
+          "value": "courier_arranged"
+        },
+        {
+          "text": "Отменена курьерская доставка",
+          "value": "courier_cancelled"
+        },
+        {
+          "text": "Неуспешный",
+          "value": "error"
+        },
+        {
+          "text": "Недозвон",
+          "value": "unreachable"
+        },
+        {
+          "text": "Необходимо перезвонить",
+          "value": "callback"
+        },
+        {
+          "text": "Неправильный номер",
+          "value": "wrong_number"
+        }
+      ]
+    },
+    {
+      "text": "Статус",
+      "condition": {
+        "call_reason": "courier",
+        "direction": "in"
+      },
+      "key": "status",
+      "options": [
+        {
+          "text": "Согласована курьерская доставка",
+          "value": "courier_arranged"
+        },
+        {
+          "text": "Отменена курьерская доставка",
+          "value": "courier_cancelled"
+        }
+      ]
+    },
+    {
+      "text": "Статус",
+      "condition": {
+        "call_reason": "other",
+        "direction": "in"
+      },
+      "key": "status",
+      "options": [
+        {
+          "text": "Неправильный номер",
+          "value": "wrong_number"
+        },
+        {
+          "text": "Другое",
+          "value": "other"
+        }
+      ]
+    }
+  ]
+}
+
+----
+==== Эскалация звонка
+
+[horizontal]
+protocol_method:: POST
+method_name:: common/escalation-message
+method_params:: ----
+get_params:: ----
+request_body:: {context, type, code_type,code, message}
+expected_result:: 200 {"success": true}
+
+Типы параметров:
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| context
+| <callcenter, operator>
+
+| type
+| "finance": Финансовый вопрос +
+"redirection": Запрос на переадресацию +
+"agreed_refund": Согласованный возврат +
+"courier": Адресная доставка +
+"other": Другое
+
+| code_type
+| "parcel": заказ +
+    "phone": номер телефона +
+    "document": документ +
+    "other": код
+|====================
+
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-ui.tbt-post.net/api/v1/common/escalation-message" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"code_type": "parcel","message": "text","code": "1003","context": "callcenter","type": "other"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+NOTE: Эскалация возможна, например, на почту или в другой канан.
+
+==== Назначение даты визита
+
+
+[horizontal]
+protocol_method:: POST
+method_name:: /common/promise-reg
+method_params:: ----
+get_params:: ----
+request_body:: {phone or user_id, subsystem=<callcenter>, type=<visit|address_delivery>, body=<date>}
+expected_result:: {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-ui.tbt-post.net/api/v1/common/promise-reg" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"phone": "380995556635","subsystem": "callcenter","type": "visit","body": "2021-01-01"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+==== Пометить к отмене
+
+[horizontal]
+protocol_method:: PUT
+method_name:: op/parcel/mark-cancel
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/op/parcel/mark-cancel/71d73f6a-c0e7-4053-850e-fd22fd445c18" -b cookie-jar.txt -H "Content-Type: application/json" -d '{}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+==== Добавление коментария
+
+[horizontal]
+protocol_method:: PUT
+method_name:: op/parcel/comment
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/op/parcel/comment/0a89ddf0-945b-4070-b400-c3bc79843f3d" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"comment": "text test"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+==== Продление хранения
+[horizontal]
+protocol_method:: PUT
+method_name:: op/parcel/ttl
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/op/parcel/ttl/0a89ddf0-945b-4070-b400-c3bc79843f3d" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"ttl_days": 10}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+==== Переадресация посылки
+[horizontal]
+protocol_method:: PUT
+method_name:: common/parcel/redirect
+method_params:: <parcel_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/common/parcel/redirect/0a89ddf0-945b-4070-b400-c3bc79843f3d" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"office_id": "e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78","comment": "123456789"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+=== Адресная доставка
+
+==== Добавление адреса
+[horizontal]
+protocol_method:: PUT
+method_name:: op/user/address
+method_params:: <user_id>
+get_params:: ----
+request_body:: {"title": "<text>","apartment": "<text>","notes": "<text>","address_id": "<adress uuid>","service": "courier"}
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-ui.tbt-post.net/api/v1/op/user/address/4f90b36a-8622-4f43-a285-f622186f4ee8" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"title": "Бар, вулиця Святого Миколая, 20","apartment": "2","notes": "тест","address_id": "c43f9220-fc80-11e8-8677-7b41fb2ccf7b","service": "courier"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+
+==== Установка основного адреса пользователя
+[horizontal]
+protocol_method:: PUT
+method_name:: op/user/address/<user_id>
+method_params:: <adress_id>
+get_params:: ----
+request_body:: {"service": "courier","is_default": <true|false>}
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-ui.tbt-post.net/api/v1/op/user/address/4f90b36a-8622-4f43-a285-f622186f4ee8/c43f9220-fc80-11e8-8677-7b41fb2ccf7b" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"service": "courier","is_default": true}'  
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{"success": true}
+----
+
+==== Поиск посылок адресной доставки
+[horizontal]
+protocol_method:: GET
+method_name:: forwarder/cc-data
+method_params:: <office_id>
+get_params:: [state=<state>]
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-ui.tbt-post.net/api/v1/forwarder/cc-data/4f90b36a-8622-4f43-a285-f622186f4ee8" -b cookie-jar.txt -H "Content-Type: application/json"   
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+[
+{
+"modified_at": "b0661ba2-f194-11e9-8d59-144f8a19d0ca",
+"addresses": [
+{
+"modified_at": "3141cd7a-93ea-11e8-8612-00163e8cc029",
+"building": "14",
+"is_default": false,
+"city": "Київ",
+"title": "Київ, Драгоманова вулиця, 14",
+"street": "Драгоманова вулиця",
+"region": null,
+"lang": "uk",
+"id": "2dca24d0-93ea-11e8-8815-c3ac7bc832a4",
+"notes": "тест2",
+"lon": 30.636610370897,
+"lat": 50.41212375,
+"apartment": "12",
+"area": "Дарницький район",
+"country": "UA"
+},
+{
+"modified_at": "f22980f6-93e9-11e8-8612-00163e8cc029",
+"building": "4",
+"is_default": false,
+"city": "Житомир",
+"title": "Житомир, Політехнічний провулок, 4",
+"street": "Політехнічний провулок",
+"region": "Житомирська область",
+"lang": "uk",
+"id": "ec2c733e-93e9-11e8-b728-43e8731f5801",
+"notes": "тест",
+"lon": 28.6345539740421,
+"lat": 50.24335755,
+"apartment": "10",
+"area": "Богунський район",
+"country": "UA"
+}
+],
+"email": "testuser@example.com",
+"callcenter_promise": null,
+"first_name": "Pedro",
+"call": null,
+"phone": "380967802533",
+"is_active": true,
+"rate": 0,
+"is_poor": false,
+"id": "f0b0b5bf-872b-4bdc-b59e-c139761b1e12",
+"last_name": "Frass",
+"parcels": [
+{
+"modified_at": "a2cfccd0-94bc-11e8-94ff-33b726b7d239",
+"paid_at": null,
+"type": "undef",
+"cod_amount": 0,
+"state": "PU0001",
+"pentity": "6123c1bc-9c3c-472f-8cff-1a295dabb106",
+"weight": 10000,
+"id": "4f1b8a57-bd14-42f3-a30f-70dfb8ee5588",
+"class": "I.PRP.NR.NA.S000",
+"pentity_owner": "0e0ae586-296d-4697-bb15-c2cbf4a9d8a6",
+"sender": "1678166e-a050-430b-878a-5244ca5d8659",
+"code": "TL7RX7PDM",
+"is_paid": false,
+"address_id": "2dca24d0-93ea-11e8-8815-c3ac7bc832a4",
+"paid_amount": 0,
+"checked_in_at": null,
+"price": 10000,
+"receiver": "f0b0b5bf-872b-4bdc-b59e-c139761b1e12",
+"transfer_via": "6beaa91b-847e-48c6-b2c9-d8f89d700e4c",
+"delivery_type": "W2D",
+"created_at": "34d4c21c-93ea-11e8-a88b-00163e8cc017"
+}
+]
+}
+],
+"success": true}
+----
+
+==== Получение маршрута доставки
+[horizontal]
+protocol_method:: GET
+method_name:: geo/quirks/erp-prefly
+method_params:: <lat, lon>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-ui.tbt-post.net/api/v1/geo/quirks/erp-prefly/50.42124585,30.65733479408397" -b cookie-jar.txt -H "Content-Type: application/json"   
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+  "office_id": "df6f7322-fade-46c4-bd56-ad288fccd550",
+  "success": true,
+  "route_mark": "B-F1-1"
+}
+----
+
+
+==== Справочник интервалов
+[horizontal]
+protocol_method:: GET
+method_name:: forwarder/lists
+method_params:: <office_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {"success": true, data}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-ui.tbt-post.net/api/v1/geo/quirks/erp-prefly/50.42124585,30.65733479408397" -b cookie-jar.txt -H "Content-Type: application/json"   
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+  "success": true,
+  "time-shift-hours": 12,
+  "max-slices-per-shift": 36,
+  "max-days-ahead": 5,
+  "max-parcels-per-slice": 10,
+  "shift-slice-groups": 4,
+  "shift-start-hours": [
+    9,
+    9,
+    9,
+    9
+  ],
+  "week-days": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "max-shifts-per-office": 4,
+  "base-route": 0
+}
+
+----
+
+==== Размещение заявки на доставку
+[horizontal]
+protocol_method:: POST
+method_name:: forwarder/lists
+method_params:: <office_id>/date/shift/slice
+get_params:: ----
+request_body:: {"address_id": "<id>","parcels": ["<parcel_id>", "<parcel_id>"...],"receiver": "<user_id>"}
+expected_result:: 200 {"success": true, data}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-ui.tbt-post.net/api/v1/forwarder/lists/df6f7322-fade-46c4-bd56-ad288fccd550/2020-04-30/1/0" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"address_id": "1dd95208-8ad3-11ea-a5a3-df87ab1a3598","parcels": ["6d4a85b8-43e7-4e0c-8a81-1c7c3e0551ee"],"receiver": "01f87202-d2c1-4954-b02e-3e27716fd832"}'    
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+  "slice": 1,
+  "at_planner": false,
+  "planner_result": {},
+  "office": "df6f7322-fade-46c4-bd56-ad288fccd550",
+  "is_locked": false,
+  "shift": 0,
+  "success": true,
+  "data": {
+    "owner": "93326f62-7572-4ad2-8c62-df8ce4ebe7f4",
+    "origin": "4f90b36a-8622-4f43-a285-f622186f4ee8",
+    "address_id": "1dd95208-8ad3-11ea-a5a3-df87ab1a3598",
+    "parcels": [
+      "6d4a85b8-43e7-4e0c-8a81-1c7c3e0551ee"
+    ],
+    "receiver": "01f87202-d2c1-4954-b02e-3e27716fd832"
+  },
+  "date": "2020-04-30",
+  "holder": "df6f7322-fade-46c4-bd56-ad288fccd550",
+  "on_hold": false
+  "success": true
+}
+----
+
+=== Сводная по звонкам 
+
+[horizontal]
+protocol_method:: GET
+method_name:: stats/callcenter/_fast
+method_params:: ----
+get_params:: from==<date in timestamp>,to=<date in timestamp>
+request_body:: ----
+expected_result:: 200 {"success": true, data}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-ui.tbt-post.net/api/v1/stats/callcenter/_fast?from=1587589200000&to=1588280400000" -b cookie-jar.txt -H "Content-Type: application/json"    
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Thu, 30 Apr 2020 12:23:03 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 44 +
+Connection: keep-alive +
+Set-Cookie: <cookie> +
+Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
+
+
+[source, json]
+----
+{
+  "success": true,
+  "b21131fd-b927-4d83-b542-7a5f7c938d60": [
+    {
+      "origin": "b21131fd-b927-4d83-b542-7a5f7c938d60",
+      "code": "380995556635",
+      "context": "api:call:reg",
+      "owner": "df6f7322-fade-46c4-bd56-ad288fccd550",
+      "serial": "2550bc46-8af2-11ea-a1c4-00163e8df107",
+      "data": {
+        "status": "callback",
+        "comment": "text",
+        "direction": "out",
+        "nsid": 11,
+        "phone": "380995556635",
+        "orders": [
+          "1003"
+        ]
+      },
+      "id": null
+    },
+    {
+      "origin": "b21131fd-b927-4d83-b542-7a5f7c938d60",
+      "code": "380995556635",
+      "context": "api:call:reg",
+      "owner": "df6f7322-fade-46c4-bd56-ad288fccd550",
+      "serial": "02ab2ff6-8ae7-11ea-ad93-00163e8df107",
+      "data": {
+        "status": "callback",
+        "comment": "",
+        "direction": "out",
+        "nsid": 11,
+        "phone": "380995556635",
+        "orders": [
+          "1003"
+        ]
+      },
+      "id": null
+    },
+    {
+      "origin": "b21131fd-b927-4d83-b542-7a5f7c938d60",
+      "code": "380995556635",
+      "context": "api:call:reg",
+      "owner": "df6f7322-fade-46c4-bd56-ad288fccd550",
+      "serial": "66018f56-8ae6-11ea-ad93-00163e8df107",
+      "data": {
+        "status": "callback",
+        "comment": "",
+        "direction": "out",
+        "nsid": 11,
+        "phone": "380995556635",
+        "orders": [
+          "1003"
+        ]
+      },
+      "id": null
+    }
+  ]
+}
+
+----
