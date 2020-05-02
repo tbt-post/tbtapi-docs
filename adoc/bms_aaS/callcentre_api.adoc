@@ -1031,6 +1031,8 @@ Etag: "924831f7b7bd8f446e85d9f21470cce483de7c62" +
 }
 ----
 
+NOTE: параметры `shift` и `slice` можно расчитать по пелу ответа на запрос `forwarder/lists`
+
 === Сводная по звонкам 
 
 [horizontal]
