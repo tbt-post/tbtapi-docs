@@ -15,7 +15,7 @@
       "required": [
         "code",
         "class",
-        "occured_at"
+        "occurred_at"
       ],
       "additionalProperties": false,
       "properties": {
@@ -25,7 +25,7 @@
         "class": {
           "$ref": "#/definitions/uuid"
         },
-        "occured_at": {
+        "occurred_at": {
           "type": "integer"
         }
       }
@@ -35,7 +35,7 @@
       "required": [
         "comment",
         "code",
-        "occured_at",
+        "occurred_at",
         "task_action",
         "problem",
         "class"
@@ -50,7 +50,7 @@
           "type": "string",
           "description": "e.g. W0A123456789014"
         },
-        "occured_at": {
+        "occurred_at": {
           "type": "integer",
           "description": "e.g. 1531751799583"
         },
@@ -136,7 +136,7 @@
       "required": [
         "owner",
         "origin",
-        "occured_at"
+        "occurred_at"
       ],
       "additionalProperties": false,
       "properties": {
@@ -146,7 +146,7 @@
         "origin": {
           "$ref": "#/definitions/uuid"
         },
-        "occured_at": {
+        "occurred_at": {
           "type": "integer",
           "description": "e.g. 1531751799583"
         }
