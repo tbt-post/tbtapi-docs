@@ -41,7 +41,7 @@ WARNING: Для проверки запросов в командной стро
 [horizontal]
 protocol_method:: GET
 method_name:: fin/contragent
-method_params:: ----
+method_params:: <contragent_id>
 get_params:: merchant_id=<merchant_id> [processor=<fin_processor_id>]
 request_body:: ----
 expected_result:: 200 {"bank_name":"<BANK NAME>","name":"<CONTRAGENT NAME>","success":true,"modified_at":"TIMESTAMP UTC","enabled":<true|false>,"reg_id":"<REGISTRATION ID>","bank_mfo":"<BANK MFO CODE>","bank_account":"<ACCOUNT ID>","id":"<INTERNAL CONTRAGENT ID>","vat":<VALUE ADDED TAX INT(%)>,"tax_id":"<TAX ID>"}
@@ -79,6 +79,7 @@ Connection: keep-alive +
   "tax_id": "0123456789"
 }
 ----
+NOTE: `contragent_id` имеет более высокий приоритет чем `merchant_id`.
 
 NOTE: `processor` - название финансовой системы, которую представляет фин-компания. Указывается, если мерчант принадлежит другой финансовой системе, например: +
 [source, url]
@@ -236,8 +237,12 @@ IMPORTANT: Если у контрагента уже есть мерчант - �
 protocol_method:: PUT
 method_name:: fin/merchant
 method_params:: ----
-request_body:: { "merchant_id": "<updated-merchant-id>", "enabled": <true|false>}
+request_body:: { "merchant_id": "<updated-merchant-id>", "enabled": <true|false>, <"contragent_id">}
 expected_result:: 200 {"success": true}
+
+NOTE: `contragent_id` - опционально, если у мерчанта несколько контрагентов.
+
+IMPORTANT: При активации мерчанта будет активирован и контрагент.
 
 []
 Пример запроса/ответа::
@@ -246,8 +251,8 @@ expected_result:: 200 {"success": true}
 ----
 curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/fin/merchant" \
 -H "Content-Type: application/json" \
--H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2=" \
--d '{"merchant_id": "new_merchant_id_test1", "enabled": true}'
+-H "Authorization: Basic ZDUxOWU5M2EtMTBiYi00ZWQzLWIxZTctZWM0NWNlMzc2YmNiOmthNmU2ZE1NRk4=" \
+-d '{"merchant_id": "new_merchant_id_test1", "enabled": true, "contragent_id": "05bd4054-200a-4db7-803e-b75c088727c5"}'
 ----
 
 Ответ::
