@@ -1,9 +1,11 @@
 = BMS CALLCENTRE API
 Kasta Group LLC <info@tbt-post.net>
-1.0.0, 2020-05-01: Public API
+alfa, 2020-05-01: Public API
 :toc: right
 :toclevels: 4
 {empty}
+
+IMPORTANT: *deprecated*
 
 == Общая информация
 
