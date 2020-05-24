@@ -362,5 +362,65 @@ Connection: keep-alive +
 
 ----
 
+=== Пользователи
+==== Получение персональных данных пользователя
 
+[horizontal]
+protocol_method:: GET
+method_name:: fin/user/identity-info
+method_params:: <user_id>
+get_params:: [address_id=<user address id>]
+request_body:: ----
+expected_result:: 200 {"success":true,<user data>}
 
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/user/identity-info/bdf41b02-8a8c-457b-9680-e2107908f9f5?address_id=088a3460-9d9f-11ea-a22b-ebadf81c302e" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2="
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 24 May 2020 09:04:23 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 366 +
+Connection: keep-alive +
+Etag: "31dc25db7cbe471cede733c7734efa81b552bcec" +
+
+NOTE: `address-id` - это опциональный параметр id адреса пользователя, необходим для получения адреса пользователя в ответе. Если не задан, то будет браться текущий у пользователя.
+[source, json]
+----
+{
+  "first_name": "Petya",
+  "last_name": "Petrovich",
+  "success": true,
+  "is_confirmed": false,
+  "phone": "380505554422",
+  "birthday": "1970-02-02",
+  "passport": {
+    "issued_at": "1986.02.02",
+    "series": "XX",
+    "issued_by": "ГУ УВУ МВД ГР",
+    "number": "12345678"
+  },
+  "address": {
+    "lang": "uk",
+    "city": "Київ",
+    "apartment": "66",
+    "building": "2Б",
+    "country": "UA",
+    "region": "Київ",
+    "lon": 30.4613314,
+    "street": "Маршала Рокосовського проспект",
+    "lat": 50.5203613,
+    "notes": ""
+  },
+  "patronymic": "Avraam",
+  "id": "bdf41b02-8a8c-457b-9680-e2107908f9f5"
+}
+
+----
