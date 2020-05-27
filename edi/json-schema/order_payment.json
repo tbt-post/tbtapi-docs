@@ -47,7 +47,7 @@
     },
     "amount": {
       "type": ["string", "number"],
-      "description": "Transaction money total",
+      "description": "Transaction money total. Unsigned value.",
       "pattern": "^[0-9]{1,5}(\\.[0-9]{1,2})?$",
       "maximum": 100000,
       "minimum": 0
@@ -60,6 +60,17 @@
     "comment": {
       "type": "string",
       "description": "Additional info"
+    },
+    "operation": {
+      "type": "string",
+      "description": "Payment operation type. 'payment' meaning is always positive, 'correction' meaning is always negative.",
+      "enum": ["payment","correction"],
+      "default": "payment"
+    },
+    "correction_id":{
+      "type": "string",
+      "description": "Optionally identifies correction",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     }
   }
 }
