@@ -895,3 +895,160 @@ Set-Cookie: <cookie> +
 }
 
 ----
+
+=== Отделение
+
+
+==== Создание отделения
+
+[horizontal]
+protocol_method:: POST
+method_name:: saas/office
+method_params:: ----
+request_body:: 
+[source, json]
+----
+{
+        "photos":            {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "way_photos":        {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "services":          {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "schedule":          {"type": "object", "minProperties": 7, "maxProperties": 7},
+        "descr":             {"type": "string", "minLength": 1, "maxLength": 1000},
+        "uk:descr":          {"type": "string", "minLength": 1, "maxLength": 1000},
+        "sms_addr":          {"type": "string", "minLength": 1, "maxLength": 500,
+                              "pattern": "^[A-Za-z0-9@$_/.,\"():;=+&%#!?<>' -]+$"},
+        "uk:sms_addr":       {"type": "string", "minLength": 1, "maxLength": 500,
+                              "pattern": "^[A-Za-z0-9@$_/.,\"():;=+&%#!?<>' -]+$"},
+        "label":             {"type": "string", "minLength": 6, "maxLength": 64},
+        "uk:label":          {"type": "string", "minLength": 6, "maxLength": 64},
+        "address_loc":       {"type": "array",
+                              "items": {"type": "string", "pattern": "^\\d+(\\.\\d*)?$"},
+                              "minItems": 2, "maxItems": 2},
+        "address_street":    {"type": "string", "maxLength": 128},
+        "uk:address_street": {"type": "string", "maxLength": 128},
+        "address_building":  {"type": "string", "maxLength": 128},
+        "address_index":     {"type": "string", "pattern": "^[0-9]{5}$"},
+        "address_place":     {"type": "string", "maxLength": 500},
+        "address_floor":     {"type": "integer"},
+        "pay_cash":          {"type": "boolean"},
+        "pay_card":          {"type": "boolean"},
+        "is_internal":       {"type": "boolean"},
+        "is_active":         {"type": "boolean"},
+        "transportation_group": {"anyOf": [{"type": "null"},
+                                           {"type": "string", "pattern": "^[a-zA-Z0-9_-]+$",
+                                            "minLength": 4, "maxLength": 32}]},
+        "fallback_address_office": {"$ref": "#/definitions/uuid"}
+    }
+----
+NOTE: параметры "descr", "uk:descr", "services", "schedule", "address_loc" - *обязательны*
+
+expected_result:: 200 {"id": <office uuid>, "success": true}
+
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/saas/office" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"descr":"DESCR","uk:descr":"testUa","schedule":{"1":"09:00-18:00","2":"09:00-18:00","3":"09:00-18:00","4":"09:00-18:00","5":"09:00-18:00","6":"09:00-15:00","7":"-"},"address_loc":["50.303624","34.900571"],"services": ["electronics_s"]}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 10 Jun 2020 17:12:04 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 63 +
+Connection: keep-alive +
+
+[source, json]
+----
+{"id": "983328f8-65ad-40df-8c84-40c71c4e9ccc", "success": true}
+----
+
+Доступные параметры для `service`:
+
+[source]
+----
+"_kp_partner_justin": "KastaPost @ JustIn",
+"electronics_m": "Электроника (M)",
+"courier": "Пеший курьер",
+"_kp_partner_novaposhta": "KastaPost @ NovaPoshta",
+"bioauth_face_m": "Биометрия лица (стандартная)",
+"bioauth_face_l": "Биометрия лица (полная)",
+"bioauth_face_s": "Биометрия лица (базовая)",
+"forwarder": "Экспедитор",
+"temporarily_disabled": "Временно не работает",
+"_meest_partner_kp": "Meest @ KastaPost",
+"warehouse": "Склад",
+"electronics_s": "Электроника (S)",
+"e_test_bed": "Место для проверки электроники"
+----
+
+
+==== Обновление отделения
+
+[horizontal]
+protocol_method:: PUT
+method_name:: saas/office
+method_params:: <office_id>
+request_body:: 
+[source, json]
+----
+{
+        "photos":            {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "way_photos":        {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "services":          {"type": "array", "maxItems": 20, "items": {"type": "string"}},
+        "schedule":          {"type": "object", "minProperties": 7, "maxProperties": 7},
+        "descr":             {"type": "string", "minLength": 1, "maxLength": 1000},
+        "uk:descr":          {"type": "string", "minLength": 1, "maxLength": 1000},
+        "sms_addr":          {"type": "string", "minLength": 1, "maxLength": 500,
+                              "pattern": "^[A-Za-z0-9@$_/.,\"():;=+&%#!?<>' -]+$"},
+        "uk:sms_addr":       {"type": "string", "minLength": 1, "maxLength": 500,
+                              "pattern": "^[A-Za-z0-9@$_/.,\"():;=+&%#!?<>' -]+$"},
+        "label":             {"type": "string", "minLength": 6, "maxLength": 64},
+        "uk:label":          {"type": "string", "minLength": 6, "maxLength": 64},
+        "address_loc":       {"type": "array",
+                              "items": {"type": "string", "pattern": "^\\d+(\\.\\d*)?$"},
+                              "minItems": 2, "maxItems": 2},
+        "address_street":    {"type": "string", "maxLength": 128},
+        "uk:address_street": {"type": "string", "maxLength": 128},
+        "address_building":  {"type": "string", "maxLength": 128},
+        "address_index":     {"type": "string", "pattern": "^[0-9]{5}$"},
+        "address_place":     {"type": "string", "maxLength": 500},
+        "address_floor":     {"type": "integer"},
+        "pay_cash":          {"type": "boolean"},
+        "pay_card":          {"type": "boolean"},
+        "is_internal":       {"type": "boolean"},
+        "is_active":         {"type": "boolean"},
+        "transportation_group": {"anyOf": [{"type": "null"},
+                                           {"type": "string", "pattern": "^[a-zA-Z0-9_-]+$",
+                                            "minLength": 4, "maxLength": 32}]},
+        "fallback_address_office": {"$ref": "#/definitions/uuid"}
+    }
+----
+
+expected_result:: 200 {"success": true}
+
+
+[horizontal]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https:e/983328f8-65ad-40df-8c84-40c71c4e9ccc" -b cookie-jar.txt -H "Content-Type: application/json" -d '{"descr": "new description"}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 10 Jun 2020 17:23:07 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+
+[source, json]
+----
+{"success": true}
+----
+
