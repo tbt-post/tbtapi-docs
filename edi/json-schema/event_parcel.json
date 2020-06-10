@@ -129,6 +129,11 @@
           "description": "Parcel source (i.e. for some circumstances)",
           "enum": ["external"]
         },
+        "external_ref": {
+          "type": "string",
+          "description": "External reference identifier (if any)",
+          "maxLength": 64
+        },
         "delivery_service": {
           "type": "string",
           "description": "Delivery service",
