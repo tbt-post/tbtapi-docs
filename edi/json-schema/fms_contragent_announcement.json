@@ -3,14 +3,20 @@
   "type": "object",
   "description": "FMS contragent events",
   "required": [
-     "sender", "timestamp", "contragent_id",
-     "contragent_reg_id", "action", "reason"
+    "sender",
+    "timestamp",
+    "contragent_id",
+    "contragent_reg_id",
+    "action",
+    "reason"
   ],
   "properties": {
     "sender": {
       "type": "string",
       "description": "Sender name",
-      "enum": ["tbt"]
+      "enum": [
+        "tbt"
+      ]
     },
     "timestamp": {
       "description": "Send time",
@@ -29,16 +35,35 @@
     "action": {
       "type": "string",
       "description": "action",
-      "enum": ["created","deleted","updated","blocked","disabled"]
+      "enum": [
+        "created",
+        "deleted",
+        "updated",
+        "blocked",
+        "disabled"
+      ]
     },
     "reason": {
       "type": "string",
       "description": "reason",
-      "enum": ["self","requisites","fraud","disaster","other"]
+      "enum": [
+        "self",
+        "requisites",
+        "fraud",
+        "disaster",
+        "other"
+      ]
     },
     "merchant_id": {
-      "type": "string",
-      "description": "Payment system contragent identifier"
+      "anyOf": [
+        {
+          "type": "string",
+          "description": "Payment system contragent identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "comment": {
       "type": "string",
