@@ -970,16 +970,11 @@ Connection: keep-alive +
 
 [source]
 ----
-"_kp_partner_justin": "KastaPost @ JustIn",
-"electronics_m": "Электроника (M)",
-"courier": "Пеший курьер",
-"_kp_partner_novaposhta": "KastaPost @ NovaPoshta",
 "bioauth_face_m": "Биометрия лица (стандартная)",
 "bioauth_face_l": "Биометрия лица (полная)",
 "bioauth_face_s": "Биометрия лица (базовая)",
 "forwarder": "Экспедитор",
 "temporarily_disabled": "Временно не работает",
-"_meest_partner_kp": "Meest @ KastaPost",
 "warehouse": "Склад",
 "electronics_s": "Электроника (S)",
 "e_test_bed": "Место для проверки электроники"
