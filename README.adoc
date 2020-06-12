@@ -50,7 +50,7 @@ https://www.facebook.com/Kasta-Group-LLC-104832931194327[Facebook mirror]
 
 === Software
 
-https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow EDI https://github.com/tbt-post/tbtapi-docs/releases/latest[versioning])
+https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow https://github.com/tbt-post/tbtapi-docs/tree/master/edi/json-schema[EDI] https://github.com/tbt-post/tbtapi-docs/releases/latest[versioning])
 
 == Copyrights
 
