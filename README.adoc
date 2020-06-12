@@ -1,6 +1,6 @@
 = TbT Platform Developer Suite
 
-image::images/tbt-logo-full.png[]
+image::images/tbt-logo-full.png[TbT Platform,400,role="right"]
 
 Public API description for https://tbt-post.net[TbT Platform] services and data schemas for ERP-systems
 
@@ -50,7 +50,7 @@ https://www.facebook.com/Kasta-Group-LLC-104832931194327[Facebook mirror]
 
 === Software
 
-https://github.com/tbt-post/edi-receiver[EDI Receiver]
+https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow EDI https://github.com/tbt-post/tbtapi-docs/releases/latest[versioning])
 
 == Copyrights
 
