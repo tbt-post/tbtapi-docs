@@ -1996,6 +1996,43 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Активация/деактивация транзита
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/contragent/<contragent_id>
+method_params:: ----
+request_body:: {"transit_enabled": <true/false>}
+expected_result:: 200 {"success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/contragent/e8459d69-e3bc-41bc-978d-28d6c6abda38" -H "Content-Type: application/json" -H "Authorization: Basic dG9rZW46cGFzc3dk" -d '{"transit_enabled": true}'
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Fri, 12 Jun 2020 10:07:28 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 545 +
+Connection: keep-alive +
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS +
+Access-Control-Max-Age: 600 +
+Access-Control-Allow-Credentials: true +
+Access-Control-Allow-Origin: https://sandbox-ui.tbt-post.net +
+Access-Control-Allow-Headers: Content-Type +
+
+[source, json]
+----
+{
+  "success": true
+}
+----
+
+
 === Финансовые транзакции
 
 ==== Получение финансовой транзакции по id
