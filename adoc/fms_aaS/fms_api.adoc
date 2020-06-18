@@ -238,7 +238,7 @@ protocol_method:: PUT
 method_name:: fin/merchant
 method_params:: ----
 request_body:: { "merchant_id": "<updated-merchant-id>", "enabled": <true|false>, <"contragent_id">}
-expected_result:: 200 {"success": true}
+expected_result:: 200 {"rowcount": 1, "success": true}
 
 NOTE: `contragent_id` - опционально, если у мерчанта несколько контрагентов.
 
