@@ -935,7 +935,7 @@ method_params:: <PARCEL ID>
 request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
 expected_result:: 202 {"success": true}
 
-NOTE: `receiver` опциональный, `cod_amount` и `paid_amount` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD
+NOTE: `receiver` опциональный, `cod_amount` и `price` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD
 
 IMPORTANT: Запрос на модификацию возможен в состояних `Принято к доставке` (`state == PU0001`) и `В отделении` (`state == PU0003`)
 
