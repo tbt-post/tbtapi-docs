@@ -2134,5 +2134,152 @@ Etag: "4792893f13cd30a1d715f3fe44ce8e46b114472a" +
 
 ----
 
+===  Владельцы товара в системе WMS
+
+==== Создание владельца товара
+[horizontal]
+protocol_method:: POST
+method_name:: agent/wms
+method_params:: owners
+get_patrams:: ----
+request_body:: {"user_id":"<user_id from agent/user/new>"}
+expected_result:: 200 {<user info>}
 
 
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/wms/owners" -H "Content-Type: application/json" -H "Authorization: Basic YZjEtMzJiZDdaelE" -d '{"user_id":"1a8c183a-b4ee-42de-af8d-3763cc0d816d"}'
+
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 22 Jun 2020 13:47:54 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 374 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "nsid": 3,
+  "created_at": "f93d50d0-b48e-11ea-ba7e-00163e8df234",
+  "modified_at": "f93d5152-b48e-11ea-ba7e-00163e8df234",
+  "details": {
+    "reg_id": "12345",
+    "name": "Vektor Ltd",
+    "created_by": "293d98fc-80e3-476b-86a3-62eefcd91665",
+    "ref_id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+  },
+  "id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+  "schema": "00000000-0000-0000-0000-000000000000"
+}
+----
+
+NOTE: В параметре `user_id` необходимо указать id созданного ранее пользователя через `agent/user/new>`
+
+==== Получение данных владельца товара
+[horizontal]
+protocol_method:: GET
+method_name:: agent/wms
+method_params:: owners/<ref_id>
+get_patrams:: ----
+request_body:: ----
+expected_result:: 200 {<user info>}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/agent/wms/owners/1a8c183a-b4ee-42de-af8d-3763cc0d816d" -H "Content-Type: application/json" -H "Authorization: Basic YZjEtMzJiZDdaelE"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 22 Jun 2020 13:47:54 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 374 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "nsid": 3,
+  "created_at": "f93d50d0-b48e-11ea-ba7e-00163e8df234",
+  "modified_at": "f93d5152-b48e-11ea-ba7e-00163e8df234",
+  "details": {
+    "reg_id": "12345",
+    "name": "Vektor Ltd",
+    "created_by": "293d98fc-80e3-476b-86a3-62eefcd91665",
+    "ref_id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+  },
+  "id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+  "schema": "00000000-0000-0000-0000-000000000000"
+}
+----
+
+NOTE: `ref_id` - id пользователя в платформе, `reg_id` - ЕДРПОУ / ИНН
+
+==== Получение списка владельцев
+[horizontal]
+protocol_method:: GET
+method_name:: agent/wms
+method_params:: owners
+get_patrams:: ----
+request_body:: ----
+expected_result:: 200 {[<users info>]}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/agent/wms/owners" -H "Content-Type: application/json" -H "Authorization: Basic YZjEtMzJiZDdaelE"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Mon, 22 Jun 2020 13:47:54 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 374 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "items": [
+    {
+      "nsid": 3,
+      "created_at": "edcb7ed0-b746-11e8-9958-00163e8cc017",
+      "modified_at": "edcb7fa2-b746-11e8-9958-00163e8cc017",
+      "details": {
+        "ref_address_id": "305faf6a-9c2c-11e6-a144-0f814fb94ae5",
+        "name": "Kasta UA",
+        "ref_id": "293d98fc-80e3-476b-86a3-62eefcd91665"
+      },
+      "id": "293d98fc-80e3-476b-86a3-62eefcd91665",
+      "schema": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "nsid": 3,
+      "created_at": "f93d50d0-b48e-11ea-ba7e-00163e8df234",
+      "modified_at": "f93d5152-b48e-11ea-ba7e-00163e8df234",
+      "details": {
+        "reg_id": "12345",
+        "name": "Vektor Ltd",
+        "created_by": "293d98fc-80e3-476b-86a3-62eefcd91665",
+        "ref_id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d"
+      },
+      "id": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+      "schema": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  "total": 2
+}
+----
