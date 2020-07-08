@@ -68,6 +68,11 @@
     "comment": {
       "type": "string",
       "description": "Additional info"
+    },
+    "msg_for": {
+      "type": "string",
+      "description": "User id to proxy message for",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     }
   }
 }

@@ -9,5 +9,8 @@
   "merchant_id": "672",
   "amount": "25",
   "payer_phone": "380110913888",
-  "comment": "{\"account\": \"K3BZZ2A\", \"ucode\": \"K3BZZ2A:__delivery\", \"identity\": \"0\", \"terminal_id\": \"8515\", \"date\": \"20200323190742\"}"
+  "comment": "{\"account\": \"K3BZZ2A\", \"ucode\": \"K3BZZ2A:__delivery\", \"identity\": \"0\", \"terminal_id\": \"8515\", \"date\": \"20200323190742\"}",
+  "operation": "payment",
+  "correction_id": "974f1826-0648-4ba8-8b12-7fb95f8eaeb9",
+  "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de"
 }

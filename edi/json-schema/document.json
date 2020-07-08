@@ -36,6 +36,11 @@
       "type": "string",
       "description": "MD5 hash of the stringified document's body",
       "pattern": "^[0-9a-f]{32}$"
+    },
+    "msg_for": {
+      "type": "string",
+      "description": "User id to proxy message for",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     }
   }
 }
