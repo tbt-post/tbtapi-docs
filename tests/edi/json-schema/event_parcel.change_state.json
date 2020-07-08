@@ -12,6 +12,8 @@
     3
   ],
   "parcel_source": "external",
+  "external_ref": "some_ref",
   "delivery_service": "novaposhta",
-  "is_quasi": true
+  "is_quasi": true,
+  "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de"
 }

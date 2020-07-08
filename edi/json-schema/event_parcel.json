@@ -74,6 +74,11 @@
         "document_id": {
           "type": "string",
           "description": "Corresonding document identifier"
+        },
+        "msg_for": {
+          "type": "string",
+          "description": "User id to proxy message for",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         }
       }
     },
@@ -143,6 +148,11 @@
           "type": "boolean",
           "description": "Is the parcel is of quasi-parcel type",
           "default": false
+        },
+        "msg_for": {
+          "type": "string",
+          "description": "User id to proxy message for",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         }
       }
     }

@@ -1,66 +1,70 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "WMS stocktaking message",
-    "definitions": {
-      "uuid": {
-        "type": "string",
-        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-      },
-      "uuid_v1": {
-        "type": "string",
-        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-      }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "WMS stocktaking message",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "type": "object",
-    "required": [
-      "serial",
-      "reference",
-      "message_type"
-    ],
-    "properties": {
-      "serial": {
-        "$ref": "#/definitions/uuid_v1"
-      },
-      "reference": {
-        "$ref": "#/definitions/uuid"
-      },
-      "label":{
-        "type": "string",
-        "pattern": "^[^ ]{3,128}$"
-      },
-      "message_type": {
-        "type": "string",
-        "enum": [
-            "start",
-            "evaluation",
-            "error",
-            "finish"
-        ]
-      },
-      "item": {
-        "oneOf": [
-          {
+    "uuid_v1": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
+  "type": "object",
+  "required": [
+    "serial",
+    "reference",
+    "message_type"
+  ],
+  "properties": {
+    "serial": {
+      "$ref": "#/definitions/uuid_v1"
+    },
+    "reference": {
+      "$ref": "#/definitions/uuid"
+    },
+    "label": {
+      "type": "string",
+      "pattern": "^[^ ]{3,128}$"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "start",
+        "evaluation",
+        "error",
+        "finish"
+      ]
+    },
+    "item": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[^ ]{3,24}$"
+        },
+        {
+          "type": "array",
+          "items": {
             "type": "string",
             "pattern": "^[^ ]{3,24}$"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^[^ ]{3,24}$"
-            }
           }
-        ]
-      },
-      "version": {
-        "type": "string"
-      },
-      "origin": {
-        "$ref": "#/definitions/uuid"
-      },
-      "owner": {
-        "$ref": "#/definitions/uuid"
-      }
+        }
+      ]
+    },
+    "version": {
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/definitions/uuid"
+    },
+    "owner": {
+      "$ref": "#/definitions/uuid"
     }
+  },
+  "msg_for": {
+    "type": "string",
+    "description": "User id to proxy message for",
+    "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
   }
-  
+}

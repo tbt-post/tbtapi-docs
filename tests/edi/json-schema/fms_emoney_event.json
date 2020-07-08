@@ -15,5 +15,6 @@
   "merchant_id": "ABCDEFGHIJKLMNOPQ",
   "note": "ABCDEFGHIJKLMNOPQ",
   "source_wallet": "ABCDEFGHIJKLMNOPQRSTU",
-  "target_wallet": "ABCD"
+  "target_wallet": "ABCD",
+  "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de"
 }

@@ -1,61 +1,65 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "description": "WMS item (movement) anouncement",
-    "definitions": {
-      "uuid": {
-        "type": "string",
-        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-      },
-      "uuid_v1": {
-        "type": "string",
-        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-      }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "WMS item (movement) anouncement",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
-    "type": "object",
-    "required": [
-      "serial",
-      "item",
-      "reference"
-    ],
-    "properties": {
-      "serial": {
-        "$ref": "#/definitions/uuid_v1"
-      },
-      "item": {
-        "oneOf": [
-          {
+    "uuid_v1": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
+  "type": "object",
+  "required": [
+    "serial",
+    "item",
+    "reference"
+  ],
+  "properties": {
+    "serial": {
+      "$ref": "#/definitions/uuid_v1"
+    },
+    "item": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[^ ]{3,24}$"
+        },
+        {
+          "type": "array",
+          "items": {
             "type": "string",
             "pattern": "^[^ ]{3,24}$"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^[^ ]{3,24}$"
-            }
           }
-        ]
-      },
-      "zone_from": {
-        "type": "string",
-        "pattern": "^[^ ]{3,64}$"
-      },
-      "zone_to": {
-        "type": "string",
-        "pattern": "^[^ ]{3,64}$"
-      },
-      "reference": {
-        "$ref": "#/definitions/uuid"
-      },
-      "version": {
-        "type": "string"
-      },
-      "origin": {
-        "$ref": "#/definitions/uuid"
-      },
-      "owner": {
-        "$ref": "#/definitions/uuid"
-      }
+        }
+      ]
+    },
+    "zone_from": {
+      "type": "string",
+      "pattern": "^[^ ]{3,64}$"
+    },
+    "zone_to": {
+      "type": "string",
+      "pattern": "^[^ ]{3,64}$"
+    },
+    "reference": {
+      "$ref": "#/definitions/uuid"
+    },
+    "version": {
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/definitions/uuid"
+    },
+    "owner": {
+      "$ref": "#/definitions/uuid"
+    },
+    "msg_for": {
+      "type": "string",
+      "description": "User id to proxy message for",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
     }
   }
-  
+}
