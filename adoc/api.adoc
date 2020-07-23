@@ -632,7 +632,7 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
-==== Превалидация ОТС
+==== Подтверждение ОТС
 
 [horizontal]
 protocol_method:: POST
