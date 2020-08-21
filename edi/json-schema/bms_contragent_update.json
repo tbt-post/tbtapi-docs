@@ -1,0 +1,207 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "string": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "boolean": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "number": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "required": [
+    "sender",
+    "timestamp",
+    "id",
+    "origin",
+    "action"
+  ],
+  "properties": {
+    "msg_for": {
+      "$ref": "#/definitions/uuid"
+    },
+    "transit_enabled": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/boolean"
+        },
+        {
+          "$ref": "#/definitions/boolean"
+        }
+      ]
+    },
+    "name": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "bank_name": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "type": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "bank_account": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "provides_processing_for": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "tax_id": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "vat": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/number"
+        },
+        {
+          "$ref": "#/definitions/number"
+        }
+      ]
+    },
+    "id": {
+      "$ref": "#/definitions/uuid"
+    },
+    "sender": {
+      "type": "string",
+      "enum": [
+        "tbt"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated"
+      ]
+    },
+    "origin": {
+      "$ref": "#/definitions/uuid"
+    },
+    "reg_id": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "enabled": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/boolean"
+        },
+        {
+          "$ref": "#/definitions/boolean"
+        }
+      ]
+    },
+    "bank_mfo": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/string"
+        },
+        {
+          "$ref": "#/definitions/string"
+        }
+      ]
+    },
+    "is_proxy": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/boolean"
+        },
+        {
+          "$ref": "#/definitions/boolean"
+        }
+      ]
+    }
+  }
+}
