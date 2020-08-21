@@ -149,7 +149,8 @@
       "type": "string",
       "enum": [
         "created",
-        "updated"
+        "updated",
+        "deleted"
       ]
     },
     "origin": {
