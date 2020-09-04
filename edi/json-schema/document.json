@@ -2,6 +2,12 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "description": "External document",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
   "required": [
      "sender", "timestamp", "doctype", "id", "body"
   ],
@@ -21,9 +27,11 @@
       "enum": ["DocReturnOrders"]
     },
     "id": {
-      "type": "string",
+      "$ref": "#/definitions/uuid",
       "description": "Document indentifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "office": {
+      "$ref": "#/definitions/uuid"
     },
     "body": {
       "anyOf": [
@@ -38,9 +46,8 @@
       "pattern": "^[0-9a-f]{32}$"
     },
     "msg_for": {
-      "type": "string",
-      "description": "User id to proxy message for",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "User id to proxy message for"
     }
   }
 }

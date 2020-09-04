@@ -1,0 +1,20 @@
+{
+  "sender" : "tbt",
+  "timestamp" : "2020-08-21T10:47:00.268Z",
+  "id" : "878d8288-1859-4e20-ac24-5295e3f1c73f",
+  "origin" : "e4722d6a-914b-4355-a3d9-d22f68aa989d",
+  "action" : "created",
+  "enabled" : [ null, true ],
+  "bank_account" : [ null, "UA000000000000000000000000000" ],
+  "bank_mfo" : [ null, "300711" ],
+  "bank_name" : [ null, "ПЕЧЕРСЬКА ФІЛІЯ АТ КБ \"ПРИВАТБАНК\"" ],
+  "name" : [ null, "Петренко Петро Петрович ФОП" ],
+  "reg_id" : [ null, "1234567890" ],
+  "tax_id" : [ null, "1234567890" ],
+  "type" : [ null, "pe" ],
+  "vat" : [ null, 0 ],
+  "is_proxy" : [ null, false ],
+  "transit_enabled" : [ null, true ],
+  "provides_processing_for" : [ null, "nobody" ],
+  "msg_for": "88d49278-f493-4682-bf6a-3963e96845ff"
+}

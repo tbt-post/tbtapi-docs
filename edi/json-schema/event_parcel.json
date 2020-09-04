@@ -8,6 +8,10 @@
   ],
 
   "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
     "order_return": {
       "type": "object",
       "required": [
@@ -31,9 +35,8 @@
           "enum": ["OrderReturn", "OrderCancel"]
         },
         "id": {
-          "type": "string",
+          "$ref": "#/definitions/uuid",
           "description": "Parcel identificator",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         },
         "order_id": {
           "type": "string",
@@ -75,10 +78,15 @@
           "type": "string",
           "description": "Corresonding document identifier"
         },
+        "origin": {
+          "$ref": "#/definitions/uuid"
+        },
+        "owner": {
+          "$ref": "#/definitions/uuid"
+        },
         "msg_for": {
-          "type": "string",
-          "description": "User id to proxy message for",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          "$ref": "#/definitions/uuid",
+          "description": "User id to proxy message for"
         }
       }
     },
@@ -99,8 +107,7 @@
           "enum": ["ChangeState"]
         },
         "id": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          "$ref": "#/definitions/uuid"
         },
 
         "state": {
@@ -108,8 +115,7 @@
           "description": "New state identifier"
         },
         "pentity": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "$ref": "#/definitions/uuid",
           "description": "Entity identification where object will be placed"
         },
         "weight": {
@@ -149,10 +155,15 @@
           "description": "Is the parcel is of quasi-parcel type",
           "default": false
         },
+        "origin": {
+          "$ref": "#/definitions/uuid"
+        },
+        "owner": {
+          "$ref": "#/definitions/uuid"
+        },
         "msg_for": {
-          "type": "string",
-          "description": "User id to proxy message for",
-          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          "$ref": "#/definitions/uuid",
+          "description": "User id to proxy message for"
         }
       }
     }
