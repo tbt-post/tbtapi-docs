@@ -10,5 +10,7 @@
   "money_back": true,
   "money_dest": "card",
   "document_id": "ABCDEFGHIJKLMNOP",
+  "origin": "aac099d5-f520-4c00-95ab-cc445bec8920",
+  "owner": "46f69d00-4389-444b-9174-26b1f6f0bafa",
   "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de"
 }
