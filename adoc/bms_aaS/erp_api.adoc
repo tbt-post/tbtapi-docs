@@ -1195,7 +1195,7 @@ NOTE: Параметры данного запроса схожи с парам�
 protocol_method:: POST
 method_name:: agent/quasi-parcel/register
 method_params:: ----
-request_body:: {"delivery_service":"tabata", "tn_id": "<ttn-barcode>", "tn_body": "str", "tn_content_type": "text/xml" |"application/json", "order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
+request_body:: {"delivery_service":"tabata", "tn_id": "<ttn-barcode>", "tn_body": "str", "address_city": "string", "tn_content_type": "text/xml" |"application/json", "order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": <PHONE 380XXYYYYYYY>, "email" : "<USER EMAIL>", "first name" : <FIRST NAME>, "last_name": "<LAST NAME>"}, "delivery_type": <DELIVERY TYPE>, "dest" : [ <LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : <CONTRAGENT ID>, "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...]}
 expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
 
 []
@@ -1206,7 +1206,7 @@ expected_result:: 200 { "success": true, "id": "<quasi-parcel uuid>" }
 curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/register" \
 -H "Content-Type: application/json" \
 -H "Authorization: Basic dG9rZW46cGFzc3dk" \
--d '{"delivery_service":"tabata", "tn_id": "0010", "tn_body": "test_ttn_name", "tn_content_type": "application/json", "order_id": "TEST0010", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'
+-d '{"delivery_service":"tabata", "tn_id": "c9eb8ade-9570-430a-87f5-9fd7f2f17afb", "tn_body": "test_ttn_name", "address_city": "Киев", "tn_content_type": "application/json", "order_id": "100000001", "receiver": { "id": 0, "phone": "380666666666", "email" : "example@example.com", "first_name" : "User", "last_name": "Test"}, "delivery_type": "W2W", "dest" : ["50.405237", "30.679338"], "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", "weight" : 145, "price" : 350, "cod_amount" : 350, "type" : "fragile:A.COD.NR.NA.S000", "note" : "", "created_at": "2018-12-11T11:45:00+00:00", "contragent_id":"e8459d69-e3bc-41bc-978d-28d6c6abda38"}'
 ----
 
 Ответ::

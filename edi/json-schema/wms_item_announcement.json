@@ -47,6 +47,9 @@
     "reference": {
       "$ref": "#/definitions/uuid"
     },
+    "flow": {
+      "type": "string"
+    },
     "version": {
       "type": "string"
     },

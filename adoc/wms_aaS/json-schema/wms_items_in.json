@@ -703,6 +703,9 @@
     "req_pproc": {
       "type": "boolean"
     },
+    "cross_doc": {
+      "type": "boolean"
+    },
     "uid": {
       "$ref": "#/definitions/uuid"
     },
