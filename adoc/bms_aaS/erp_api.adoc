@@ -1351,6 +1351,266 @@ Connection: keep-alive +
 }
 ----
 
+==== Список quasi-parcel
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/quasi-parcel
+method_params:: list
+get_params:: [limit=<num> offset=<num> sender=<id>, receiver=<id>, interval_from=<DATE TIME in ISO 8601>, interval_to=<DATE TIME in ISO 8601>, interval_field=<created_at|modified_at>, sort_by=<created_at| modified_at|sender|receiver|code>, sort_order=<desc|asc>]
+expected_result:: 200 { <parcels_list> }
+
+NOTE: Все поля в `get_params` опциональны
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+ curl -v GET "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/list?limit=100&offset=0&receiver=1a8c183a-b4ee-42de-af8d-3763cc0d816d&sender=44ee4ac5-8e42-4e40-821a-3f3e5f13f680&sort_by=modified_at&interval_from=2020-01-01&interval_to=2020-12-01&interval_fieldcreated_at" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+Server: nginx/1.10.3 +
+Date: Fri, 25 Sep 2020 09:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1944 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "has_next": false,
+  "items": [
+    {
+      "code": "100000001",
+      "is_applied": true,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 1,
+      "created_at": "2020-09-01T09:37:09.994246+00:00",
+      "modified_at": "2020-09-01T09:37:09.994260+00:00",
+      "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "payload": {
+        "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "delivery_type": "W2W",
+        "weight": 145,
+        "order_id": "100000001",
+        "delivery_service": "tabata",
+        "price": 350,
+        "note": "",
+        "dest": [
+          "50.405237",
+          "30.679338"
+        ],
+        "receiver": {
+          "phone": "380666666666",
+          "first_name": "User",
+          "last_name": "Test",
+          "id": 0,
+          "email": "example@example.com"
+        },
+        "cod_amount": 350,
+        "type": "fragile:A.COD.NR.NA.S000",
+        "created_at": "2018-12-11T11:45:00+00:00",
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "record_type": "main",
+      "receiver": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+      "id": "394c8e1f-e196-4d3f-9c1d-c021c9837f23",
+      "schema": "3f19c757-9bd2-4528-b7cb-4aaec57e321f"
+    },
+    {
+      "code": "000000001",
+      "is_applied": true,
+      "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "nsid": 1,
+      "created_at": "2020-09-01T09:35:40.209019+00:00",
+      "modified_at": "2020-09-01T09:35:40.209029+00:00",
+      "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+      "payload": {
+        "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+        "delivery_type": "W2W",
+        "weight": 145,
+        "order_id": "000000001",
+        "type": "fragile:A.COD.NR.NA.S000",
+        "price": 350,
+        "note": "",
+        "dest": [
+          "50.405237",
+          "30.679338"
+        ],
+        "receiver": {
+          "phone": "380666666666",
+          "first_name": "User",
+          "last_name": "Test",
+          "id": 0,
+          "email": "example@example.com"
+        },
+        "cod_amount": 350,
+        "delivery_service": "tabata",
+        "created_at": "2018-12-11T11:45:00+00:00",
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+      },
+      "record_type": "main",
+      "receiver": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+      "id": "36d1ae66-32ee-43f3-8721-f133a138211a",
+      "schema": "3f19c757-9bd2-4528-b7cb-4aaec57e321f"
+    }
+  ],
+  "limit": 100,
+  "success": true,
+  "offset": 0
+}
+
+----
+
+==== Получение quasi-parcel по ID/Code
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/quasi-parcel
+method_params:: <parcel_id>
+get_params:: code=<parcel_code>
+expected_result:: 200 { <parcels_datat> }
+
+NOTE: Все поля в `get_params` опциональны
+
+WARNING: `parcel_id` имеет более высокий приоритет чем `code`
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v GET "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/394c8e1f-e196-4d3f-9c1d-c021c9837f23" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" 
+----
+
+Ответ::
+Server: nginx/1.10.3 +
+Date: Fri, 25 Sep 2020 09:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1944 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "code": "100000001",
+  "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "success": true,
+  "created_at": "2020-09-01T09:37:09.994246+00:00",
+  "modified_at": "2020-09-01T09:37:10.061440+00:00",
+  "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680",
+  "payload": {
+    "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253",
+    "delivery_type": "W2W",
+    "weight": 145,
+    "order_id": "100000001",
+    "delivery_service": "tabata",
+    "price": 350,
+    "note": "",
+    "dest": [
+      "50.405237",
+      "30.679338"
+    ],
+    "receiver": {
+      "phone": "380666666666",
+      "first_name": "User",
+      "last_name": "Test",
+      "id": 0,
+      "email": "example@example.com"
+    },
+    "cod_amount": 350,
+    "type": "fragile:A.COD.NR.NA.S000",
+    "created_at": "2018-12-11T11:45:00+00:00",
+    "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38"
+  },
+  "receiver": "1a8c183a-b4ee-42de-af8d-3763cc0d816d",
+  "id": "394c8e1f-e196-4d3f-9c1d-c021c9837f23",
+  "ds_info": {
+    "address_city": "Киев",
+    "tn_content_type": "application/json",
+    "tn_body": "test_ttn_name",
+    "tn_id": "c9eb8ade-9570-430a-87f5-9fd7f2f17afb"
+  }
+}
+
+----
+
+==== Получение стикера quasi-parcel
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/quasi-parcel
+method_params:: <parcel_id>
+get_params:: <delivery-sticker>
+expected_result:: 200 { <pdf stick> }
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v GET "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/394c8e1f-e196-4d3f-9c1d-c021c9837f23/delivery-sticker" --output test.pdf \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+Server: nginx/1.10.3 +
+Date: Fri, 25 Sep 2020 09:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1944 +
+Connection: keep-alive +
+
+NOTE: результатом выполнения запроса будет файл указанный в `output`
+
+==== Трекинг quasi-parcel
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/quasi-parcel
+method_params:: <parcel_id>
+get_params:: <delivery-tracking>
+expected_result:: 200 { <parcel tracking data> }
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v GET "https://sandbox-api.tbt-post.net/api/v1/agent/quasi-parcel/394c8e1f-e196-4d3f-9c1d-c021c9837f23/delivery-tracking" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+Server: nginx/1.10.3 +
+Date: Fri, 25 Sep 2020 09:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1944 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "tracking": {
+    "transfer_via": null,
+    "code": "100000001",
+    "descr_uk": "Заявка зареєстрована в системі",
+    "modified_at": "2020-09-01T09:36:27.810196+00:00",
+    "descr_ru": "Заявка зарегистрирована в системе",
+    "state": "PU0000",
+    "descr_en": "New"
+  },
+  "success": true
+}
+----
 === Отделения и адреса
 
 ==== Получения данных отделений
