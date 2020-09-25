@@ -2916,6 +2916,82 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Получение quasi-parcel по ID/Code
+
+[horizontal]
+protocol_method:: GET
+method_name:: op/quasi-parcel
+method_params:: <parcel_id>
+get_params:: code=<parcel_code>
+expected_result:: 200 { <parcels_datat> }
+
+NOTE: Все поля в `get_params` опциональны
+
+WARNING: `parcel_id` имеет более высокий приоритет чем `code`
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v GET "https://sandbox-api.tbt-post.net/api/v1/op/quasi-parcel/394c8e1f-e196-4d3f-9c1d-c021c9837f23" \
+-H "Content-Type: application/json" \
+-b cookie-jar1.txt
+----
+
+Ответ::
+Server: nginx/1.10.3 +
+Date: Fri, 25 Sep 2020 09:01:19 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 1944 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+    "code": "100000001", 
+    "created_at": "2020-09-01T09:37:09.994246+00:00", 
+    "created_by": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", 
+    "ds_info": {
+        "address_city": "Киев", 
+        "tn_body": "test_ttn_name", 
+        "tn_content_type": "application/json", 
+        "tn_id": "c9eb8ade-9570-430a-87f5-9fd7f2f17afb"
+    }, 
+    "id": "394c8e1f-e196-4d3f-9c1d-c021c9837f23", 
+    "modified_at": "2020-09-01T09:37:10.061440+00:00", 
+    "payload": {
+        "cod_amount": 350, 
+        "contragent_id": "e8459d69-e3bc-41bc-978d-28d6c6abda38", 
+        "created_at": "2018-12-11T11:45:00+00:00", 
+        "delivery_service": "tabata", 
+        "delivery_type": "W2W", 
+        "dest": [
+            "50.405237", 
+            "30.679338"
+        ], 
+        "dest_apartment": "26b10dbb-4f1b-4d45-9c19-ec3cb85d4253", 
+        "note": "", 
+        "order_id": "100000001", 
+        "price": 350, 
+        "receiver": {
+            "email": "example@example.com", 
+            "first_name": "User", 
+            "id": 0, 
+            "last_name": "Test", 
+            "phone": "380666666666"
+        }, 
+        "type": "fragile:A.COD.NR.NA.S000", 
+        "weight": 145
+    }, 
+    "receiver": "1a8c183a-b4ee-42de-af8d-3763cc0d816d", 
+    "sender": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680", 
+    "success": true
+}
+
+----
+
 === Стоимость услуг
 
 ==== Получение общих данных стоимости услуг
