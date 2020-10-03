@@ -43,7 +43,7 @@ WARNING: Для проверки запросов в командной стро
 protocol_method:: POST
 method_name:: agent/parcel
 method_params:: new
-request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...], "rolling_payments": <BOOLEAN>}
+request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>", "patronymic": "<user patronymic>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH>, <HEIGHT>, <DEPTH>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...], "rolling_payments": <BOOLEAN>}
 expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
 NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "contragent_id": "<CONTRAGENT_ID>"}
@@ -932,7 +932,7 @@ Connection: keep-alive +
 protocol_method:: PUT
 method_name:: agent/parcel/update
 method_params:: <PARCEL ID>
-request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
+request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>", "patronymic": "<user patronymic>"}, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>}
 expected_result:: 202 {"success": true}
 
 NOTE: `receiver` опциональный, `cod_amount` и `price` необходимо передавать парой, изменение возможно только в меньшую сторону по сравнению с начальным значением и доступно только для типов отправлений с COD
@@ -1870,7 +1870,7 @@ NOTE: Используемое кодирование для кирилицы в
 protocol_method:: POST
 method_name:: agent/user/new
 method_params:: ----
-request_body:: { "email": "<EMAIL>", "phone": "<PHONE>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>", "gender": "male|female|undef", "birthday": "1970-01-01", "company": { "name": "<COMPANY NAME>", "reg_id": "<REG ID>", "tax_id": "<TAX ID>", "type": "company|pe" } }
+request_body:: { "email": "<EMAIL>", "phone": "<PHONE>", "first_name": "<FIRST NAME>", "last_name": "<LAST NAME>",  "patronymic": "<user patronymic>", "gender": "male|female|undef", "birthday": "1970-01-01", "company": { "name": "<COMPANY NAME>", "reg_id": "<REG ID>", "tax_id": "<TAX ID>", "type": "company|pe" } }
 expected_result:: 200 { "user_id": "<USER ID>", "success": true }
 
 NOTE: поле `company` является опциональным
