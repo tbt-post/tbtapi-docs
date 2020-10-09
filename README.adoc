@@ -1,4 +1,4 @@
-= TbT Platform Developer Suite
+= TBT Cloud Services Developer guide
 
 image::images/tbt-logo-full.png[TbT Platform,400,role="right"]
 
@@ -38,7 +38,7 @@ image:images/F.png[BMS,50,50,role="right"]
 
 === Media Channels
 
-https://www.linkedin.com/company/kasta-group-llc[LinkedIn official]
+https://www.linkedin.com/company/tbt-cloud[LinkedIn official]
 
 https://t.me/tbtpost[Telegram Channel]
 
@@ -46,7 +46,7 @@ https://twitter.com/tbtpost[Twitter Feed]
 
 === Mirrors
 
-https://www.facebook.com/Kasta-Group-LLC-104832931194327[Facebook mirror]
+https://www.facebook.com/TBT-103648548156002/[Facebook mirror]
 
 === Software
 
