@@ -2,9 +2,9 @@
 
 image::images/tbt-logo-full.png[TbT Platform,400,role="right"]
 
-Public API description for https://tbt-post.net[TbT Platform] services and data schemas for ERP-systems
+Public API description for https://tbt-post.net[TBT Cloud] (formerly TbT Platform) services and data schemas for ERP-systems
 
-Описание публичного API для сервисов https://tbt-post.net[платформы TbT] и схемы данных для ERP-систем.
+Описание публичного API для сервисов https://tbt-post.net[облака TBT] и схемы данных для автоматизированного обмена с ERP-системами.
 
 == SaaS services
 
