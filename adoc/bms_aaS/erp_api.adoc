@@ -1969,6 +1969,54 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Получение базовых данных пользователя
+
+protocol_method:: GET
+method_name:: agent/user/<user_id>
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {<user_base_data>}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/user/cf8b0967-f1d3-4e53-aa48-297940415263" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Wed, 28 Oct 2020 12:13:32 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 328 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "first_name": "Test",
+  "last_name": "Test",
+  "success": true,
+  "company": {
+    "reg_id": "12345",
+    "modified_at": "2018-12-24T21:35:39.634642+00:00",
+    "type": "company",
+    "name": "TestCompany",
+    "tax_id": "321654"
+  },
+  "email": "example@example.com",
+  "phone": "380955556622",
+  "patronymic": null,
+  "id": "cf8b0967-f1d3-4e53-aa48-297940415263"
+}
+----
+
+
 === Контрагенты
 
 ==== Регистрация контрагента
