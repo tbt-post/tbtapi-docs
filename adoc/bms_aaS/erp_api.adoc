@@ -48,7 +48,7 @@ expected_result:: 200 {"id" : "<PARSEL ID>", "success": true}
 
 NOTE: Возможно указание параметра `dest` (координаты) *или* `dest_address_id` (ID адреса) 
 
-NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "contragent_id": "<CONTRAGENT_ID>"}
+NOTE: описание `PARCEL_ITEM_SPEC`: {"barcode": "<UNIQ BARCODE>", "sku": "<SUPPLIER SKU NAME>", "name": "<NAME>", "brand": "<BRAND>", "size": "<SIZE>", "quantity": <QUANTITY as INTEGER>, "weight": <WEIGHT GRAM as INTEGER>, "price": <PRICE as DECIMAL(10,2)>, "comment": "<OPTIONAL COMMENT>", "photos":["<OPTIONAL PHOTO_URL_LIST>"], "color": "<OPTIONAL COLOR NAME>", "contragent_id": "<CONTRAGENT_ID>", "non_returnable": <BOOLEAN>}
 
 NOTE: Ключи: +
 `cod_amount`, `contragent_id`, `sender`, `dimensions`, `_comment`, `items`, `rolling_payments` -- *опциональны.* +
@@ -812,6 +812,8 @@ request_body:: { "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYY
 expected_result:: 202 {"success": true}
 
 NOTE: Все ключи -- опциональны, некоторые ключи имеют в зависимостях другие ключи: например `dest` связан с `delivery_type`, `dest_apartment`
+
+NOTE: Праметры `PARCEL ITEM SPEC` описаны в запросе `agent/parcel/new`
 
 IMPORTANT: Изменения применимы только для состояния `Заявка зарегистрирована в системе` (`state == PU0000`)
 
@@ -2114,10 +2116,13 @@ Access-Control-Allow-Headers: Content-Type +
 
 [horizontal]
 protocol_method:: GET
-method_name:: agent/contragent
+method_name:: agent/contragent/
 method_params:: <CONTRAGENT ID>
+get_params:: [merchant_id=<ID>&processor=<fin_processor>]
 request_body:: ----
 expected_result:: 200 {"success": true, "name": "<CONTRAGENT NAME>", "reg_id": "<REGISTRATION ID>", "tax_id": "<TAX ID>", "vat": <VALUE ADDED TAX INT(%)>, "bank_name": "<BANK NAME>", "bank_mfo": "<BANK MFO CODE>", "bank_account": "<ACCOUNT ID>", "enabled": <true|false>, "modified_at": <TIMESTAMP UTC>, "translations": [{"processor": <POS PROCESSOR>, "merchant_id": <POS MERCHANT ID>, {...}, ...}]}
+
+NOTE: `<CONTRAGENT ID>` имее более высокий приоритет чем связка `merchant_id` и `processor` 
 
 []
 Пример запроса/ответа::
@@ -2168,6 +2173,7 @@ Access-Control-Allow-Headers: Content-Type +
 protocol_method:: GET
 method_name:: agent/contragent
 method_params:: list
+get_params:: limit=<result limit, number>
 request_body:: ----
 expected_result:: 200 {"contragents": [{<CONTRAGENT SPEC>}, ...], "success": true}
 
