@@ -35,7 +35,7 @@
     "posop": {
       "type": "string",
       "description": "Payment processor identifier",
-      "enum": ["fcs_term"]
+      "enum": ["fcs_term","electrum","kastapay"]
     },
     "posorder_id": {
       "type": "string",
