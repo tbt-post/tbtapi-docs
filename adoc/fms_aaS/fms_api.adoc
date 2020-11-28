@@ -471,3 +471,53 @@ curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/fin/user/by-phone/380952
   "id": "a5635654-783a-42c8-be2f-51996f2cc050"
 }
 ----
+
+=== Корректировка транзакции
+
+[horizontal]
+protocol_method:: PUT
+method_name:: fin/transaction/correction
+method_params:: ----
+request_body:: {
+ "posorder_id": <pos trans id>,
+ "correction_id": "<pos id of correction>",
+ "amount": <correction sum>,
+ "date": "<date of correction>"
+}
+expected_result:: 200 {"providerid": <trans provider id>, "sum": <corrected trans sum>, "correction": {<added correction: id - platform uuid, correction_id, amount, date}}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/fin/transaction/correction/" -H "Content-Type: application/json" -H "Authorization: Basic ZDUxOWUWIxZTctZWM0NWNlMzc2=" -d '{"posorder_id": "21312311231","correction_id": "123123:12312", "amount": 199, "date": "2020-11-27T08:32:25.501774+00:00"}'
+----
+
+Ответ::
+
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sat, 28 Nov 2020 09:37:33 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 205 +
+Connection: keep-alive +
+
+
+[source, json]
+----
+{
+  "success": true,
+  "providerid": 4043,
+  "sum": 1,
+  "correction": {
+    "date": "2020-11-27T08:32:25.501774+00:00",
+    "amount": 199,
+    "id": "199329ad-7c49-46f5-b9da-df3210092c27",
+    "correction_id": "123123:12312"
+  }
+}
+----
+
+
+
