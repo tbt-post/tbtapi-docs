@@ -1871,6 +1871,55 @@ NOTE: Используемое кодирование для кирилицы в
 
 === Пользователи
 
+==== Получение собственного профиля
+
+protocol_method:: GET
+method_name:: agent/user
+get_params:: ----
+request_body:: ----
+expected_result:: 200 {<user_agent_data>, "success": true}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v "https://sandbox-api.tbt-post.net/api/v1/agent/user" -H "Content-Type: application/json" -H "Authorization: Basic dG9rZW46cGFzc3dk"
+----
+
+Ответ::
+HTTP/1.1 200 OK +
+Server: nginx/1.10.3 +
+Date: Sun, 06 Dec 2020 12:14:29 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 442 +
+Connection: keep-alive +
+
+[source, json]
+----
+{
+  "first_name": "Test first Name",
+  "last_name": "Test last Name",
+  "success": true,
+  "company": {
+    "bank_name": "FakeBank",
+    "name": "FakeAgenr",
+    "modified_at": "2020-04-06T16:20:18.515164+00:00",
+    "reg_id": "12345",
+    "bank_mfo": "123456",
+    "bank_account": "UA541681684",
+    "type": "company",
+    "vat": 20,
+    "tax_id": "321654"
+  },
+  "email": "example@gmail.com",
+  "phone": "380665552211",
+  "patronymic": null,
+  "id": "44ee4ac5-8e42-4e40-821a-3f3e5f13f680"
+}
+----
+
+
 ==== Регистрация пользователя
 
 [horizontal]
