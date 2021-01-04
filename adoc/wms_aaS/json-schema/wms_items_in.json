@@ -1,63 +1,218 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
+  "success": true,
+  "anyOf": [
+    {
+      "required": [
+        "origin",
+        "generated",
+        "serial"
+      ]
+    },
+    {
+      "required": [
+        "origin",
+        "generated",
+        "uid"
+      ]
+    },
+    {
+      "required": [
+        "origin",
+        "userial"
+      ]
+    }
+  ],
+  "dependencies": {
+    "items": {
+      "required": [
+        "definitions",
+        "total"
+      ]
+    }
+  },
+  "additionalProperties": false,
   "definitions": {
-    "task_fulfill": {
+    "color_model_hsl": {
+      "required": [
+        "color_model",
+        "color_value"
+      ],
+      "type": "object",
+      "properties": {
+        "color_value": {
+          "minItems": 3,
+          "items": [
+            {
+              "minimum": 0,
+              "type": "number",
+              "maximum": 360
+            },
+            {
+              "minimum": 0,
+              "type": "number",
+              "maximum": 100
+            },
+            {
+              "minimum": 0,
+              "type": "number",
+              "maximum": 100
+            }
+          ],
+          "additionalItems": false,
+          "type": "array"
+        },
+        "color_model": {
+          "enum": [
+            "hsl"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "task_unload": {
       "type": "object",
       "properties": {
         "action": {
-          "type": "string",
           "enum": [
-            "fulfill"
-          ]
+            "unload"
+          ],
+          "type": "string"
         },
         "spec": {
-          "type": "object",
           "additionalProperties": false,
-          "patternProperties": {
-            "^[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$": {
-              "type": "object",
-              "required": [
-                "items"
+          "required": [
+            "items",
+            "type",
+            "class",
+            "delivery_type",
+            "sender",
+            "receiver",
+            "address_id"
+          ],
+          "type": "object",
+          "properties": {
+            "dest_apartment": {
+              "type": "string"
+            },
+            "address_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "dest_branch_id": {
+              "pattern": "^[^ ]{2,128}$",
+              "type": "string"
+            },
+            "sender": {
+              "$ref": "#/definitions/uuid"
+            },
+            "delivery_service": {
+              "enum": [
+                "self_delivery",
+                "kastapost",
+                "novaposhta",
+                "ukrposhta",
+                "meest",
+                "intime",
+                "justin"
               ],
-              "additionalProperties": false,
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+              "type": "string"
+            },
+            "receiver": {
+              "$ref": "#/definitions/uuid"
+            },
+            "delivery_type": {
+              "enum": [
+                "W2W",
+                "W2D",
+                "D2W",
+                "D2D"
+              ],
+              "type": "string"
+            },
+            "parcel_code": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "pattern": "^[^ ]{6,32}$",
+                  "type": "string",
+                  "description": "some parcel group code, e.g. order id or delivery reg @ external ERP"
+                }
+              ]
+            },
+            "note": {
+              "type": "string"
+            },
+            "receiver_spec": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "additionalProperties": false,
+                  "required": [
+                    "first_name",
+                    "last_name",
+                    "phone"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "reg_id": {
+                      "pattern": "^[^ ]{6,64}$",
+                      "type": "string",
+                      "description": "State register number for legal entity"
+                    },
+                    "phone": {
+                      "pattern": "^[0-9]{12}$",
+                      "type": "string",
+                      "description": "Receiver phone number"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "description": "First name of person | Legal entitity name"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "description": "Last name of person | Business unit structure"
+                    }
                   }
                 }
-              }
+              ]
+            },
+            "items": {
+              "items": {
+                "pattern": "^[^ ]{6,36}$",
+                "type": "string",
+                "description": "unique sku code, e.g. MK0A123456789012"
+              },
+              "type": "array"
+            },
+            "cod_amount": {
+              "minimum": 0.01,
+              "type": "number",
+              "maximum": 9999999999.99,
+              "multipleOf": 0.01
+            },
+            "type": {
+              "enum": [
+                "undef",
+                "papers",
+                "fragile",
+                "goods",
+                "foods",
+                "chemicals",
+                "special",
+                "hazard"
+              ],
+              "type": "string"
+            },
+            "class": {
+              "type": "string",
+              "description": "parcel class, e.g. I.PRP.NR.NA.S000"
             }
           }
         }
       }
-    },
-    "color_model_cmyk": {
-      "type": "object",
-      "properties": {
-        "color_model": {
-          "type": "string",
-          "enum": [
-            "cmyk"
-          ]
-        },
-        "color_value": {
-          "type": "array",
-          "items": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100
-          },
-          "minItems": 4,
-          "maxItems": 4
-        }
-      }
-    },
-    "uuid_v1": {
-      "type": "string",
-      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
     },
     "task": {
       "allOf": [
@@ -79,135 +234,332 @@
         }
       ]
     },
-    "color_model_rgb": {
+    "uuid": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "type": "string"
+    },
+    "color_model_cmyk": {
       "type": "object",
       "properties": {
-        "color_model": {
-          "type": "string",
-          "enum": [
-            "rgb"
-          ]
-        },
         "color_value": {
-          "type": "array",
+          "minItems": 4,
           "items": {
-            "type": "integer",
             "minimum": 0,
-            "maximum": 255
+            "type": "number",
+            "maximum": 100
           },
-          "minItems": 3,
-          "maxItems": 3
+          "type": "array",
+          "maxItems": 4
+        },
+        "color_model": {
+          "enum": [
+            "cmyk"
+          ],
+          "type": "string"
         }
-      },
+      }
+    },
+    "uuid_v1": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "type": "string"
+    },
+    "color_model_lab": {
       "required": [
         "color_model",
         "color_value"
-      ]
-    },
-    "task_store": {
+      ],
       "type": "object",
       "properties": {
-        "action": {
-          "type": "string",
-          "enum": [
-            "store"
-          ]
-        },
-        "spec": {
-          "type": "object",
-          "required": [
-            "items"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "box_code": {
-              "type": "string",
-              "description": "external box barcode",
-              "pattern": "^[^ ]{6,32}$"
+        "color_value": {
+          "minItems": 3,
+          "items": [
+            {
+              "minimum": 0,
+              "type": "number",
+              "maximum": 100
             },
-            "items": {
+            {
+              "minimum": -100,
+              "type": "number",
+              "maximum": 100
+            },
+            {
+              "minimum": -100,
+              "type": "number",
+              "maximum": 100
+            }
+          ],
+          "additionalItems": false,
+          "type": "array"
+        },
+        "color_model": {
+          "enum": [
+            "lab"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "item_class": {
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "weight",
+        "dimensions",
+        "description"
+      ],
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "item_class"
+          ],
+          "type": "string"
+        },
+        "dimensions": {
+          "minItems": 3,
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "array",
+          "description": "width, height, depth, in mm",
+          "maxItems": 3
+        },
+        "weight": {
+          "type": "integer",
+          "description": "weight, in grams"
+        },
+        "description": {
+          "required": [
+            "article",
+            "code",
+            "name",
+            "brand",
+            "type",
+            "size",
+            "size_class",
+            "color",
+            "origin",
+            "composition",
+            "info",
+            "product_id",
+            "photos"
+          ],
+          "type": "object",
+          "properties": {
+            "lang": {
+              "enum": [
+                "ru",
+                "uk",
+                "en"
+              ],
+              "type": "string"
+            },
+            "info": {
+              "type": "string",
+              "description": "verbose description"
+            },
+            "code": {
+              "type": "string",
+              "description": "EAN-13 manufacturer barcode, e.g. 978020137962"
+            },
+            "non_returnable": {
+              "type": "boolean"
+            },
+            "product_id": {
+              "type": "string",
+              "description": "e.g. 431231234"
+            },
+            "tags": {
+              "items": {
+                "pattern": "^[^ ]{3,24}$",
+                "type": "string"
+              },
               "type": "array",
+              "description": "e.g. additional marks to help identify the item",
+              "maxItems": 30
+            },
+            "color": {
+              "additionalProperties": false,
+              "required": [
+                "$ref"
+              ],
+              "type": "object",
+              "properties": {
+                "$ref": {
+                  "$ref": "#/definitions/uuid"
+                }
+              }
+            },
+            "season": {
+              "enum": [
+                "winter",
+                "summer",
+                "spring",
+                "fall",
+                "demi-season",
+                "demi-season-summer",
+                "demi-season-winter",
+                "all-season"
+              ],
+              "type": "string"
+            },
+            "brand": {
+              "type": "string",
+              "description": "e.g. Adidas"
+            },
+            "fragile": {
+              "type": "boolean"
+            },
+            "size_class": {
+              "type": "string",
+              "description": "size chart used, e.g. EU"
+            },
+            "photos": {
               "items": {
                 "type": "string",
-                "description": "unique sku code or ref to item-class"
-              }
+                "format": "uri"
+              },
+              "type": "array"
+            },
+            "gender": {
+              "enum": [
+                "female",
+                "male",
+                "unisex"
+              ],
+              "type": "string"
+            },
+            "price": {
+              "minimum": 0,
+              "type": "number",
+              "maximum": 9999999999.99,
+              "multipleOf": 0.01
+            },
+            "article": {
+              "type": "string"
+            },
+            "size": {
+              "type": "string",
+              "description": "e.g. 42"
+            },
+            "type": {
+              "type": "string",
+              "description": "e.g. shoes"
+            },
+            "composition": {
+              "type": "string",
+              "description": "string with delimiter ';', material substance in '%'"
+            },
+            "origin": {
+              "type": "string",
+              "description": "manufacturer country e.g. Singapore"
+            },
+            "name": {
+              "type": "string",
+              "description": "e.g. Cargo"
             }
           }
         }
       }
     },
-    "color_class_common": {
+    "color_model_rgb": {
+      "required": [
+        "color_model",
+        "color_value"
+      ],
       "type": "object",
+      "properties": {
+        "color_value": {
+          "minItems": 3,
+          "items": {
+            "minimum": 0,
+            "type": "integer",
+            "maximum": 255
+          },
+          "type": "array",
+          "maxItems": 3
+        },
+        "color_model": {
+          "enum": [
+            "rgb"
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "uuid_v4": {
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "type": "string"
+    },
+    "color_class_common": {
+      "additionalProperties": false,
       "required": [
         "type",
         "color_name",
         "color_model",
         "color_id"
       ],
-      "additionalProperties": false,
+      "type": "object",
       "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "color_class"
-          ]
-        },
-        "color_name": {
-          "type": "string"
-        },
+        "color_value": {},
         "color_model": {
-          "type": "string",
           "enum": [
             "undef",
             "rgb",
             "hsl",
             "lab",
             "cmyk"
-          ]
+          ],
+          "type": "string"
         },
-        "color_value": {},
+        "color_name": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "color_class"
+          ],
+          "type": "string"
+        },
         "color_id": {
           "type": "string",
           "description": "reference to color in external system, e.g. 87463234"
         }
       }
     },
-    "color_model_lab": {
+    "task_fulfill": {
       "type": "object",
       "properties": {
-        "color_model": {
-          "type": "string",
+        "action": {
           "enum": [
-            "lab"
-          ]
-        },
-        "color_value": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 100
-            },
-            {
-              "type": "number",
-              "minimum": -100,
-              "maximum": 100
-            },
-            {
-              "type": "number",
-              "minimum": -100,
-              "maximum": 100
-            }
+            "fulfill"
           ],
-          "additionalItems": false,
-          "minItems": 3
+          "type": "string"
+        },
+        "spec": {
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$": {
+              "additionalProperties": false,
+              "required": [
+                "items"
+              ],
+              "type": "object",
+              "properties": {
+                "items": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "type": "object"
         }
-      },
-      "required": [
-        "color_model",
-        "color_value"
-      ]
+      }
     },
     "color_class": {
       "allOf": [
@@ -235,428 +587,92 @@
         }
       ]
     },
-    "uuid_v4": {
-      "type": "string",
-      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    },
-    "uuid": {
-      "type": "string",
-      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-    },
-    "color_model_hsl": {
-      "type": "object",
-      "properties": {
-        "color_model": {
-          "type": "string",
-          "enum": [
-            "hsl"
-          ]
-        },
-        "color_value": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 360
-            },
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 100
-            },
-            {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 100
-            }
-          ],
-          "additionalItems": false,
-          "minItems": 3
-        }
-      },
-      "required": [
-        "color_model",
-        "color_value"
-      ]
-    },
     "color_model_undef": {
       "type": "object",
       "properties": {
-        "color_model": {
-          "type": "string",
-          "enum": [
-            "undef"
-          ]
-        },
         "color_value": {
           "type": "null"
-        }
-      }
-    },
-    "item_class": {
-      "type": "object",
-      "required": [
-        "type",
-        "weight",
-        "dimensions",
-        "description"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "type": "string",
+        },
+        "color_model": {
           "enum": [
-            "item_class"
-          ]
-        },
-        "weight": {
-          "type": "integer",
-          "description": "weight, in grams"
-        },
-        "dimensions": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "minItems": 3,
-          "maxItems": 3,
-          "description": "width, height, depth, in mm"
-        },
-        "description": {
-          "type": "object",
-          "required": [
-            "article",
-            "code",
-            "name",
-            "brand",
-            "type",
-            "size",
-            "size_class",
-            "color",
-            "origin",
-            "composition",
-            "info",
-            "product_id",
-            "photos"
+            "undef"
           ],
-          "properties": {
-            "tags": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "^[^ ]{3,24}$"
-              },
-              "maxItems": 30,
-              "description": "e.g. additional marks to help identify the item"
-            },
-            "color": {
-              "type": "object",
-              "required": [
-                "$ref"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "$ref": {
-                  "$ref": "#/definitions/uuid"
-                }
-              }
-            },
-            "product_id": {
-              "type": "string",
-              "description": "e.g. 431231234"
-            },
-            "name": {
-              "type": "string",
-              "description": "e.g. Cargo"
-            },
-            "article": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string",
-              "description": "e.g. shoes"
-            },
-            "size": {
-              "type": "string",
-              "description": "e.g. 42"
-            },
-            "brand": {
-              "type": "string",
-              "description": "e.g. Adidas"
-            },
-            "lang": {
-              "type": "string",
-              "enum": [
-                "ru",
-                "uk",
-                "en"
-              ]
-            },
-            "season": {
-              "type": "string",
-              "enum": [
-                "winter",
-                "summer",
-                "spring",
-                "fall",
-                "demi-season",
-                "demi-season-summer",
-                "demi-season-winter",
-                "all-season"
-              ]
-            },
-            "photos": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "format": "uri"
-              }
-            },
-            "fragile": {
-              "type": "boolean"
-            },
-            "info": {
-              "type": "string",
-              "description": "verbose description"
-            },
-            "code": {
-              "type": "string",
-              "description": "EAN-13 manufacturer barcode, e.g. 978020137962"
-            },
-            "size_class": {
-              "type": "string",
-              "description": "size chart used, e.g. EU"
-            },
-            "origin": {
-              "type": "string",
-              "description": "manufacturer country e.g. Singapore"
-            },
-            "composition": {
-              "type": "string",
-              "description": "string with delimiter ';', material substance in '%'"
-            },
-            "gender": {
-              "type": "string",
-              "enum": [
-                "female",
-                "male",
-                "unisex"
-              ]
-            },
-            "price": {
-              "type": "number",
-              "minimum": 0.01,
-              "maximum": 9999999999.99,
-              "multipleOf": 0.01
-            }
-          }
-        }
-      }
-    },
-    "task_unload": {
-      "type": "object",
-      "properties": {
-        "action": {
-          "type": "string",
-          "enum": [
-            "unload"
-          ]
-        },
-        "spec": {
-          "type": "object",
-          "required": [
-            "items",
-            "type",
-            "class",
-            "delivery_type",
-            "sender",
-            "receiver",
-            "address_id"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "delivery_service": {
-              "type": "string",
-              "enum": [
-                "self_delivery",
-                "kastapost",
-                "novaposhta",
-                "ukrposhta",
-                "meest",
-                "intime",
-                "justin"
-              ]
-            },
-            "dest_branch_id": {
-              "type": "string",
-              "pattern": "^[^ ]{2,128}$"
-            },
-            "type": {
-              "type": "string",
-              "enum": [
-                "undef",
-                "papers",
-                "fragile",
-                "goods",
-                "foods",
-                "chemicals",
-                "special",
-                "hazard"
-              ]
-            },
-            "cod_amount": {
-              "type": "number",
-              "minimum": 0.01,
-              "maximum": 9999999999.99,
-              "multipleOf": 0.01
-            },
-            "note": {
-              "type": "string"
-            },
-            "dest_apartment": {
-              "type": "string"
-            },
-            "class": {
-              "type": "string",
-              "description": "parcel class, e.g. I.PRP.NR.NA.S000"
-            },
-            "sender": {
-              "$ref": "#/definitions/uuid"
-            },
-            "recevier_spec": {
-              "anyOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "object",
-                  "required": [
-                    "first_name",
-                    "last_name",
-                    "phone"
-                  ],
-                  "properties": {
-                    "first_name": {
-                      "type": "string",
-                      "description": "First name of person | Legal entitity name"
-                    },
-                    "last_name": {
-                      "type": "string",
-                      "description": "Last name of person | Business unit structure"
-                    },
-                    "phone": {
-                      "type": "string",
-                      "description": "Receiver phone number",
-                      "pattern": "^[0-9]{12}$"
-                    },
-                    "reg_id": {
-                      "type": "string",
-                      "description": "State register number for legal entity",
-                      "pattern": "^[^ ]{6,64}$"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              ]
-            },
-            "address_id": {
-              "$ref": "#/definitions/uuid"
-            },
-            "parcel_code": {
-              "anyOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "type": "string",
-                  "description": "some parcel group code, e.g. order id or delivery reg @ external ERP",
-                  "pattern": "^[^ ]{6,32}$"
-                }
-              ]
-            },
-            "items": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "description": "unique sku code, e.g. MK0A123456789012",
-                "pattern": "^[^ ]{6,32}$"
-              }
-            },
-            "receiver": {
-              "$ref": "#/definitions/uuid"
-            },
-            "delivery_type": {
-              "type": "string",
-              "enum": [
-                "W2W",
-                "W2D",
-                "D2W",
-                "D2D"
-              ]
-            }
-          }
+          "type": "string"
         }
       }
     },
     "task_common": {
-      "type": "object",
+      "additionalProperties": false,
       "required": [
         "action",
         "spec"
       ],
-      "additionalProperties": false,
+      "type": "object",
       "properties": {
         "action": {
-          "type": "string",
           "enum": [
             "store",
             "unload",
             "fulfill"
-          ]
+          ],
+          "type": "string"
         },
         "spec": {}
       }
+    },
+    "task_store": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "enum": [
+            "store"
+          ],
+          "type": "string"
+        },
+        "spec": {
+          "additionalProperties": false,
+          "required": [
+            "items"
+          ],
+          "type": "object",
+          "properties": {
+            "items": {
+              "items": {
+                "type": "string",
+                "description": "unique sku code or ref to item-class"
+              },
+              "type": "array"
+            },
+            "box_code": {
+              "pattern": "^[^ ]{6,32}$",
+              "type": "string",
+              "description": "external box barcode"
+            }
+          }
+        }
+      }
     }
   },
-  "additionalProperties": false,
-  "dependencies": {
-    "items": {
-      "required": [
-        "definitions",
-        "total"
-      ]
-    }
-  },
-  "anyOf": [
-    {
-      "required": [
-        "origin",
-        "generated",
-        "serial"
-      ]
-    },
-    {
-      "required": [
-        "origin",
-        "generated",
-        "uid"
-      ]
-    },
-    {
-      "required": [
-        "origin",
-        "userial"
-      ]
-    }
-  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
   "properties": {
+    "origin": {
+      "$ref": "#/definitions/uuid_v4"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/definitions/task"
+      },
+      "type": "array"
+    },
+    "cross_dock": {
+      "type": "boolean"
+    },
     "description": {
       "anyOf": [
         {
-          "type": "string",
           "minLength": 0,
+          "type": "string",
           "maxLength": 255
         },
         {
@@ -664,25 +680,179 @@
         }
       ]
     },
+    "userial": {
+      "$ref": "#/definitions/uuid_v1"
+    },
+    "workflow": {
+      "enum": [
+        "divergence"
+      ],
+      "type": "string"
+    },
     "registry_of": {
       "anyOf": [
         {
-          "type": "string",
           "enum": [
             "direct",
             "reverse-normal",
             "reverse-problem",
             "internal",
             "transfer"
-          ]
+          ],
+          "type": "string"
         },
         {
           "type": "null"
         }
       ]
     },
-    "definitions": {
+    "items": {
+      "items": {
+        "oneOf": [
+          {
+            "pattern": "^[^ ]{8,32}$",
+            "type": "string",
+            "description": "code, e.g. MK0A123456789012"
+          },
+          {
+            "additionalProperties": false,
+            "required": [
+              "type",
+              "quantity",
+              "class",
+              "weight",
+              "dimensions"
+            ],
+            "type": "object",
+            "properties": {
+              "code": {
+                "pattern": "^[^ ]{8,32}$",
+                "type": "string",
+                "description": "code, e.g. MK0A123456789012"
+              },
+              "dimensions": {
+                "minItems": 3,
+                "items": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "type": "array",
+                "description": "width, height, depth, in mm",
+                "maxItems": 3
+              },
+              "weight": {
+                "minimum": 0,
+                "type": "integer",
+                "description": "weight, in grams"
+              },
+              "price": {
+                "minimum": 0,
+                "type": "number",
+                "maximum": 9999999999.99,
+                "multipleOf": 0.01
+              },
+              "box_code": {
+                "pattern": "^[^ ]{8,32}$",
+                "type": "string",
+                "description": "placement, e.g. CUA1022123ZX"
+              },
+              "note": {
+                "type": "string",
+                "description": "text comment, optional"
+              },
+              "quantity": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "type": {
+                "enum": [
+                  "item"
+                ],
+                "type": "string"
+              },
+              "class": {
+                "additionalProperties": false,
+                "required": [
+                  "$ref"
+                ],
+                "type": "object",
+                "properties": {
+                  "$ref": {
+                    "description": "e.g. 730b6997-0b46-4f75-a749-e2f512be25ff",
+                    "$ref": "#/definitions/uuid"
+                  }
+                }
+              },
+              "aliases": {
+                "items": {
+                  "pattern": "^[^ ]{6,32}$",
+                  "type": "string",
+                  "description": "alternative product codes if any"
+                },
+                "type": "array",
+                "maxItems": 10
+              }
+            }
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "produced_by": {
+      "anyOf": [
+        {
+          "enum": [
+            "kp",
+            "up",
+            "np",
+            "me",
+            "it"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "req_pproc": {
+      "type": "boolean"
+    },
+    "is_jumbo": {
+      "type": "boolean"
+    },
+    "req_rac": {
+      "type": "boolean"
+    },
+    "generated": {
+      "minimum": 0,
+      "type": "integer",
+      "description": "timestamp e.g. 1531752070460"
+    },
+    "items_owner": {
+      "$ref": "#/definitions/uuid_v4"
+    },
+    "is_announce": {
+      "type": "boolean"
+    },
+    "jumbo": {
+      "required": [
+        "group_id"
+      ],
       "type": "object",
+      "properties": {
+        "chunks": {
+          "type": "integer"
+        },
+        "chunk": {
+          "type": "integer"
+        },
+        "group_id": {
+          "$ref": "#/definitions/uuid"
+        }
+      }
+    },
+    "definitions": {
       "additionalProperties": false,
       "patternProperties": {
         "^[0-9a-fa-fA-F]{8}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{4}-[0-9a-fa-fA-F]{12}$": {
@@ -695,146 +865,20 @@
             }
           ]
         }
-      }
-    },
-    "req_rac": {
-      "type": "boolean"
-    },
-    "req_pproc": {
-      "type": "boolean"
-    },
-    "cross_doc": {
-      "type": "boolean"
-    },
-    "uid": {
-      "$ref": "#/definitions/uuid"
-    },
-    "is_announce": {
-      "type": "boolean"
-    },
-    "userial": {
-      "$ref": "#/definitions/uuid_v1"
-    },
-    "generated": {
-      "type": "integer",
-      "description": "timestamp e.g. 1531752070460",
-      "minimum": 0
-    },
-    "tasks": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/task"
-      }
+      },
+      "type": "object"
     },
     "serial": {
+      "minimum": 0,
       "type": "integer",
-      "description": "timestamp e.g. 145481128145898",
-      "minimum": 0
-    },
-    "workflow": {
-      "type": "string",
-      "enum": [
-        "divergence"
-      ]
+      "description": "timestamp e.g. 145481128145898"
     },
     "total": {
       "type": "integer",
       "description": "e.g. 10"
     },
-    "items_owner": {
-      "$ref": "#/definitions/uuid_v4"
-    },
-    "origin": {
-      "$ref": "#/definitions/uuid_v4"
-    },
-    "items": {
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "type": "string",
-            "pattern": "^[^ ]{8,32}$",
-            "description": "code, e.g. MK0A123456789012"
-          },
-          {
-            "type": "object",
-            "required": [
-              "type",
-              "quantity",
-              "class",
-              "weight",
-              "dimensions"
-            ],
-            "additionalProperties": false,
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "item"
-                ]
-              },
-              "code": {
-                "type": "string",
-                "pattern": "^[^ ]{8,32}$",
-                "description": "code, e.g. MK0A123456789012"
-              },
-              "quantity": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "class": {
-                "type": "object",
-                "required": [
-                  "$ref"
-                ],
-                "additionalProperties": false,
-                "properties": {
-                  "$ref": {
-                    "$ref": "#/definitions/uuid",
-                    "description": "e.g. 730b6997-0b46-4f75-a749-e2f512be25ff"
-                  }
-                }
-              },
-              "weight": {
-                "type": "integer",
-                "description": "weight, in grams",
-                "minimum": 0
-              },
-              "dimensions": {
-                "type": "array",
-                "items": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "minItems": 3,
-                "maxItems": 3,
-                "description": "width, height, depth, in mm"
-              },
-              "note": {
-                "type": "string",
-                "description": "text comment, optional"
-              }
-            }
-          }
-        ]
-      }
-    },
-    "produced_by": {
-      "anyOf": [
-        {
-          "type": "string",
-          "enum": [
-            "kp",
-            "up",
-            "np",
-            "me",
-            "it"
-          ]
-        },
-        {
-          "type": "null"
-        }
-      ]
+    "uid": {
+      "$ref": "#/definitions/uuid"
     }
   }
 }
