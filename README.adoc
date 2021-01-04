@@ -58,4 +58,4 @@ https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow https://g
 
 &copy; 2019-2020 Kasta Group LLC
 
-&copy; 2020 TBT LLC
+&copy; 2020-2021 TBT LLC
