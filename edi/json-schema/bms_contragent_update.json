@@ -48,6 +48,10 @@
     "msg_for": {
       "$ref": "#/definitions/uuid"
     },
+    "group": {
+      "$ref": "#/definitions/uuid",
+      "description": "Agent group"
+    },
     "transit_enabled": {
       "type": "array",
       "items": [
