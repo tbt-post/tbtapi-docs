@@ -2,6 +2,12 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "description": "Parcel transaction event",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
   "required": [
      "sender", "timestamp", "id", "parcel_id", "contragent_id",
      "posop", "posorder_id", "merchant_id", "amount"
@@ -18,19 +24,16 @@
       "format": "date-time"
     },
     "id": {
-      "type": "string",
-      "description": "Transaction identifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Transaction identifier"
     },
     "parcel_id": {
-      "type": "string",
-      "description": "Parcel identifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Parcel identifier"
     },
     "contragent_id": {
-      "type": "string",
-      "description": "Contragent identifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Contragent identifier"
     },
     "posop": {
       "type": "string",
@@ -68,14 +71,16 @@
       "default": "payment"
     },
     "correction_id":{
-      "type": "string",
-      "description": "Optionally identifies correction",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Optionally identifies correction"
     },
     "msg_for": {
-      "type": "string",
-      "description": "User id to proxy message for",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "User id to proxy message for"
+    },
+    "group": {
+      "$ref": "#/definitions/uuid",
+      "description": "Agent group"
     }
   }
 }

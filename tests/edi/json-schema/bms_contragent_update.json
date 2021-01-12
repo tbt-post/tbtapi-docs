@@ -16,5 +16,6 @@
   "is_proxy" : [ null, false ],
   "transit_enabled" : [ null, true ],
   "provides_processing_for" : [ null, "nobody" ],
-  "msg_for": "88d49278-f493-4682-bf6a-3963e96845ff"
+  "msg_for": "88d49278-f493-4682-bf6a-3963e96845ff",
+  "group": "e7f4b2dc-1648-4497-8b43-792c6d8c70c2"
 }

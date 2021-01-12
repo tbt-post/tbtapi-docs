@@ -2,6 +2,16 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "description": "FMS eMoney event message",
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "uuid_v1": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  },
   "required": [
     "sender",
     "timestamp",
@@ -29,9 +39,8 @@
       "format": "date-time"
     },
     "serial": {
-      "type": "string",
-      "description": "Event unique serial identifier (uuid v1)",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid_v1",
+      "description": "Event unique serial identifier (uuid v1)"
     },
     "money_type": {
       "type": "string",
@@ -50,9 +59,8 @@
       "description": "Payment system transaction identifier"
     },
     "transaction_id": {
-      "type": "string",
-      "description": "Transaction unique identifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Transaction unique identifier"
     },
     "emoney_amount": {
       "type": [
@@ -90,9 +98,8 @@
       "description": "Payment reason/description, formal"
     },
     "contragent_id": {
-      "type": "string",
-      "description": "Contragent identifier",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "Contragent identifier"
     },
     "contragent_reg_id": {
       "type": "string",
@@ -115,9 +122,12 @@
       "description": "Target wallet reference, informal"
     },
     "msg_for": {
-      "type": "string",
-      "description": "User id to proxy message for",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      "$ref": "#/definitions/uuid",
+      "description": "User id to proxy message for"
+    },
+    "group": {
+      "$ref": "#/definitions/uuid",
+      "description": "Agent group"
     }
   }
 }
