@@ -28,7 +28,7 @@
     },
     "id": {
       "$ref": "#/definitions/uuid",
-      "description": "Document indentifier",
+      "description": "Document indentifier"
     },
     "office": {
       "$ref": "#/definitions/uuid"
