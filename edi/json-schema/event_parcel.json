@@ -36,7 +36,7 @@
         },
         "id": {
           "$ref": "#/definitions/uuid",
-          "description": "Parcel identificator",
+          "description": "Parcel identificator"
         },
         "order_id": {
           "type": "string",
