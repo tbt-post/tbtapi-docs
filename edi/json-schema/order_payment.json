@@ -74,6 +74,11 @@
       "$ref": "#/definitions/uuid",
       "description": "Optionally identifies correction"
     },
+    "integration": {
+      "type": "string",
+      "description": "Optionally identifies particular posop integration",
+      "pattern": "^[^ ]{2,64}$"
+    },
     "msg_for": {
       "$ref": "#/definitions/uuid",
       "description": "User id to proxy message for"
