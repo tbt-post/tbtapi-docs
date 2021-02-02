@@ -79,6 +79,10 @@
       "description": "Optionally identifies particular posop integration",
       "pattern": "^[^ ]{2,64}$"
     },
+    "transit": {
+      "type": "boolean",
+      "description": "Optional flag for transit payment type"
+    },
     "msg_for": {
       "$ref": "#/definitions/uuid",
       "description": "User id to proxy message for"
