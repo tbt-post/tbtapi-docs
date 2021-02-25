@@ -96,6 +96,41 @@ Access-Control-Allow-Headers: Content-Type
 
 NOTE: При повторном отправлении запроса с такими же параметрами, сервер ответит ошибкой "409" и сообщением "{"message": "Order TEST0001 already registered", "success": false}"
 
+==== Отмена посылки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/cancel
+method_params:: <PARCEL ID>
+get_params:: ----
+request_body:: {}
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/cancel/bc769fa4-d8e9-469b-9e39-3a50c7c2326c" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{}'
+----
+
+Ответ::
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Thu, 25 Feb 2021 11:04:55 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+
+
+
+[source, json]
+----
+{"success": true}
+----
 
 ==== Получение по id/code
 
