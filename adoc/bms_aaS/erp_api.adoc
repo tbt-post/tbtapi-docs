@@ -185,11 +185,8 @@ expected_result:: 200 {"success": true,"total": <num>,"parcels":[<parcels list>]
 | sender_email
 | <email>
 
-| pattern_id
-| <like pattern>
-
-| pattern_code
-| <like pattern>
+| parcel parent
+| <parcel parent_id (if exist)>
 
 | interval_from
 | <date-time>
@@ -200,8 +197,6 @@ expected_result:: 200 {"success": true,"total": <num>,"parcels":[<parcels list>]
 | interval_field
 | created_at/modified_at/checked_in_at (default created_at)
 
-| pentity_recur
-| true/false  - поиск рекурсивно по полю pentity
 |====================
 
 Пример запроса/ответа::
