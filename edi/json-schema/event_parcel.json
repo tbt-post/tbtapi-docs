@@ -4,7 +4,8 @@
   "description": "Percel event",
   "oneOf": [
     {"$ref": "#/definitions/order_return"},
-    {"$ref": "#/definitions/change_state"}
+    {"$ref": "#/definitions/change_state"},
+    {"$ref": "#/definitions/ttl_info"}
   ],
 
   "definitions": {
@@ -154,6 +155,52 @@
           "type": "boolean",
           "description": "Is the parcel is of quasi-parcel type",
           "default": false
+        },
+        "origin": {
+          "$ref": "#/definitions/uuid"
+        },
+        "owner": {
+          "$ref": "#/definitions/uuid"
+        },
+        "msg_for": {
+          "$ref": "#/definitions/uuid",
+          "description": "User id to proxy message for"
+        },
+        "group": {
+          "$ref": "#/definitions/uuid",
+          "description": "Agent group"
+        }
+      }
+    },
+
+    "ttl_info": {
+      "type": "object",
+      "required": ["sender", "timestamp", "msgtype", "id", "starts_from", "ttl_days"],
+      "properties": {
+        "sender": {
+          "type": "string",
+          "enum": ["tabata", "tabata_wms", "tbt", "tbt_bms", "tbt_wms"]
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "msgtype": {
+          "type": "string",
+          "enum": ["TTLInfo"]
+        },
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "starts_from": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Parcel storage TTL starting date"
+        },
+        "ttl_days": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Parcel storage TTL days limit"
         },
         "origin": {
           "$ref": "#/definitions/uuid"
