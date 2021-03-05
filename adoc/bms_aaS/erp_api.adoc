@@ -96,6 +96,126 @@ Access-Control-Allow-Headers: Content-Type
 
 NOTE: При повторном отправлении запроса с такими же параметрами, сервер ответит ошибкой "409" и сообщением "{"message": "Order TEST0001 already registered", "success": false}"
 
+==== Отмена посылки
+
+[horizontal]
+protocol_method:: PUT
+method_name:: agent/parcel/cancel
+method_params:: <PARCEL ID>
+get_params:: ----
+request_body:: {}
+expected_result:: 200 {"success": true}
+
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X PUT "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/cancel/bc769fa4-d8e9-469b-9e39-3a50c7c2326c" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic dG9rZW46cGFzc3dk" \
+-d '{}'
+----
+
+Ответ::
+HTTP/1.1 202 Accepted +
+Server: nginx/1.10.3 +
+Date: Thu, 25 Feb 2021 11:04:55 GMT +
+Content-Type: application/json; charset=utf-8 +
+Content-Length: 17 +
+Connection: keep-alive +
+
+
+
+[source, json]
+----
+{"success": true}
+----
+
+
+==== Поиск посылки
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/search
+method_params:: ---
+get_params:: <table below> 
+request_body:: ----
+expected_result:: 200 {"success": true,"total": <num>,"parcels":[<parcels list>]
+
+.Типы параметров поиска:
+[width="80%",cols=2,options="header"]
+|====================
+| параметр
+| тип
+
+| limit
+| <num>
+
+| offset
+| <offset>
+
+| sort_by
+| <parcel_model_field>
+
+| sort_order
+| asc/desc
+
+| <parcel_model_field>
+| ['sender', 'receiver', 'agent', 'parent', 'address_id', 'transfer_via', 'type', 'class', 'state', 'is_open', 'is_paid', 'goes_back']
+
+| office_id
+| <uuid>
+
+| pentity - рекурсивный поиск по ресурсу отделения
+| <uuid>
+
+| state[]
+| <parcel state list>
+
+| receiver_phone
+| <phone>
+
+| sender_phone
+| <phone>
+
+| participant_phone
+| <phone>
+
+| sender_email
+| <email>
+
+| parcel parent
+| <parcel parent_id (if exist)>
+
+| interval_from
+| <date-time>
+
+| interval_to
+| <date-time>
+
+| interval_field
+| created_at/modified_at/checked_in_at (default created_at)
+
+|====================
+
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+
+----
+
+Ответ::
+
+
+
+[source, json]
+----
+
+----
+
+
 
 ==== Получение по id/code
 

@@ -13,5 +13,7 @@
   "operation": "payment",
   "correction_id": "974f1826-0648-4ba8-8b12-7fb95f8eaeb9",
   "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de",
-  "group": "e7f4b2dc-1648-4497-8b43-792c6d8c70c2"
+  "group": "e7f4b2dc-1648-4497-8b43-792c6d8c70c2",
+  "transit": true,
+  "integration": "fafa"
 }
