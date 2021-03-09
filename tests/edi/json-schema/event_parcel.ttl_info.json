@@ -1,0 +1,12 @@
+{
+  "sender": "tbt_bms",
+  "timestamp": "2020-03-23T17:07:33.438Z",
+  "msgtype": "TTLInfo",
+  "id": "3d9cddc1-f71d-0d6a-6343-010ccfc800a6",
+  "starts_from": "2021-04-09",
+  "ttl_days": 100,
+  "origin": "aac099d5-f520-4c00-95ab-cc445bec8920",
+  "owner": "46f69d00-4389-444b-9174-26b1f6f0bafa",
+  "msg_for": "deeaea34-ff10-48dd-bf54-82add4b931de",
+  "group": "e7f4b2dc-1648-4497-8b43-792c6d8c70c2"
+}
