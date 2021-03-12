@@ -14,8 +14,7 @@
   "type": "object",
   "required": [
     "serial",
-    "item",
-    "reference"
+    "item"
   ],
   "properties": {
     "serial": {
