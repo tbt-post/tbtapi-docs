@@ -21,6 +21,9 @@
     "serial": {
       "$ref": "#/definitions/uuid_v1"
     },
+    "document_id": {
+      "$ref": "#/definitions/uuid"
+    },
     "items": {
       "type": "array",
       "items": {
