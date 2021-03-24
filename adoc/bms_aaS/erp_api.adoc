@@ -179,6 +179,9 @@ expected_result:: 200 {"success": true,"total": <num>,"parcels":[<parcels list>]
 | sender_phone
 | <phone>
 
+| address_city
+| <City name>
+
 | participant_phone
 | <phone>
 
