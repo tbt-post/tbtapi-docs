@@ -1267,6 +1267,162 @@ Access-Control-Allow-Headers: Content-Type +
 }
 ----
 
+==== Добавление списка отправлений в группу
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/group
+method_params:: ----
+request_body:: {"parcel_ids": [<parcel_id's_list>]}
+
+WARNING: Допустимое состояние посылки для добавление в реестр - `PU0000`
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/group" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic MGE3OmtSZnR2dzdX" \
+-d '{"parcel_ids": ["84d56efc-b58a-4041-bcfb-14adb231b5f4","5abe6b25-e9ec-4866-8eda-6ffb02975070"]}'
+----
+
+Ответ::
+
+[source, json]
+----
+{"rowcount": 2, "group_id": "B210413-0015441", "success": true}
+----
+
+==== Добавление отправлений в уже существующую группу
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/group
+method_params:: ----
+request_body:: {"parcel_ids": [<parcel_id's_list>], "group_id": <"group_id">}
+
+WARNING: Допустимое состояние посылки для добавление в реестр - `PU0000`
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/group" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic NWEwMGE3OmtSZnR2dzdX" \
+-d '{"parcel_ids": ["4f4c0cb5-8eb1-4155-80c4-707db4bc900c"], "group_id": "B210413-0015441"}'
+----
+
+Ответ::
+
+[source, json]
+----
+{"rowcount": 1, "group_id": "B210413-0015441", "success": true}
+----
+
+==== Получить список посылок группы
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/list/group/
+method_params:: group_id
+request_body:: ----
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/list/group/B210413-0015441?limit=200&offset=0" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic WEwMGE3OmtSZnR2dzdX" 
+----
+
+Ответ::
+
+[source, json]
+----
+{"total": 3, "parcels": [<parcels_list>], "success": true}
+----
+
+==== Удаление отправлений из группы
+
+[horizontal]
+protocol_method:: POST
+method_name:: agent/parcel/group/del
+method_params:: ----
+request_body:: {"parcel_ids": [<parcel_id's_list>], "group_id": <"group_id">}
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X POST "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/group/del" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic EwMGE3OmtSZnR2dzdX" \
+-d '{"parcel_ids": ["4f4c0cb5-8eb1-4155-80c4-707db4bc900c"], "group_id": "B210413-0015441"}'
+----
+
+Ответ::
+
+[source, json]
+----
+{"rowcount": 1, "success": true}
+----
+
+
+==== Получить список груп за день
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/parcel/groups
+method_params:: date=<ISO DATE>
+request_body:: ----
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-api.tbt-post.net/api/v1/agent/parcel/groups?date=2021-04-13" \
+-H "Content-Type: application/json" \
+-H "Authorization: Basic NWEwMGE3OmtSZnR2dzdX"
+----
+
+Ответ::
+
+[source, json]
+----
+{"items": ["B210413-0015441"], "success": true}
+----
+
+==== Получение печатной формы реестра
+
+[horizontal]
+protocol_method:: GET
+method_name:: agent/print-renderer/compile/kp/grouped-shipments
+method_params:: group-id=<group_id> +
+agent=<agent_user_id> + 
+sender-office=<preferred_office_id> +
+request_body:: ----
+
+[]
+Пример запроса/ответа::
+Запрос::
+[source, shell]
+----
+curl -v -X GET "https://sandbox-ui-v2.tbt-post.net/api/v1/agent/print-renderer/compile/kp/grouped-shipments?group-id=B210413-0015441&agent=44ee4ac5-8e42-4e40-821a-3f3e5f13f680&sender-office=e0b05432-63a7-4e2e-9c7d-9d1eaaa04b78&inline=true" -H "Content-Type: application/json" -H "Authorization: Basic EwMGE3OmtSZnR2dzdX" --output registry.pdf
+----
+
+Ответ::
+
+<pdf_file>
+
+
+
+
 === Quasi-parcel
 
 ==== Создание заявки на новый quasi-parcel
