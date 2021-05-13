@@ -3,6 +3,7 @@
   "timestamp": "2020-03-23T17:07:33.438Z",
   "msgtype": "TTLInfo",
   "id": "3d9cddc1-f71d-0d6a-6343-010ccfc800a6",
+  "code": "ABCDEFGHIJKLMNOP",
   "starts_from": "2021-04-09",
   "ttl_days": 100,
   "origin": "aac099d5-f520-4c00-95ab-cc445bec8920",

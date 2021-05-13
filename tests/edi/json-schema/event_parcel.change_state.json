@@ -3,6 +3,7 @@
   "timestamp": "2020-03-23T17:07:33.438Z",
   "msgtype": "ChangeState",
   "id": "dec33351-53a8-4c68-a840-aed5aca308a4",
+  "code": "ABCDEFGHIJKLMNOP",
   "state": "PO0100",
   "pentity": "fd6b34c5-a331-cbbf-cade-ea4bd225fdb0",
   "weight": 343,

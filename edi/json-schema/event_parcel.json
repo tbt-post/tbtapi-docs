@@ -39,9 +39,13 @@
           "$ref": "#/definitions/uuid",
           "description": "Parcel identificator"
         },
+        "code": {
+          "type": "string",
+          "description": "Parcel code"
+        },
         "order_id": {
           "type": "string",
-          "description": "Parcel code (i.e. order ID)"
+          "description": "Returned (cancelled) parcel code (i.e. order ID)"
         },
         "reason": {
           "type": "string",
@@ -110,7 +114,10 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
-
+        "code": {
+          "type": "string",
+          "description": "Parcel code"
+        },
         "state": {
           "type": "string",
           "description": "New state identifier"
@@ -190,6 +197,10 @@
         },
         "id": {
           "$ref": "#/definitions/uuid"
+        },
+        "code": {
+          "type": "string",
+          "description": "Parcel code"
         },
         "starts_from": {
           "type": "string",
