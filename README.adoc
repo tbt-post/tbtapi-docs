@@ -1,10 +1,10 @@
 = TBT Cloud Services Developer guide
 
-image::images/tbt-logo-full.png[TbT Platform,400,role="right"]
+image::images/tbt-logo-full.png[TBT Cloud,400,role="right"]
 
-Public API description for https://tbt-post.net[TBT Cloud] (formerly TbT Platform) services and data schemas for ERP-systems
+Public API technical description for https://tbt-post.net[TBT Cloud] (formerly TbT Platform) services and data schemas for ERP-systems
 
-Описание публичного API для сервисов https://tbt-post.net[облака TBT] и схемы данных для автоматизированного обмена с ERP-системами.
+Технические описания публичного API для сервисов https://tbt-post.net[облака TBT] и схемы данных для автоматизированного обмена с ERP-системами.
 
 == SaaS services
 
@@ -52,10 +52,22 @@ https://www.facebook.com/TBT-103648548156002/[Facebook mirror]
 
 https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow https://github.com/tbt-post/tbtapi-docs/tree/master/edi[EDI] https://github.com/tbt-post/tbtapi-docs/releases/latest[versioning])
 
+== Integrations
+
+=== ADC-UA
+
+UA Deliveries PRO -- Is the unique multicloud solution for digitization of Ukrainian logistics, retail and financial markets
+
+Link: https://ua.deliveries.pro
+
 == Copyrights
 
-&copy; 2016-2018 TabaTa LLC
+&copy; 2020-2021 TBT LLC
 
 &copy; 2019-2020 Kasta Group LLC
 
-&copy; 2020-2021 TBT LLC
+&copy; 2016-2018 TabaTa LLC
+
+
+
+
