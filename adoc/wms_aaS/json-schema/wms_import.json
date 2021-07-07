@@ -1,0 +1,237 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "uuid": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "url": {
+            "type": "string",
+            "pattern": "^https?:\\/\\/\\S+$"
+        }
+    },
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "external_box_code",
+        "external_document",
+        "external_datetime",
+        "items"
+    ],
+    "properties": {
+        "serial": {
+            "$ref": "#/definitions/uuid"
+        },
+        "processed": {
+            "type": "boolean"
+        },
+        "external_box_code": {
+            "type": "string",
+            "pattern": "^[^ ]{3,24}$"
+        },
+        "external_document": {
+            "type": "string"
+        },
+        "external_datetime": {
+            "type": "string"
+        },
+        "items": {
+            "type": "object",
+            "patternProperties": {
+                "^[^ ]{6,32}$": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "price",
+                        "note",
+                        "owner",
+                        "class"
+                    ],
+                    "properties": {
+                        "price": {
+                            "type": "number"
+                        },
+                        "note": {
+                            "type": "string"
+                        },
+                        "owner": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "$ref"
+                            ],
+                            "properties": {
+                                "$ref": {
+                                    "$ref": "#/definitions/uuid"
+                                }
+                            }
+                        },
+                        "class": {
+                            "type": "object",
+                            "required": [
+                                "type",
+                                "weight",
+                                "dimensions",
+                                "description"
+                            ],
+                            "additionalProperties": false,
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "item_class"
+                                    ]
+                                },
+                                "weight": {
+                                    "type": "integer",
+                                    "description": "weight, in grams"
+                                },
+                                "dimensions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    },
+                                    "minItems": 3,
+                                    "maxItems": 3,
+                                    "description": "width, height, depth, in mm"
+                                },
+                                "description": {
+                                    "type": "object",
+                                    "required": [
+                                        "article",
+                                        "code",
+                                        "name",
+                                        "brand",
+                                        "type",
+                                        "size",
+                                        "size_class",
+                                        "color",
+                                        "origin",
+                                        "composition",
+                                        "info",
+                                        "product_id",
+                                        "photos"
+                                    ],
+                                    "properties": {
+                                        "tags": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "pattern": "^[^ ]{3,24}$"
+                                            },
+                                            "maxItems": 30,
+                                            "description": "e.g. additional marks to help identify the item"
+                                        },
+                                        "color": {
+                                            "type": "object",
+                                            "required": [
+                                                "$ref"
+                                            ],
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "$ref": {
+                                                    "$ref": "#/definitions/uuid"
+                                                }
+                                            }
+                                        },
+                                        "non_returnable": {
+                                            "type": "boolean"
+                                        },
+                                        "product_id": {
+                                            "type": "string",
+                                            "description": "e.g. 431231234"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "description": "e.g. Cargo"
+                                        },
+                                        "article": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "description": "e.g. shoes"
+                                        },
+                                        "size": {
+                                            "type": "string",
+                                            "description": "e.g. 42"
+                                        },
+                                        "brand": {
+                                            "type": "string",
+                                            "description": "e.g. Adidas"
+                                        },
+                                        "lang": {
+                                            "type": "string",
+                                            "enum": [
+                                                "ru",
+                                                "uk",
+                                                "en"
+                                            ]
+                                        },
+                                        "season": {
+                                            "type": "string",
+                                            "enum": [
+                                                "winter",
+                                                "summer",
+                                                "spring",
+                                                "fall",
+                                                "demi-season",
+                                                "demi-season-summer",
+                                                "demi-season-winter",
+                                                "all-season"
+                                            ]
+                                        },
+                                        "photos": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/url"
+                                            }
+                                        },
+                                        "fragile": {
+                                            "type": "boolean"
+                                        },
+                                        "info": {
+                                            "type": "string",
+                                            "description": "verbose description"
+                                        },
+                                        "code": {
+                                            "type": "string",
+                                            "description": "EAN-13 manufacturer barcode, e.g. 978020137962"
+                                        },
+                                        "size_class": {
+                                            "type": "string",
+                                            "description": "size chart used, e.g. EU"
+                                        },
+                                        "origin": {
+                                            "type": "string",
+                                            "description": "manufacturer country e.g. Singapore"
+                                        },
+                                        "composition": {
+                                            "type": "string",
+                                            "description": "string with delimiter ';', material substance in '%'"
+                                        },
+                                        "gender": {
+                                            "type": "string",
+                                            "enum": [
+                                                "female",
+                                                "male",
+                                                "unisex"
+                                            ]
+                                        },
+                                        "price": {
+                                            "type": "number",
+                                            "minimum": 0.0,
+                                            "maximum": 9.99999999999E9,
+                                            "multipleOf": 0.01
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
