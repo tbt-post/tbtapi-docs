@@ -22,6 +22,9 @@
         "serial": {
             "$ref": "#/definitions/uuid"
         },
+        "wh": {
+            "$ref": "#/definitions/uuid"
+        },
         "processed": {
             "type": "boolean"
         },
