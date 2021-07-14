@@ -44,7 +44,7 @@ protocol_method:: POST
 method_name:: agent/parcel
 method_params:: new
 request_body:: {"order_id": "<EXT Order ID>", "receiver": { "id": "<EXT User ID>", "phone": "<PHONE 380XXYYYYYYY>", "email" : "<USER EMAIL>", "first name" : "<FIRST NAME>", "last_name": "<LAST NAME>", "patronymic": "<user patronymic>"}, "delivery_type": "<DELIVERY TYPE>", "dest" : [<LATITUDE>, <LONGITUDE>], ["dest_address_id": "<destination address ID>"], "dest_apartment": "<DEST APARTMENT>", "weight" : <WEIGHT GRAM as INTEGER>, "price" : <PRICE as DECIMAL(10,2)>, "cod_amount" : <PRICE as DECIMAL(10,2)>, "type" : "<TYPE CODE>:<CLASS CODE>", "note" : "<USER NOTE>", "created_at": "<DATE TIME in ISO 8601>", "contragent_id" : "<CONTRAGENT ID>", "sender": "<SENDER USER ID>", "dimensions": [<WIDTH, mm AS INTEGER>, <HEIGHT, mm AS INTEGER>, <DEPTH, mm AS INTEGER>], "_comment" : "<SENDER's comment>", "items": [<PARCEL ITEM SPEC>, ...], "rolling_payments": <BOOLEAN>}
-expected_result:: 200 {"id" : "<PARSEL ID>", "code": "<ttn-code>", "success": true}
+expected_result:: 200 {"id" : "<PARSEL ID>", "code": "<TTN CODE>", "success": true}
 
 NOTE: Если не указывать `order_id` в теле запроса, он будет сгенерирован системой. 
 
