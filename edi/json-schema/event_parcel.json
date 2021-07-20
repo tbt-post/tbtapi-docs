@@ -213,6 +213,12 @@
           "maximum": 1000,
           "description": "Parcel storage TTL days limit"
         },
+        "ttl_days_max": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Parcel storage TTL maximum days limit"
+        },
         "origin": {
           "$ref": "#/definitions/uuid"
         },
