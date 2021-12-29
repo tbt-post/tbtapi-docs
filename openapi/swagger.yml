@@ -1,0 +1,108 @@
+openapi: 3.0.3
+
+servers:
+  - url: https://sandbox-api.tbt-post.net/api/v1
+
+info:
+  description: >-
+    This document roughly describes TBT Cloud public API.
+  version: 1.4.1
+  title: TBT Cloud API
+  license:
+    name: Apache-2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+
+externalDocs:
+  description: Find out more about TBT Cloud
+  url: 'https://tbt-post.net'
+
+tags:
+  - name: Common
+    description: Common API part
+
+  - name: WMS
+    description: WMS SaaS specific part
+
+  - name: BMS
+    description: BMS SaaS specific part
+
+  - name: FMS
+    description: FMS AaaS specific part
+
+paths:
+
+  /:
+    get:
+      tags:
+        - Common
+      summary: Get API info
+      description: Retrieve basic API information
+      operationId: info
+      responses:
+        "200":
+          description: Returns API info
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SimpleResponse"
+                  - type: object
+                    required:
+                      - profile
+                      - version
+                      - build
+                      - api_version
+                    properties:
+                      profile:
+                        type: string
+                        enum:
+                          - dev
+                          - staging
+                          - next
+                          - prod
+                        example: "dev"
+                      version:
+                        type: string
+                        example: "1.4.1"
+                      build:
+                        type: string
+                        example: "devel:74fa5021"
+                      api_version:
+                        type: string
+                        description: Current API version level for /api/v{level}
+                        default: "1"
+                        example: "1"
+      security: [] # No security
+
+components:
+  requestBodies:
+    EmptyBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+      description: Empty JSON body
+      required: true
+
+  schemas:
+    SimpleResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          description: operation result
+          type: boolean
+          example: true
+        message:
+          description: error message if success = false
+          type: string
+          nullable: true
+          required: false
+        trace:
+          description: error trace if any
+          type: string
+          nullable: true
+          required: false
+      additionalProperties: false
