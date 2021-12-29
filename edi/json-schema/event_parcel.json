@@ -92,6 +92,10 @@
         "msg_for": {
           "$ref": "#/definitions/uuid",
           "description": "User id to proxy message for"
+        },
+        "group": {
+          "$ref": "#/definitions/uuid",
+          "description": "Agent group"
         }
       }
     },
