@@ -56,13 +56,13 @@ https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow https://g
 
 === ADC-UA
 
-UA Deliveries PRO -- Is the unique multicloud solution for digitization of Ukrainian logistics, retail and financial markets
+UA Deliveries PRO -- Is the unique multicloud solution for digitization of Ukrainian logistics, retail and financial markets that combines logistical solutions of TBT Cloud with data storage and processing DKD platform.
 
-Link: https://ua.deliveries.pro
+Link: https://dkdhub.com
 
 == Copyrights
 
-&copy; 2020-2021 TBT LLC
+&copy; 2020-2022 TBT LLC
 
 &copy; 2019-2020 Kasta Group LLC
 
