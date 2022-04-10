@@ -60,11 +60,13 @@ The mirrors are not intended to deliver all information or to do deliver it imme
 
 Зеркала не предназначены для доставки всей информации или ее немедленной доставки, но для вашего удобства мы также ведем следующие учетные записи:
 
-https://t.me/tbtpost[Telegram Channel, eng]
-
 https://twitter.com/tbtpost[Twitter Feed, eng/ukr]
 
 https://www.facebook.com/TBT-103648548156002/[Facebook mirror, eng/ukr]
+
+=== Notifications
+
+https://t.me/tbtpost[Telegram Channel, eng]
 
 === Software
 
