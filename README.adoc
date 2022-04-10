@@ -74,11 +74,11 @@ https://github.com/tbt-post/edi-receiver[EDI Receiver] (please, follow https://g
 
 ==== PDT
 
-https://play.google.com/store/apps/details?id=com.dkdhub.pdt[PDT]
+https://play.google.com/store/apps/details?id=com.dkdhub.pdt[PDT, android]
 
 Portable data terminal (PDT) for WMS SaaS owners has builtin support of main TBT scenarios.
 
-Терминал сбора данных (ТСД) для владельцев WMS SaaS имеет встроенную поддержку основных сценариев TBT.
+Терминал сбора данных (ТСД) для владельцев WMS SaaS - имеет встроенную поддержку основных сценариев TBT.
 
 == Integrations
 
@@ -86,7 +86,7 @@ Portable data terminal (PDT) for WMS SaaS owners has builtin support of main TBT
 
 ADC-UA -- Is the unique multicloud solution for digitization of Ukrainian logistics, retail and financial markets that combines logistical solutions of TBT Cloud with data storage and processing power provided by DKDHUB platform. Also covers accounting tasks, intergations and 1C migrations for ukrainian users. Services provided by https://www.linkedin.com/company/innologis[Innologis LLC]
 
-ADC-UA - уникальное мульти-облачное решение для диджитизации украинских логистических, розничных и финансовых рынков, сочетающее логистические решения TBT Cloud с мощностями хранения и обработки данных, предоставляемыми платформой DKDHUB. Также охватывает задачи учета, взаимодействия и миграции 1С для украинских пользователей. Услуги предоставляются https://www.linkedin.com/company/innologis [ООО «Иннолоджис»]
+ADC-UA - уникальное мульти-облачное решение для диджитизации украинских логистических, розничных и финансовых рынков, сочетающее логистические решения TBT Cloud с мощностями хранения и обработки данных, предоставляемыми платформой DKDHUB. Также охватывает задачи учета, взаимодействия и миграции 1С для украинских пользователей. Услуги предоставляются https://www.linkedin.com/company/innologis[ООО «Иннолоджис»]
 
 Link: https://dkdhub.com
 
