@@ -2,7 +2,7 @@
 
 image::images/tbt-logo-full.png[TBT Cloud,400,role="right"]
 
-Public API technical description for https://tbt-post.net[TBT Cloud] (formerly TbT Platform) services and data schemas for ERP-systems
+Public API technical description for https://tbt-post.net[TBT Cloud] services and data schemas to build automatic exchange with ERP-systems
 
 Технические описания публичного API для сервисов https://tbt-post.net[облака TBT] и схемы данных для автоматизированного обмена с ERP-системами.
 
