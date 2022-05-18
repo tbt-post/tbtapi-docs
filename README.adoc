@@ -1,6 +1,6 @@
 = TBT Cloud Services Developer guide
 
-image::images/tbt-logo-full.png[TBT Cloud,400,role="right"]
+image::https://github.com/tbt-post/.github/blob/main/TBT-Cloud-icon-512px.png[TBT Cloud,200,role="right"]
 
 Public API technical description for https://tbt-post.net[TBT Cloud] services and data schemas for ERP-systems
 
@@ -95,6 +95,8 @@ Link: https://dkdhub.com
 == Copyrights
 
 &copy; 2020-2022 TBT LLC
+
+&copy; 2021-2022 Innologis LLC and partners
 
 === Previous (historical) maintainers
 
