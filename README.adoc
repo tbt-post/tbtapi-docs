@@ -34,12 +34,6 @@ image:images/F.png[BMS,50,50,role="right"]
 
 Система управления финансовыми сервисами
 
-== Additional resources
-
-All and any fresh and actual intformation about the project, conditions, services and so on is published at https://www.linkedin.com/company/tbt-cloud[LinkedIn] - follow us there to stay informed.
-
-Вся свежая и актуальная информация о проекте, условиях, услугах и так далее опубликована на https://www.linkedin.com/company/tbt-cloud[LinkedIn] - присоединяйтесь, чтобы оставаться в курсе событий.
-
 === Applications
 
 Cloud-wide auth: https://auth.tbt-post.net
@@ -50,19 +44,13 @@ BMS: https://bms.tbt-post.net
 
 WMS: https://wms.tbt-post.net
 
-=== Media Channels
-
-https://www.linkedin.com/company/tbt-cloud[LinkedIn official]
-
 === Mirrors
 
 The mirrors are not intended to deliver all information or to do deliver it immediately but for your convenience we also maintain the following accounts:
 
 Зеркала не предназначены для доставки всей информации или ее немедленной доставки, но для вашего удобства мы также ведем следующие учетные записи:
 
-https://twitter.com/tbtpost[Twitter Feed, eng/ukr]
-
-https://www.facebook.com/TBT-103648548156002/[Facebook mirror, eng/ukr]
+https://twitter.com/tbtpost[Twitter Feed, eng]
 
 === Notifications
 
@@ -84,19 +72,13 @@ Portable data terminal (PDT) for WMS SaaS owners has builtin support of main TBT
 
 == Integrations
 
-=== Deliveries.PRO
-
-ADC-UA -- Is the unique multicloud solution for digitization of Ukrainian logistics, retail and financial markets that combines logistical solutions of TBT Cloud with data storage and processing power provided by DKDHUB platform. Also covers accounting tasks, intergations and 1C migrations for ukrainian users. Services provided by https://www.linkedin.com/company/innologis[Innologis LLC]
-
-ADC-UA - уникальное мульти-облачное решение для диджитизации украинских логистических, розничных и финансовых рынков, сочетающее логистические решения TBT Cloud с мощностями хранения и обработки данных, предоставляемыми платформой DKDHUB. Также охватывает задачи учета, взаимодействия и миграции 1С для украинских пользователей. Услуги предоставляются https://www.linkedin.com/company/innologis[ООО «Иннолоджис»]
-
 Link: https://dkdhub.com
 
 == Copyrights
 
-&copy; 2020-2022 TBT LLC
+&copy; 2021-2023 Innologis LLC and partners
 
-&copy; 2021-2022 Innologis LLC and partners
+&copy; 2020-2022 TBT LLC
 
 === Previous (historical) maintainers
 
